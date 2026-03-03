@@ -12,8 +12,22 @@ export default {
         "2xl": "1400px",
       },
     },
+    fontFamily: {
+      sans: ['Assistant', 'sans-serif'],
+    },
     extend: {
       colors: {
+        "header-bg": "hsl(var(--header-bg))",
+        "header-border": "hsl(var(--header-border))",
+        "chip-active-bg": "hsl(var(--chip-active-bg))",
+        "chip-active-text": "hsl(var(--chip-active-text))",
+        "chip-inactive-bg": "hsl(var(--chip-inactive-bg))",
+        "chip-inactive-text": "hsl(var(--chip-inactive-text))",
+        "chip-border": "hsl(var(--chip-border))",
+        overdue: "hsl(var(--overdue))",
+        success: "hsl(var(--success))",
+        warning: "hsl(var(--warning))",
+        info: "hsl(var(--info))",
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
