@@ -171,7 +171,7 @@ export default function FiltersBar({
                   <ChevronDown size={14} />
                 </button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="center" style={{ direction: "rtl" }}>
+              <DropdownMenuContent align="center" style={{ direction: "rtl", textAlign: "center" }}>
                 {overflowSystems.map((sys) => (
                   <DropdownMenuItem
                     key={sys}
