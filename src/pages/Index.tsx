@@ -45,12 +45,12 @@ const Index = () => {
     const categories = new Set(tasks.map((t) => t.category).filter(Boolean));
 
     const s = { ...uiState };
-    if (s.selectedSystem !== "all" && !systemLabels.has(s.selectedSystem)) {
-      s.selectedSystem = "all";
-    }
-    if (s.selectedTopic !== "all" && !categories.has(s.selectedTopic)) {
-      s.selectedTopic = "all";
-    }
+    // Migrate old single-select format
+    if (!Array.isArray(s.selectedSystems)) s.selectedSystems = [];
+    if (!Array.isArray(s.selectedTopics)) s.selectedTopics = [];
+    
+    s.selectedSystems = s.selectedSystems.filter((sys) => systemLabels.has(sys));
+    s.selectedTopics = s.selectedTopics.filter((t) => categories.has(t));
     return s;
   }, [tasks, uiState]);
 
@@ -70,6 +70,32 @@ const Index = () => {
     (currentPage - 1) * PAGE_SIZE,
     currentPage * PAGE_SIZE
   );
+
+  const handleSystemToggle = useCallback((sys: string) => {
+    setUiState((prev) => {
+      const systems = Array.isArray(prev.selectedSystems) ? prev.selectedSystems : [];
+      if (sys === "__all__") {
+        return { ...prev, selectedSystems: [], currentPage: 1 };
+      }
+      const next = systems.includes(sys)
+        ? systems.filter((s) => s !== sys)
+        : [...systems, sys];
+      return { ...prev, selectedSystems: next, currentPage: 1 };
+    });
+  }, [setUiState]);
+
+  const handleTopicToggle = useCallback((topic: string) => {
+    setUiState((prev) => {
+      const topics = Array.isArray(prev.selectedTopics) ? prev.selectedTopics : [];
+      if (topic === "__all__") {
+        return { ...prev, selectedTopics: [], currentPage: 1 };
+      }
+      const next = topics.includes(topic)
+        ? topics.filter((t) => t !== topic)
+        : [...topics, topic];
+      return { ...prev, selectedTopics: next, currentPage: 1 };
+    });
+  }, [setUiState]);
 
   return (
     <div className="min-h-screen bg-background" dir="rtl">
@@ -98,8 +124,8 @@ const Index = () => {
           tasks={tasks}
           uiState={validatedState}
           onSearch={(q) => updateUi({ searchQuery: q, currentPage: 1 })}
-          onSystemChange={(s) => updateUi({ selectedSystem: s, currentPage: 1 })}
-          onTopicChange={(t) => updateUi({ selectedTopic: t, currentPage: 1 })}
+          onSystemToggle={handleSystemToggle}
+          onTopicToggle={handleTopicToggle}
           onFlagToggle={(flag) =>
             setUiState((prev) => ({
               ...prev,

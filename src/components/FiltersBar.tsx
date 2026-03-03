@@ -18,8 +18,8 @@ interface FiltersBarProps {
   tasks: Task[];
   uiState: UIState;
   onSearch: (q: string) => void;
-  onSystemChange: (s: string) => void;
-  onTopicChange: (t: string) => void;
+  onSystemToggle: (s: string) => void;
+  onTopicToggle: (t: string) => void;
   onFlagToggle: (flag: "overdueOnly" | "groupOnly" | "delegationOnly") => void;
   onSortChange: (mode: SortMode, dir: SortDirection) => void;
   onClearAll: () => void;
@@ -39,8 +39,8 @@ export default function FiltersBar({
   tasks,
   uiState,
   onSearch,
-  onSystemChange,
-  onTopicChange,
+  onSystemToggle,
+  onTopicToggle,
   onFlagToggle,
   onSortChange,
   onClearAll,
@@ -76,6 +76,9 @@ export default function FiltersBar({
     uiState.flags.overdueOnly ||
     uiState.flags.groupOnly ||
     uiState.flags.delegationOnly;
+
+  const isSystemActive = (sys: string) => uiState.selectedSystems.includes(sys);
+  const isTopicActive = (topic: string) => uiState.selectedTopics.includes(topic);
 
   const chipClass = (active: boolean) =>
     `inline-flex items-center gap-1.5 px-3.5 py-1 border text-[13px] font-medium rounded-full transition-all duration-150 cursor-pointer select-none whitespace-nowrap ${
@@ -128,16 +131,23 @@ export default function FiltersBar({
         {/* Row 1: Systems */}
         <div className="flex items-center justify-center gap-2 flex-wrap">
           <button
-            className={chipClass(uiState.selectedSystem === "all")}
-            onClick={() => onSystemChange("all")}
+            className={chipClass(uiState.selectedSystems.length === 0)}
+            onClick={() => {
+              // If already showing all, do nothing; otherwise clear selection
+              if (uiState.selectedSystems.length > 0) {
+                // Clear all systems by toggling each - but simpler to just signal "clear"
+                // We'll handle this via a special call
+                onSystemToggle("__all__");
+              }
+            }}
           >
             כל המערכות
           </button>
           {visibleSystems.map((sys) => (
             <button
               key={sys}
-              className={chipClass(uiState.selectedSystem === sys)}
-              onClick={() => onSystemChange(sys)}
+              className={chipClass(isSystemActive(sys))}
+              onClick={() => onSystemToggle(sys)}
             >
               {sys}
             </button>
@@ -145,7 +155,7 @@ export default function FiltersBar({
           {overflowSystems.length > 0 && (
             <DropdownMenu modal={false}>
               <DropdownMenuTrigger asChild>
-                <button className="inline-flex items-center gap-1 px-3.5 py-1 border border-border text-[13px] font-medium text-chip-inactive-text rounded-full bg-chip-inactive-bg hover:bg-secondary transition-colors cursor-pointer">
+                <button className="inline-flex items-center gap-1 px-3.5 py-1 border border-chip-border text-[13px] font-medium text-chip-inactive-text rounded-full bg-chip-inactive-bg hover:bg-secondary transition-colors cursor-pointer">
                   עוד
                   <ChevronDown size={14} />
                 </button>
@@ -154,10 +164,10 @@ export default function FiltersBar({
                 {overflowSystems.map((sys) => (
                   <DropdownMenuItem
                     key={sys}
-                    onClick={() => onSystemChange(sys)}
+                    onClick={() => onSystemToggle(sys)}
                     className="text-[13px]"
                   >
-                    {sys}
+                    {isSystemActive(sys) ? "✓ " : ""}{sys}
                   </DropdownMenuItem>
                 ))}
               </DropdownMenuContent>
@@ -168,23 +178,27 @@ export default function FiltersBar({
         {/* Row 2: Topics */}
         <div className="flex items-center justify-center gap-2 flex-wrap">
           <button
-            className={chipClass(uiState.selectedTopic === "all")}
-            onClick={() => onTopicChange("all")}
+            className={chipClass(uiState.selectedTopics.length === 0)}
+            onClick={() => {
+              if (uiState.selectedTopics.length > 0) {
+                onTopicToggle("__all__");
+              }
+            }}
           >
             כל הנושאים
           </button>
           {topics.map((topic) => (
             <button
               key={topic}
-              className={chipClass(uiState.selectedTopic === topic)}
-              onClick={() => onTopicChange(topic)}
+              className={chipClass(isTopicActive(topic))}
+              onClick={() => onTopicToggle(topic)}
             >
               {topic}
             </button>
           ))}
         </div>
 
-        {/* Row 3: Special filters + clear */}
+        {/* Row 3: Special filters + clear (aligned to end to match sort button) */}
         <div className="flex items-center justify-center gap-2">
           <button
             className={chipClass(uiState.flags.overdueOnly)}
