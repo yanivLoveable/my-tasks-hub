@@ -8,11 +8,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { TriangleAlert, Users, User, ArrowLeftRight } from "lucide-react";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 
 interface FiltersBarProps {
   tasks: Task[];
@@ -87,6 +82,13 @@ export default function FiltersBar({
       active
         ? "bg-chip-active-bg text-chip-active-text border-chip-active-bg"
         : "bg-chip-inactive-bg text-chip-inactive-text border-chip-border hover:bg-secondary"
+    }`;
+
+  const chipSmallClass = (active: boolean) =>
+    `inline-flex items-center gap-1.5 px-3 py-0.5 border text-xs font-medium rounded-full transition-all duration-150 select-none whitespace-nowrap ${
+      active
+        ? "bg-chip-active-bg text-chip-active-text border-chip-active-bg cursor-pointer"
+        : "bg-chip-inactive-bg text-chip-inactive-text border-chip-border hover:bg-secondary cursor-pointer"
     }`;
 
   return (
@@ -197,49 +199,45 @@ export default function FiltersBar({
           ))}
         </div>
 
-        {/* Row 3: Special filters + clear (aligned to end to match sort button) */}
-        <div className="flex items-center justify-center gap-2">
-          <button
-            className={chipClass(uiState.flags.overdueOnly)}
-            onClick={() => onFlagToggle("overdueOnly")}
-          >
-            <TriangleAlert className="w-3.5 h-3.5" strokeWidth={2.5} />
-            חריגות
-          </button>
+        {/* Row 3: Special filters + clear */}
+        <div className="flex items-center w-full">
+          <div className="flex-1 flex items-center justify-center gap-2 flex-wrap">
+            <button
+              className={chipSmallClass(uiState.flags.overdueOnly)}
+              onClick={() => onFlagToggle("overdueOnly")}
+            >
+              <TriangleAlert className="w-3.5 h-3.5" />
+              חורגות
+            </button>
 
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <button className={`${chipClass(false)} opacity-50 cursor-help`}>
-                <User className="w-3.5 h-3.5" strokeWidth={2.5} />
-                אישי
-              </button>
-            </TooltipTrigger>
-            <TooltipContent>לא זמין בדאטה הנוכחי</TooltipContent>
-          </Tooltip>
+            <button
+              className={`${chipSmallClass(false)} cursor-help opacity-70`}
+            >
+              <ArrowLeftRight className="w-3.5 h-3.5" />
+              דליגציה
+            </button>
 
-          <button
-            className={chipClass(uiState.flags.groupOnly)}
-            onClick={() => onFlagToggle("groupOnly")}
-          >
-            <Users className="w-3.5 h-3.5" strokeWidth={2.5} />
-            קבוצה
-          </button>
+            <button
+              className={`${chipSmallClass(false)} cursor-help opacity-70`}
+            >
+              <User className="w-3.5 h-3.5" />
+              אישי
+            </button>
 
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <button className={`${chipClass(false)} opacity-50 cursor-help`}>
-                <ArrowLeftRight className="w-3.5 h-3.5" strokeWidth={2.5} />
-                דליגציה
-              </button>
-            </TooltipTrigger>
-            <TooltipContent>לא זמין בדאטה הנוכחי</TooltipContent>
-          </Tooltip>
+            <button
+              className={chipSmallClass(uiState.flags.groupOnly)}
+              onClick={() => onFlagToggle("groupOnly")}
+            >
+              <Users className="w-3.5 h-3.5" />
+              קבוצה
+            </button>
+          </div>
 
           <button
-            className={`text-[12px] transition-colors mr-2 ${
+            className={`text-[12px] whitespace-nowrap bg-transparent border-none p-0 transition-colors ${
               hasActiveFlags
-                ? "text-primary hover:text-primary/80 underline cursor-pointer"
-                : "text-muted-foreground/60 cursor-default"
+                ? "text-primary hover:text-primary/80 underline underline-offset-2 cursor-pointer"
+                : "text-muted-foreground/40 cursor-default no-underline"
             }`}
             onClick={hasActiveFlags ? onClearAll : undefined}
           >
