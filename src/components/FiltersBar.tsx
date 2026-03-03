@@ -77,8 +77,10 @@ export default function FiltersBar({
     uiState.flags.groupOnly ||
     uiState.flags.delegationOnly;
 
-  const isSystemActive = (sys: string) => uiState.selectedSystems.includes(sys);
-  const isTopicActive = (topic: string) => uiState.selectedTopics.includes(topic);
+  const selectedSystems = Array.isArray(uiState.selectedSystems) ? uiState.selectedSystems : [];
+  const selectedTopics = Array.isArray(uiState.selectedTopics) ? uiState.selectedTopics : [];
+  const isSystemActive = (sys: string) => selectedSystems.includes(sys);
+  const isTopicActive = (topic: string) => selectedTopics.includes(topic);
 
   const chipClass = (active: boolean) =>
     `inline-flex items-center gap-1.5 px-3.5 py-1 border text-[13px] font-medium rounded-full transition-all duration-150 cursor-pointer select-none whitespace-nowrap ${
@@ -131,12 +133,9 @@ export default function FiltersBar({
         {/* Row 1: Systems */}
         <div className="flex items-center justify-center gap-2 flex-wrap">
           <button
-            className={chipClass(uiState.selectedSystems.length === 0)}
+            className={chipClass(selectedSystems.length === 0)}
             onClick={() => {
-              // If already showing all, do nothing; otherwise clear selection
-              if (uiState.selectedSystems.length > 0) {
-                // Clear all systems by toggling each - but simpler to just signal "clear"
-                // We'll handle this via a special call
+              if (selectedSystems.length > 0) {
                 onSystemToggle("__all__");
               }
             }}
@@ -178,9 +177,9 @@ export default function FiltersBar({
         {/* Row 2: Topics */}
         <div className="flex items-center justify-center gap-2 flex-wrap">
           <button
-            className={chipClass(uiState.selectedTopics.length === 0)}
+            className={chipClass(selectedTopics.length === 0)}
             onClick={() => {
-              if (uiState.selectedTopics.length > 0) {
+              if (selectedTopics.length > 0) {
                 onTopicToggle("__all__");
               }
             }}
