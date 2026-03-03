@@ -166,9 +166,9 @@ export default function FiltersBar({
           {overflowSystems.length > 0 && (
             <DropdownMenu modal={false}>
               <DropdownMenuTrigger asChild>
-                <button className="inline-flex items-center gap-1 px-3 py-0.5 border border-chip-border text-xs font-medium text-chip-inactive-text rounded-full bg-chip-inactive-bg hover:bg-secondary transition-colors cursor-pointer">
+                <button className="inline-flex items-center gap-1 px-3 py-0.5 border border-chip-border text-xs font-bold text-primary rounded-full bg-chip-inactive-bg hover:bg-secondary transition-colors cursor-pointer">
                   עוד
-                  <ChevronDown size={14} />
+                  <ChevronDown className="w-3 h-3" />
                 </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="center" style={{ direction: "rtl", textAlign: "center" }}>
