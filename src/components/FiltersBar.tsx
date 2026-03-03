@@ -111,7 +111,7 @@ export default function FiltersBar({
               <span>{currentSortLabel}</span>
             </button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="min-w-[180px]">
+          <DropdownMenuContent align="end" className="min-w-[180px]" style={{ direction: "rtl" }}>
             {SORT_OPTIONS.map((opt) => {
               const isActive = uiState.sortMode === opt.mode && uiState.sortDirection === opt.dir;
               return (
@@ -153,6 +153,16 @@ export default function FiltersBar({
               {sys}
             </button>
           ))}
+          {/* Show selected overflow systems as chips */}
+          {overflowSystems.filter((sys) => isSystemActive(sys)).map((sys) => (
+            <button
+              key={sys}
+              className={chipStyle(true)}
+              onClick={() => onSystemToggle(sys)}
+            >
+              {sys}
+            </button>
+          ))}
           {overflowSystems.length > 0 && (
             <DropdownMenu modal={false}>
               <DropdownMenuTrigger asChild>
@@ -161,14 +171,15 @@ export default function FiltersBar({
                   <ChevronDown size={14} />
                 </button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="start">
+              <DropdownMenuContent align="center" style={{ direction: "rtl" }}>
                 {overflowSystems.map((sys) => (
                   <DropdownMenuItem
                     key={sys}
                     onClick={() => onSystemToggle(sys)}
-                    className="text-[13px]"
+                    className={`text-[13px] ${isSystemActive(sys) ? "bg-primary/10 font-semibold" : ""}`}
+                    style={{ paddingInline: 14, paddingBlock: 7 }}
                   >
-                    {isSystemActive(sys) ? "✓ " : ""}{sys}
+                    {sys}
                   </DropdownMenuItem>
                 ))}
               </DropdownMenuContent>
