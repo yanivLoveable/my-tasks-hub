@@ -25,7 +25,7 @@ export default function TaskCard({ task }: TaskCardProps) {
       <div className="flex items-start gap-4">
         {/* Right side: System badge */}
         <div className="flex-shrink-0 pt-1">
-          <span className="inline-flex items-center justify-center min-w-[48px] px-3 py-1.5 text-[11px] font-bold rounded-lg bg-primary text-primary-foreground">
+          <span className="inline-flex items-center justify-center min-w-[44px] px-2.5 py-1 text-[10px] font-bold rounded-md bg-primary text-primary-foreground tracking-wide uppercase">
             {task.systemLabel}
           </span>
         </div>
