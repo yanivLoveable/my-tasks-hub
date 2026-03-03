@@ -176,8 +176,8 @@ export default function FiltersBar({
                   <DropdownMenuItem
                     key={sys}
                     onClick={() => onSystemToggle(sys)}
-                    className={`text-[13px] ${isSystemActive(sys) ? "bg-primary/10 font-semibold" : ""}`}
-                    style={{ paddingInline: 14, paddingBlock: 7 }}
+                    className={isSystemActive(sys) ? "bg-primary/10 font-semibold" : ""}
+                    style={{ justifyContent: "center", fontSize: 13 }}
                   >
                     {sys}
                   </DropdownMenuItem>
