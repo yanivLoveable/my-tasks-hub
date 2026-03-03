@@ -221,12 +221,9 @@ export default function FiltersBar({
             </TooltipTrigger>
             <TooltipContent>לא זמין בדאטה הנוכחי</TooltipContent>
           </Tooltip>
-        </div>
 
-        {/* Clear row 3 flags */}
-        <div className="flex justify-center">
           <button
-            className={`text-[12px] transition-colors ${
+            className={`text-[12px] transition-colors mr-2 ${
               hasActiveFlags
                 ? "text-primary hover:text-primary/80 underline cursor-pointer"
                 : "text-muted-foreground/60 cursor-default"
