@@ -110,7 +110,13 @@ const Index = () => {
           onSortChange={(mode: SortMode, dir: SortDirection) =>
             updateUi({ sortMode: mode, sortDirection: dir })
           }
-          onClearAll={() => setUiState(DEFAULT_UI_STATE)}
+          onClearAll={() =>
+            setUiState((prev) => ({
+              ...prev,
+              flags: { overdueOnly: false, groupOnly: false, delegationOnly: false },
+              currentPage: 1,
+            }))
+          }
         />
 
         <div className="px-6">
