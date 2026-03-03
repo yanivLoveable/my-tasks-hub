@@ -143,7 +143,7 @@ export default function FiltersBar({
             </button>
           ))}
           {overflowSystems.length > 0 && (
-            <DropdownMenu>
+            <DropdownMenu modal={false}>
               <DropdownMenuTrigger asChild>
                 <button className="inline-flex items-center gap-1 px-3.5 py-1 border border-border text-[13px] font-medium text-chip-inactive-text rounded-full bg-chip-inactive-bg hover:bg-secondary transition-colors cursor-pointer">
                   עוד

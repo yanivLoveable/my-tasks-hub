@@ -72,6 +72,7 @@ export function useTasks() {
       setTasks(MOCK_TASKS);
       setLastUpdated(new Date());
       setBanner({ type: "success", text: "הנתונים עודכנו בהצלחה" });
+      setTimeout(() => setBanner((b) => b?.type === "success" ? null : b), 2000);
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : String(err);
       setBanner({ type: "error", text: msg });
