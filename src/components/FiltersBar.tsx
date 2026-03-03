@@ -84,7 +84,7 @@ export default function FiltersBar({
     }`;
 
   return (
-    <div className="mx-auto px-6 pt-5" style={{ maxWidth: 760 }}>
+    <div className="mx-auto px-6 pt-5" style={{ maxWidth: 1104 }}>
       {/* Search + Sort */}
       <div className="flex items-center gap-2 mb-3">
         <div className="relative flex-1">
