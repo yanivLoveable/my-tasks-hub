@@ -44,9 +44,9 @@ export default function PaginationFooter({
       <div className="flex items-center gap-1">
         <button
           className="p-1.5 rounded-md text-muted-foreground hover:text-primary disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-          onClick={() => onPageChange(currentPage + 1)}
-          disabled={currentPage >= totalPages}
-          title="הבא"
+          onClick={() => onPageChange(currentPage - 1)}
+          disabled={currentPage <= 1}
+          title="הקודם"
         >
           <ChevronRight size={16} />
         </button>
@@ -73,9 +73,9 @@ export default function PaginationFooter({
 
         <button
           className="p-1.5 rounded-md text-muted-foreground hover:text-primary disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-          onClick={() => onPageChange(currentPage - 1)}
-          disabled={currentPage <= 1}
-          title="הקודם"
+          onClick={() => onPageChange(currentPage + 1)}
+          disabled={currentPage >= totalPages}
+          title="הבא"
         >
           <ChevronLeft size={16} />
         </button>
