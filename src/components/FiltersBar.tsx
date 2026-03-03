@@ -1,4 +1,4 @@
-import { Search, ArrowUpDown } from "lucide-react";
+import { Search, ArrowUpDown, ChevronDown } from "lucide-react";
 import type { Task, UIState, SortMode, SortDirection } from "@/types/task";
 import { useMemo, useState } from "react";
 import {
@@ -47,7 +47,6 @@ export default function FiltersBar({
 }: FiltersBarProps) {
   const [searchInput, setSearchInput] = useState(uiState.searchQuery);
 
-  // Debounced search
   const searchTimeout = useMemo(() => ({ id: null as ReturnType<typeof setTimeout> | null }), []);
   const handleSearchChange = (value: string) => {
     setSearchInput(value);
@@ -55,7 +54,6 @@ export default function FiltersBar({
     searchTimeout.id = setTimeout(() => onSearch(value), 300);
   };
 
-  // Derive unique systems and topics
   const systems = useMemo(() => {
     const set = new Set(tasks.map((t) => t.systemLabel));
     return Array.from(set).sort();
@@ -66,40 +64,36 @@ export default function FiltersBar({
     return Array.from(set).sort();
   }, [tasks]);
 
-  const [showAllSystems, setShowAllSystems] = useState(false);
-  const visibleSystems = showAllSystems ? systems : systems.slice(0, MAX_SYSTEM_CHIPS);
-  const hasMoreSystems = systems.length > MAX_SYSTEM_CHIPS;
+  const visibleSystems = systems.slice(0, MAX_SYSTEM_CHIPS);
+  const overflowSystems = systems.slice(MAX_SYSTEM_CHIPS);
 
   const currentSortLabel =
     SORT_OPTIONS.find(
       (o) => o.mode === uiState.sortMode && o.dir === uiState.sortDirection
     )?.label ?? "תאריך יעד (ישן לחדש)";
 
-  const hasActiveFilters =
-    uiState.selectedSystem !== "all" ||
-    uiState.selectedTopic !== "all" ||
+  const hasActiveFlags =
     uiState.flags.overdueOnly ||
     uiState.flags.groupOnly ||
-    uiState.flags.delegationOnly ||
-    uiState.searchQuery.trim() !== "";
+    uiState.flags.delegationOnly;
 
   const chipClass = (active: boolean) =>
-    `inline-flex items-center gap-1.5 px-3 py-1 border text-xs font-medium rounded-full transition-all duration-150 cursor-pointer select-none whitespace-nowrap ${
+    `inline-flex items-center gap-1.5 px-3.5 py-1 border text-[13px] font-medium rounded-full transition-all duration-150 cursor-pointer select-none whitespace-nowrap ${
       active
         ? "bg-chip-active-bg text-chip-active-text border-chip-active-bg"
         : "bg-chip-inactive-bg text-chip-inactive-text border-chip-border hover:bg-secondary"
     }`;
 
   return (
-    <div className="mx-auto px-6 pt-4" style={{ maxWidth: 720 }}>
+    <div className="mx-auto px-6 pt-5" style={{ maxWidth: 760 }}>
       {/* Search + Sort */}
-      <div className="flex items-center gap-2 mb-4">
+      <div className="flex items-center gap-3 mb-4">
         <div className="relative flex-1">
           <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
           <input
             type="text"
             placeholder="חיפוש לפי כותרת, מזהה או תאריך..."
-            className="w-full h-10 pr-9 pl-4 bg-background border border-input rounded-lg focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 transition-colors text-[13px]"
+            className="w-full h-10 pr-10 pl-4 bg-background border border-input rounded-lg focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 transition-colors text-[13px]"
             dir="rtl"
             value={searchInput}
             onChange={(e) => handleSearchChange(e.target.value)}
@@ -130,7 +124,7 @@ export default function FiltersBar({
       </div>
 
       {/* Filter Chips */}
-      <div className="space-y-2" dir="rtl">
+      <div className="space-y-2.5" dir="rtl">
         {/* Row 1: Systems */}
         <div className="flex items-center justify-center gap-2 flex-wrap">
           <button
@@ -148,14 +142,26 @@ export default function FiltersBar({
               {sys}
             </button>
           ))}
-          {hasMoreSystems && !showAllSystems && (
-            <button
-              className="inline-flex items-center gap-1 px-3 py-1 border border-border text-xs font-bold text-primary rounded-full bg-secondary hover:bg-secondary/80 transition-colors"
-              onClick={() => setShowAllSystems(true)}
-            >
-              עוד
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"/></svg>
-            </button>
+          {overflowSystems.length > 0 && (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button className="inline-flex items-center gap-1 px-3.5 py-1 border border-border text-[13px] font-medium text-chip-inactive-text rounded-full bg-chip-inactive-bg hover:bg-secondary transition-colors cursor-pointer">
+                  עוד
+                  <ChevronDown size={14} />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start">
+                {overflowSystems.map((sys) => (
+                  <DropdownMenuItem
+                    key={sys}
+                    onClick={() => onSystemChange(sys)}
+                    className="text-[13px]"
+                  >
+                    {sys}
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
           )}
         </div>
 
@@ -178,7 +184,7 @@ export default function FiltersBar({
           ))}
         </div>
 
-        {/* Row 3: Special filters */}
+        {/* Row 3: Special filters + clear */}
         <div className="flex items-center justify-center gap-2">
           <button
             className={chipClass(uiState.flags.overdueOnly)}
@@ -190,9 +196,7 @@ export default function FiltersBar({
 
           <Tooltip>
             <TooltipTrigger asChild>
-              <button
-                className={`${chipClass(false)} opacity-50 cursor-help`}
-              >
+              <button className={`${chipClass(false)} opacity-50 cursor-help`}>
                 <User className="w-3.5 h-3.5" strokeWidth={2.5} />
                 אישי
               </button>
@@ -210,9 +214,7 @@ export default function FiltersBar({
 
           <Tooltip>
             <TooltipTrigger asChild>
-              <button
-                className={`${chipClass(false)} opacity-50 cursor-help`}
-              >
+              <button className={`${chipClass(false)} opacity-50 cursor-help`}>
                 <ArrowLeftRight className="w-3.5 h-3.5" strokeWidth={2.5} />
                 דליגציה
               </button>
@@ -221,17 +223,19 @@ export default function FiltersBar({
           </Tooltip>
         </div>
 
-        {/* Clear all */}
-        {hasActiveFilters && (
-          <div className="flex justify-center pt-1">
-            <button
-              className="text-[12px] text-muted-foreground hover:text-primary transition-colors underline"
-              onClick={onClearAll}
-            >
-              נקה הכל
-            </button>
-          </div>
-        )}
+        {/* Clear row 3 flags */}
+        <div className="flex justify-center">
+          <button
+            className={`text-[12px] transition-colors ${
+              hasActiveFlags
+                ? "text-primary hover:text-primary/80 underline cursor-pointer"
+                : "text-muted-foreground/60 cursor-default"
+            }`}
+            onClick={hasActiveFlags ? onClearAll : undefined}
+          >
+            נקה הכל
+          </button>
+        </div>
       </div>
     </div>
   );
