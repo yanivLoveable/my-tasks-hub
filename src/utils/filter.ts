@@ -4,16 +4,16 @@ import { formatDateHebrew } from "./dates";
 export function filterTasks(tasks: Task[], state: UIState): Task[] {
   let result = tasks;
 
-  // System filter
-  if (state.selectedSystem !== "all") {
-    result = result.filter(
-      (t) => t.systemLabel === state.selectedSystem
-    );
+  // System filter (multi-select)
+  if (state.selectedSystems.length > 0) {
+    const set = new Set(state.selectedSystems);
+    result = result.filter((t) => set.has(t.systemLabel));
   }
 
-  // Topic filter
-  if (state.selectedTopic !== "all") {
-    result = result.filter((t) => t.category === state.selectedTopic);
+  // Topic filter (multi-select)
+  if (state.selectedTopics.length > 0) {
+    const set = new Set(state.selectedTopics);
+    result = result.filter((t) => t.category && set.has(t.category));
   }
 
   // Flags

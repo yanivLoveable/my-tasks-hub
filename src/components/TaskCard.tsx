@@ -24,8 +24,8 @@ export default function TaskCard({ task }: TaskCardProps) {
     >
       <div className="flex items-start gap-4">
         {/* Right side: System badge */}
-        <div className="flex-shrink-0 pt-1">
-          <span className="inline-flex items-center justify-center min-w-[44px] px-2.5 py-1 text-[10px] font-bold rounded-md bg-primary text-primary-foreground tracking-wide uppercase">
+        <div className="flex-shrink-0 pt-0.5">
+          <span className="inline-flex items-center justify-center min-w-[48px] px-3 py-1.5 text-[11px] font-bold rounded-full bg-primary text-primary-foreground tracking-wide">
             {task.systemLabel}
           </span>
         </div>
@@ -34,7 +34,7 @@ export default function TaskCard({ task }: TaskCardProps) {
         <div className="flex-1 min-w-0">
           {/* Row 1: title + identifier */}
           <div className="flex items-center gap-2 mb-0.5">
-            <h3 className="text-[15px] font-bold text-foreground leading-snug">
+            <h3 className="text-[14px] font-bold text-foreground leading-snug">
               {task.title}
             </h3>
             {task.identifier && (
@@ -45,7 +45,7 @@ export default function TaskCard({ task }: TaskCardProps) {
           </div>
 
           {/* Row 2: category + dates + overdue */}
-          <div className="flex items-center gap-3 text-[12px] text-muted-foreground mt-1">
+          <div className="flex items-center gap-2 text-[12px] text-muted-foreground mt-1 flex-wrap">
             {task.category && (
               <span className="font-medium">{task.category}</span>
             )}
@@ -67,7 +67,7 @@ export default function TaskCard({ task }: TaskCardProps) {
 
           {/* Row 3: group info */}
           {task.assignedToRole && (
-            <div className="flex items-center gap-1 text-[11px] text-muted-foreground mt-1.5">
+            <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground mt-1.5">
               <Users size={12} />
               <span>{task.assignedToRole}</span>
             </div>
@@ -77,8 +77,8 @@ export default function TaskCard({ task }: TaskCardProps) {
         {/* Left side: External link icon */}
         <div className="flex items-start pt-2 flex-shrink-0">
           <ExternalLink
-            size={18}
-            className="text-muted-foreground/50 group-hover:text-primary transition-colors"
+            size={16}
+            className="text-muted-foreground/40 group-hover:text-primary transition-colors"
           />
         </div>
       </div>

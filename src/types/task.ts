@@ -20,8 +20,8 @@ export type SortDirection = "asc" | "desc";
 
 export interface UIState {
   searchQuery: string;
-  selectedSystem: string;
-  selectedTopic: string;
+  selectedSystems: string[];
+  selectedTopics: string[];
   flags: {
     overdueOnly: boolean;
     groupOnly: boolean;
@@ -34,8 +34,8 @@ export interface UIState {
 
 export const DEFAULT_UI_STATE: UIState = {
   searchQuery: "",
-  selectedSystem: "all",
-  selectedTopic: "all",
+  selectedSystems: [],
+  selectedTopics: [],
   flags: {
     overdueOnly: false,
     groupOnly: false,
