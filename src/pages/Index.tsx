@@ -144,10 +144,7 @@ const Index = () => {
 
       {/* Content */}
       <div className="mx-auto" style={{ maxWidth: 1104 }}>
-        <div className="px-6">
-          <TaskList tasks={paginatedTasks} loading={loading} />
-        </div>
-
+        <TaskList tasks={paginatedTasks} loading={loading} />
         <PaginationFooter
           currentPage={currentPage}
           totalItems={sorted.length}
