@@ -143,7 +143,7 @@ const Index = () => {
       </div>
 
       {/* Content */}
-      <div className="mx-auto" style={{ maxWidth: 900 }}>
+      <div className="mx-auto" style={{ maxWidth: 1104 }}>
         <div className="px-6">
           <TaskList tasks={paginatedTasks} loading={loading} />
         </div>
