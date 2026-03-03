@@ -35,7 +35,7 @@ export default function Header({
               ? `הרענון יהיה זמין שוב בשעה ${cooldownTime}`
               : "רענן נתונים"
           }
-          className="p-1.5 rounded-md transition-colors text-muted-foreground hover:text-primary disabled:opacity-40 disabled:cursor-not-allowed"
+          className="flex items-center justify-center w-8 h-8 rounded-md transition-colors text-muted-foreground hover:text-primary disabled:opacity-40 disabled:cursor-not-allowed"
           onClick={onRefresh}
           disabled={refreshing || cooldown}
         >
@@ -46,11 +46,11 @@ export default function Header({
         </button>
         <button
           title="שלח משוב"
-          className="p-1.5 rounded-md transition-colors text-muted-foreground hover:text-primary"
+          className="flex items-center justify-center w-8 h-8 rounded-md transition-colors text-muted-foreground hover:text-primary"
         >
-          <span className="relative inline-flex items-center justify-center">
+          <span className="relative inline-flex items-center justify-center w-[18px] h-[18px]">
             <MessageSquare size={18} />
-            <span className="absolute text-[7px] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 leading-none">
+            <span className="absolute text-[7px] leading-none top-[44%] left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none">
               ★
             </span>
           </span>
