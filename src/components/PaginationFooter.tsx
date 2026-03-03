@@ -30,7 +30,6 @@ export default function PaginationFooter({
     }
   }
 
-  // Insert ellipsis markers as -1
   const displayPages: (number | "ellipsis")[] = [];
   let last = 0;
   for (const p of pages) {
@@ -40,11 +39,8 @@ export default function PaginationFooter({
   }
 
   return (
-    <div className="flex items-center justify-between px-6 py-4 border-t border-border mt-4">
-      <span className="text-[13px] text-muted-foreground">
-        מציג {start}-{end} מתוך {totalItems} משימות
-      </span>
-
+    <div className="flex flex-col items-center gap-3 py-6 mt-4">
+      {/* Pagination controls */}
       <div className="flex items-center gap-1">
         <button
           className="p-1.5 rounded-md text-muted-foreground hover:text-primary disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
@@ -52,7 +48,7 @@ export default function PaginationFooter({
           disabled={currentPage <= 1}
           title="הקודם"
         >
-          <ChevronRight size={16} />
+          <ChevronLeft size={16} />
         </button>
 
         {displayPages.map((p, i) =>
@@ -65,8 +61,8 @@ export default function PaginationFooter({
               key={p}
               className={`min-w-[28px] h-7 rounded-md text-xs font-medium transition-colors ${
                 p === currentPage
-                  ? "bg-primary text-primary-foreground"
-                  : "text-muted-foreground hover:bg-secondary"
+                  ? "text-foreground font-bold underline underline-offset-4"
+                  : "text-muted-foreground hover:text-foreground"
               }`}
               onClick={() => onPageChange(p)}
             >
@@ -81,8 +77,20 @@ export default function PaginationFooter({
           disabled={currentPage >= totalPages}
           title="הבא"
         >
-          <ChevronLeft size={16} />
+          <ChevronRight size={16} />
         </button>
+      </div>
+
+      {/* Item count */}
+      <span className="text-[12px] text-muted-foreground">
+        עמוד {currentPage} מתוך {totalPages}·מציג {start}-{end} מתוך {totalItems} משימות
+      </span>
+
+      {/* Footer links */}
+      <div className="flex items-center gap-3 text-[12px] text-muted-foreground mt-2">
+        <button className="hover:text-primary transition-colors">שלח משוב</button>
+        <span>|</span>
+        <button className="hover:text-primary transition-colors">לתמיכה</button>
       </div>
     </div>
   );

@@ -110,6 +110,7 @@ const Index = () => {
           onSortChange={(mode: SortMode, dir: SortDirection) =>
             updateUi({ sortMode: mode, sortDirection: dir })
           }
+          onClearAll={() => setUiState(DEFAULT_UI_STATE)}
         />
 
         <div className="px-6">

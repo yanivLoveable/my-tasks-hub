@@ -23,7 +23,8 @@ export default function Header({
       </span>
       <div className="flex items-center gap-3">
         {lastUpdated && (
-          <span className="text-[11px] text-muted-foreground">
+          <span className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
+            <span className="w-2 h-2 rounded-full bg-green-500 inline-block" />
             עדכון אחרון: {formatDateTimeHebrew(lastUpdated)}
           </span>
         )}
