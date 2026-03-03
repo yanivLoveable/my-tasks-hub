@@ -1,11 +1,11 @@
 import { useState, useEffect, useCallback, useRef } from "react";
-import { getAccessToken } from "@/services/authService";
-import { fetchUserTasks } from "@/services/tasksService";
-import { triggerRefresh } from "@/services/refreshService";
-import { waitForJob } from "@/services/jobsService";
-import { mapApiToTasks } from "@/utils/mapTasks";
+import { MOCK_TASKS } from "@/data/mockTasks";
+// import { getAccessToken } from "@/services/authService";
+// import { fetchUserTasks } from "@/services/tasksService";
+// import { triggerRefresh } from "@/services/refreshService";
+// import { waitForJob } from "@/services/jobsService";
+// import { mapApiToTasks } from "@/utils/mapTasks";
 import type { Task } from "@/types/task";
-
 const COOLDOWN_KEY = "notifCenter.refreshCooldownUntil";
 const COOLDOWN_MS = 10 * 60 * 1000;
 
@@ -26,10 +26,9 @@ export function useTasks() {
     try {
       setLoading(true);
       setBanner(null);
-      const token = await getAccessToken();
-      const raw = await fetchUserTasks(token);
-      const mapped = mapApiToTasks(raw);
-      setTasks(mapped);
+      // Mock: use static data instead of API
+      await new Promise((r) => setTimeout(r, 500));
+      setTasks(MOCK_TASKS);
       setLastUpdated(new Date());
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : String(err);
@@ -60,68 +59,20 @@ export function useTasks() {
   const refresh = useCallback(async () => {
     if (isOnCooldown() || refreshing) return;
 
-    const controller = new AbortController();
-    abortRef.current = controller;
-
     try {
       setRefreshing(true);
       setBanner({ type: "info", text: "מתבצע רענון נתונים..." });
 
-      const token = await getAccessToken();
-      const { runId } = await triggerRefresh(token);
-
       // Set cooldown
       localStorage.setItem(COOLDOWN_KEY, String(Date.now() + COOLDOWN_MS));
 
-      const jobResult = await waitForJob(
-        token,
-        runId,
-        undefined,
-        controller.signal
-      );
+      // Mock: simulate refresh delay
+      await new Promise((r) => setTimeout(r, 2000));
 
-      if (jobResult.status === "failed") {
-        setBanner({
-          type: "error",
-          text: jobResult.errorMessage || "הרענון נכשל",
-        });
-        return;
-      }
-
-      // Check per-source statuses
-      const sources = jobResult.result?.sources;
-      if (sources) {
-        const failedSources = Object.entries(sources)
-          .filter(([, v]) => v.status === "failed")
-          .map(([k]) => k);
-        const lockedSources = Object.entries(sources)
-          .filter(([, v]) => v.status === "locked")
-          .map(([k]) => k);
-
-        if (failedSources.length > 0) {
-          setBanner({
-            type: "warning",
-            text: `הרענון הושלם חלקית. מערכות שנכשלו: ${failedSources.join(", ")}`,
-          });
-        } else if (lockedSources.length > 0) {
-          setBanner({
-            type: "warning",
-            text: "חלק מהמערכות עסוקות, נסה שוב בעוד רגע",
-          });
-        } else {
-          setBanner({ type: "success", text: "הנתונים עודכנו בהצלחה" });
-        }
-      } else {
-        setBanner({ type: "success", text: "הנתונים עודכנו בהצלחה" });
-      }
-
-      // Reload tasks
-      const token2 = await getAccessToken();
-      const raw = await fetchUserTasks(token2);
-      setTasks(mapApiToTasks(raw));
+      setTasks(MOCK_TASKS);
       setLastUpdated(new Date());
+      setBanner({ type: "success", text: "הנתונים עודכנו בהצלחה" });
     } catch (err: unknown) {
-      if (controller.signal.aborted) return;
       const msg = err instanceof Error ? err.message : String(err);
       setBanner({ type: "error", text: msg });
     } finally {
