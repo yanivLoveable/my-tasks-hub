@@ -20,12 +20,11 @@ interface FiltersBarProps {
   onClearAll: () => void;
 }
 
-const SORT_OPTIONS: { label: string; mode: SortMode; dir: SortDirection }[] = [
-  { label: "ברירת מחדל", mode: "default", dir: "asc" },
-  { label: "תאריך התחלה: ישן → חדש", mode: "startDate", dir: "asc" },
-  { label: "תאריך התחלה: חדש → ישן", mode: "startDate", dir: "desc" },
-  { label: "תאריך יעד (ישן לחדש)", mode: "dueDate", dir: "asc" },
-  { label: "תאריך יעד (חדש לישן)", mode: "dueDate", dir: "desc" },
+const SORT_OPTIONS: { main: string; sub: string; mode: SortMode; dir: SortDirection }[] = [
+  { main: "תאריך יעד", sub: "(ישן לחדש)", mode: "dueDate", dir: "asc" },
+  { main: "תאריך יעד", sub: "(חדש לישן)", mode: "dueDate", dir: "desc" },
+  { main: "תאריך פתיחה", sub: "(ישן לחדש)", mode: "startDate", dir: "asc" },
+  { main: "תאריך פתיחה", sub: "(חדש לישן)", mode: "startDate", dir: "desc" },
 ];
 
 const MAX_SYSTEM_CHIPS = 5;
@@ -62,10 +61,10 @@ export default function FiltersBar({
   const visibleSystems = systems.slice(0, MAX_SYSTEM_CHIPS);
   const overflowSystems = systems.slice(MAX_SYSTEM_CHIPS);
 
-  const currentSortLabel =
-    SORT_OPTIONS.find(
-      (o) => o.mode === uiState.sortMode && o.dir === uiState.sortDirection
-    )?.label ?? "תאריך יעד (ישן לחדש)";
+  const currentSort = SORT_OPTIONS.find(
+    (o) => o.mode === uiState.sortMode && o.dir === uiState.sortDirection
+  );
+  const currentSortLabel = currentSort ? `${currentSort.main} ${currentSort.sub}` : "תאריך יעד (ישן לחדש)";
 
   const hasActiveFlags =
     uiState.flags.overdueOnly ||
@@ -112,15 +111,21 @@ export default function FiltersBar({
               <span>{currentSortLabel}</span>
             </button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            {SORT_OPTIONS.map((opt) => (
-              <DropdownMenuItem
-                key={`${opt.mode}-${opt.dir}`}
-                onClick={() => onSortChange(opt.mode, opt.dir)}
-              >
-                {opt.label}
-              </DropdownMenuItem>
-            ))}
+          <DropdownMenuContent align="end" className="min-w-[180px]">
+            {SORT_OPTIONS.map((opt) => {
+              const isActive = uiState.sortMode === opt.mode && uiState.sortDirection === opt.dir;
+              return (
+                <DropdownMenuItem
+                  key={`${opt.mode}-${opt.dir}`}
+                  onClick={() => onSortChange(opt.mode, opt.dir)}
+                  className={isActive ? "bg-primary/10" : ""}
+                  style={{ paddingInline: 14, paddingBlock: 7 }}
+                >
+                  <span style={{ fontSize: 13, fontWeight: 500, color: "rgb(17,24,39)" }}>{opt.main}</span>
+                  <span style={{ fontSize: 11, color: "rgb(156,163,175)", marginRight: 4 }}>{opt.sub}</span>
+                </DropdownMenuItem>
+              );
+            })}
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
