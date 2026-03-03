@@ -116,10 +116,6 @@ const Index = () => {
           cooldownTime={getCooldownTime()}
         />
         <ControlsBar totalTasks={sorted.length} />
-      </div>
-
-      {/* Filters + Content */}
-      <div className="mx-auto" style={{ maxWidth: 900 }}>
         <FiltersBar
           tasks={tasks}
           uiState={validatedState}
@@ -144,7 +140,10 @@ const Index = () => {
             }))
           }
         />
+      </div>
 
+      {/* Content */}
+      <div className="mx-auto" style={{ maxWidth: 900 }}>
         <div className="px-6">
           <TaskList tasks={paginatedTasks} loading={loading} />
         </div>
