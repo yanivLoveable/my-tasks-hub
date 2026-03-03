@@ -1,17 +1,19 @@
 import type { Task } from "@/types/task";
 import { formatDateHebrew } from "@/utils/dates";
-import { Calendar, AlertTriangle, ExternalLink } from "lucide-react";
+import { ExternalLink, GitBranch, Users } from "lucide-react";
 
 interface TaskCardProps {
   task: Task;
 }
 
 const SYSTEM_COLORS: Record<string, string> = {
-  ERP: "bg-blue-100 text-blue-800",
-  SNOW: "bg-emerald-100 text-emerald-800",
-  DOCS: "bg-purple-100 text-purple-800",
-  CRM: "bg-amber-100 text-amber-800",
-  JIRA: "bg-sky-100 text-sky-800",
+  ERP: "bg-primary text-primary-foreground",
+  SNOW: "bg-primary text-primary-foreground",
+  DOCS: "bg-primary text-primary-foreground",
+  CRM: "bg-primary text-primary-foreground",
+  JIRA: "bg-primary text-primary-foreground",
+  SAP: "bg-primary text-primary-foreground",
+  TEAMS: "bg-primary text-primary-foreground",
 };
 
 export default function TaskCard({ task }: TaskCardProps) {
@@ -22,72 +24,84 @@ export default function TaskCard({ task }: TaskCardProps) {
   };
 
   const systemColor =
-    SYSTEM_COLORS[task.systemLabel] || "bg-secondary text-secondary-foreground";
+    SYSTEM_COLORS[task.systemLabel] || "bg-primary text-primary-foreground";
 
   return (
     <div
-      className="group bg-background border border-border rounded-xl p-4 cursor-pointer hover:shadow-md hover:border-primary/30 transition-all duration-200"
+      className="group bg-background border border-border rounded-xl px-5 py-4 cursor-pointer hover:shadow-md hover:border-primary/30 transition-all duration-200"
       onClick={handleClick}
       role="button"
       tabIndex={0}
       onKeyDown={(e) => e.key === "Enter" && handleClick()}
     >
-      <div className="flex items-start justify-between gap-3">
-        {/* Right side: content */}
+      <div className="flex items-start gap-4">
+        {/* External link icon - left side */}
+        <div className="flex items-start pt-2 flex-shrink-0">
+          <ExternalLink
+            size={18}
+            className="text-muted-foreground/50 group-hover:text-primary transition-colors"
+          />
+        </div>
+
+        {/* Content - center/right */}
         <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 mb-1.5">
-            <span
-              className={`inline-flex items-center px-2 py-0.5 text-[10px] font-bold rounded-md ${systemColor}`}
-            >
-              {task.systemLabel}
-            </span>
-            {task.category && (
-              <span className="text-[11px] text-muted-foreground">
-                {task.category}
-              </span>
-            )}
+          {/* Row 1: identifier + title */}
+          <div className="flex items-center gap-2 mb-0.5">
+            <h3 className="text-[15px] font-bold text-foreground leading-snug">
+              {task.title}
+            </h3>
             {task.identifier && (
-              <span className="text-[11px] text-muted-foreground font-mono">
-                #{task.identifier}
+              <span className="text-[12px] text-muted-foreground font-mono whitespace-nowrap">
+                {task.identifier}
               </span>
             )}
           </div>
 
-          <h3 className="text-sm font-semibold text-foreground leading-snug mb-2 line-clamp-2">
-            {task.title}
-          </h3>
-
-          <div className="flex items-center gap-4 text-[11px] text-muted-foreground">
+          {/* Row 2: category + dates + overdue */}
+          <div className="flex items-center gap-3 text-[12px] text-muted-foreground mt-1">
+            {task.category && (
+              <>
+                <span className="text-muted-foreground font-medium">{task.category}</span>
+              </>
+            )}
             {task.startDate && (
-              <span className="flex items-center gap-1">
-                <Calendar size={12} />
-                נפתח: {formatDateHebrew(task.startDate)}
+              <span>
+                פתיחה: {formatDateHebrew(task.startDate)}
               </span>
             )}
             {task.dueDate && (
-              <span className="flex items-center gap-1">
-                <Calendar size={12} />
+              <span>
                 יעד: {formatDateHebrew(task.dueDate)}
               </span>
             )}
-            {task.status && (
-              <span className="text-muted-foreground">{task.status}</span>
+            {task.overdueDays && task.overdueDays > 0 && (
+              <>
+                <span className="text-muted-foreground">|</span>
+                <span className="text-overdue font-bold">
+                  חריגה: {task.overdueDays} ימים
+                </span>
+              </>
             )}
           </div>
+
+          {/* Row 3: delegation / group info */}
+          {task.assignedToRole && (
+            <div className="flex items-center gap-3 text-[11px] text-muted-foreground mt-1.5">
+              <span className="flex items-center gap-1">
+                <Users size={12} />
+                {task.assignedToRole}
+              </span>
+            </div>
+          )}
         </div>
 
-        {/* Left side: overdue + link icon */}
-        <div className="flex flex-col items-end gap-2 flex-shrink-0">
-          {task.overdueDays && task.overdueDays > 0 && (
-            <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-red-50 text-overdue text-[11px] font-bold rounded-md">
-              <AlertTriangle size={12} />
-              חריגה: {task.overdueDays} ימים
-            </span>
-          )}
-          <ExternalLink
-            size={14}
-            className="text-muted-foreground/40 group-hover:text-primary transition-colors"
-          />
+        {/* System badge - right side */}
+        <div className="flex-shrink-0 pt-1">
+          <span
+            className={`inline-flex items-center justify-center min-w-[48px] px-3 py-1.5 text-[11px] font-bold rounded-lg ${systemColor}`}
+          >
+            {task.systemLabel}
+          </span>
         </div>
       </div>
     </div>

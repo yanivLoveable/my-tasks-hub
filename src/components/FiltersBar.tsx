@@ -7,7 +7,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { TriangleAlert, Users, ArrowLeftRight } from "lucide-react";
+import { TriangleAlert, Users, User, ArrowLeftRight } from "lucide-react";
 import {
   Tooltip,
   TooltipContent,
@@ -22,14 +22,15 @@ interface FiltersBarProps {
   onTopicChange: (t: string) => void;
   onFlagToggle: (flag: "overdueOnly" | "groupOnly" | "delegationOnly") => void;
   onSortChange: (mode: SortMode, dir: SortDirection) => void;
+  onClearAll: () => void;
 }
 
 const SORT_OPTIONS: { label: string; mode: SortMode; dir: SortDirection }[] = [
   { label: "ברירת מחדל", mode: "default", dir: "asc" },
   { label: "תאריך התחלה: ישן → חדש", mode: "startDate", dir: "asc" },
   { label: "תאריך התחלה: חדש → ישן", mode: "startDate", dir: "desc" },
-  { label: "תאריך יעד: מהישן לחדש", mode: "dueDate", dir: "asc" },
-  { label: "תאריך יעד: מהחדש לישן", mode: "dueDate", dir: "desc" },
+  { label: "תאריך יעד (ישן לחדש)", mode: "dueDate", dir: "asc" },
+  { label: "תאריך יעד (חדש לישן)", mode: "dueDate", dir: "desc" },
 ];
 
 const MAX_SYSTEM_CHIPS = 5;
@@ -42,6 +43,7 @@ export default function FiltersBar({
   onTopicChange,
   onFlagToggle,
   onSortChange,
+  onClearAll,
 }: FiltersBarProps) {
   const [searchInput, setSearchInput] = useState(uiState.searchQuery);
 
@@ -71,10 +73,18 @@ export default function FiltersBar({
   const currentSortLabel =
     SORT_OPTIONS.find(
       (o) => o.mode === uiState.sortMode && o.dir === uiState.sortDirection
-    )?.label ?? "ברירת מחדל";
+    )?.label ?? "תאריך יעד (ישן לחדש)";
+
+  const hasActiveFilters =
+    uiState.selectedSystem !== "all" ||
+    uiState.selectedTopic !== "all" ||
+    uiState.flags.overdueOnly ||
+    uiState.flags.groupOnly ||
+    uiState.flags.delegationOnly ||
+    uiState.searchQuery.trim() !== "";
 
   const chipClass = (active: boolean) =>
-    `inline-flex items-center gap-1.5 px-3 py-0.5 border text-xs font-medium rounded-full transition-all duration-150 cursor-pointer select-none whitespace-nowrap ${
+    `inline-flex items-center gap-1.5 px-3 py-1 border text-xs font-medium rounded-full transition-all duration-150 cursor-pointer select-none whitespace-nowrap ${
       active
         ? "bg-chip-active-bg text-chip-active-text border-chip-active-bg"
         : "bg-chip-inactive-bg text-chip-inactive-text border-chip-border hover:bg-secondary"
@@ -83,14 +93,13 @@ export default function FiltersBar({
   return (
     <div className="mx-auto px-6 pt-4" style={{ maxWidth: 720 }}>
       {/* Search + Sort */}
-      <div className="flex items-center gap-2 mb-3">
+      <div className="flex items-center gap-2 mb-4">
         <div className="relative flex-1">
           <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
           <input
             type="text"
-            placeholder="חיפוש לפי כותרת, מזהה או מערכת..."
-            className="w-full h-9 pr-9 pl-9 bg-background border border-input rounded-xl focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 transition-colors text-[13px]"
-            style={{ boxShadow: "rgba(0,0,0,0.06) 0px 1px 3px inset" }}
+            placeholder="חיפוש לפי כותרת, מזהה או תאריך..."
+            className="w-full h-10 pr-9 pl-4 bg-background border border-input rounded-lg focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 transition-colors text-[13px]"
             dir="rtl"
             value={searchInput}
             onChange={(e) => handleSearchChange(e.target.value)}
@@ -100,8 +109,7 @@ export default function FiltersBar({
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <button
-              className="flex items-center gap-1.5 bg-background border border-input text-muted-foreground hover:text-primary hover:border-primary transition-colors flex-shrink-0 whitespace-nowrap text-[13px]"
-              style={{ height: 36, paddingInline: 10, borderRadius: 4 }}
+              className="flex items-center gap-1.5 h-10 px-3 bg-background border border-input text-muted-foreground hover:text-primary hover:border-primary transition-colors flex-shrink-0 whitespace-nowrap text-[13px] rounded-lg"
               title="מיון"
             >
               <ArrowUpDown size={14} />
@@ -122,7 +130,7 @@ export default function FiltersBar({
       </div>
 
       {/* Filter Chips */}
-      <div className="space-y-1.5" dir="rtl">
+      <div className="space-y-2" dir="rtl">
         {/* Row 1: Systems */}
         <div className="flex items-center justify-center gap-2 flex-wrap">
           <button
@@ -142,7 +150,7 @@ export default function FiltersBar({
           ))}
           {hasMoreSystems && !showAllSystems && (
             <button
-              className="inline-flex items-center gap-1 px-3 py-0.5 border border-border text-xs font-bold text-primary rounded-full bg-secondary hover:bg-secondary/80 transition-colors"
+              className="inline-flex items-center gap-1 px-3 py-1 border border-border text-xs font-bold text-primary rounded-full bg-secondary hover:bg-secondary/80 transition-colors"
               onClick={() => setShowAllSystems(true)}
             >
               עוד
@@ -171,38 +179,59 @@ export default function FiltersBar({
         </div>
 
         {/* Row 3: Special filters */}
-        <div className="flex items-center w-full">
-          <div className="flex-1 flex justify-center gap-2">
-            <button
-              className={chipClass(uiState.flags.overdueOnly)}
-              onClick={() => onFlagToggle("overdueOnly")}
-            >
-              <TriangleAlert className="w-3.5 h-3.5" strokeWidth={2.5} />
-              חריגות
-            </button>
+        <div className="flex items-center justify-center gap-2">
+          <button
+            className={chipClass(uiState.flags.overdueOnly)}
+            onClick={() => onFlagToggle("overdueOnly")}
+          >
+            <TriangleAlert className="w-3.5 h-3.5" strokeWidth={2.5} />
+            חריגות
+          </button>
 
-            <button
-              className={chipClass(uiState.flags.groupOnly)}
-              onClick={() => onFlagToggle("groupOnly")}
-            >
-              <Users className="w-3.5 h-3.5" strokeWidth={2.5} />
-              קבוצה
-            </button>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button
+                className={`${chipClass(false)} opacity-50 cursor-help`}
+              >
+                <User className="w-3.5 h-3.5" strokeWidth={2.5} />
+                אישי
+              </button>
+            </TooltipTrigger>
+            <TooltipContent>לא זמין בדאטה הנוכחי</TooltipContent>
+          </Tooltip>
 
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <button
-                  className={`${chipClass(false)} opacity-50 cursor-help`}
-                  onClick={() => {}}
-                >
-                  <ArrowLeftRight className="w-3.5 h-3.5" strokeWidth={2.5} />
-                  דליגציה
-                </button>
-              </TooltipTrigger>
-              <TooltipContent>לא זמין בדאטה הנוכחי</TooltipContent>
-            </Tooltip>
-          </div>
+          <button
+            className={chipClass(uiState.flags.groupOnly)}
+            onClick={() => onFlagToggle("groupOnly")}
+          >
+            <Users className="w-3.5 h-3.5" strokeWidth={2.5} />
+            קבוצה
+          </button>
+
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button
+                className={`${chipClass(false)} opacity-50 cursor-help`}
+              >
+                <ArrowLeftRight className="w-3.5 h-3.5" strokeWidth={2.5} />
+                דליגציה
+              </button>
+            </TooltipTrigger>
+            <TooltipContent>לא זמין בדאטה הנוכחי</TooltipContent>
+          </Tooltip>
         </div>
+
+        {/* Clear all */}
+        {hasActiveFilters && (
+          <div className="flex justify-center pt-1">
+            <button
+              className="text-[12px] text-muted-foreground hover:text-primary transition-colors underline"
+              onClick={onClearAll}
+            >
+              נקה הכל
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
