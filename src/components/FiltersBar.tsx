@@ -27,8 +27,6 @@ const SORT_OPTIONS: { main: string; sub: string; mode: SortMode; dir: SortDirect
   { main: "תאריך פתיחה", sub: "(חדש לישן)", mode: "startDate", dir: "desc" },
 ];
 
-const MAX_SYSTEM_CHIPS = 5;
-
 export default function FiltersBar({
   tasks,
   uiState,
@@ -58,9 +56,6 @@ export default function FiltersBar({
     return Array.from(set).sort();
   }, [tasks]);
 
-  const visibleSystems = systems.slice(0, MAX_SYSTEM_CHIPS);
-  const overflowSystems = systems.slice(MAX_SYSTEM_CHIPS);
-
   const currentSort = SORT_OPTIONS.find(
     (o) => o.mode === uiState.sortMode && o.dir === uiState.sortDirection
   );
@@ -76,6 +71,12 @@ export default function FiltersBar({
   const isSystemActive = (sys: string) => selectedSystems.includes(sys);
   const isTopicActive = (topic: string) => selectedTopics.includes(topic);
 
+  const systemsLabel = selectedSystems.length === 0
+    ? "כל המערכות"
+    : selectedSystems.length === 1
+      ? selectedSystems[0]
+      : `${selectedSystems.length} מערכות`;
+
   const chipStyle = (active: boolean) =>
     `inline-flex items-center gap-1.5 px-3 py-0.5 border text-xs font-medium rounded-full transition-all duration-150 cursor-pointer select-none whitespace-nowrap ${
       active
@@ -85,21 +86,59 @@ export default function FiltersBar({
 
   return (
     <div className="mx-auto px-6 pt-5" style={{ maxWidth: 760 }}>
-      {/* Search + Sort */}
+      {/* Search + Systems Dropdown + Sort */}
       <div className="flex items-center gap-2 mb-3">
-        <div className="relative flex-1">
+        {/* Unified search bar with integrated systems dropdown */}
+        <div className="relative flex-1 flex items-center bg-background border border-input rounded-xl overflow-hidden" style={{ boxShadow: "inset 0 1px 3px rgba(0,0,0,0.06)" }}>
+          {/* Search icon */}
           <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/60 pointer-events-none" />
+          {/* Search input */}
           <input
             type="text"
             placeholder="חיפוש לפי כותרת, מזהה או תאריך..."
-            className="w-full h-9 pr-9 pl-9 bg-background border border-input rounded-xl focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 transition-colors text-[13px]"
+            className="flex-1 h-9 pr-9 pl-2 bg-transparent border-none focus:outline-none transition-colors text-[13px]"
             dir="rtl"
             value={searchInput}
             onChange={(e) => handleSearchChange(e.target.value)}
-            style={{ boxShadow: "inset 0 1px 3px rgba(0,0,0,0.06)" }}
           />
+          {/* Vertical separator */}
+          <div className="w-px h-5 bg-input flex-shrink-0" />
+          {/* Systems dropdown */}
+          <DropdownMenu modal={false}>
+            <DropdownMenuTrigger asChild>
+              <button
+                className="flex items-center gap-1.5 h-9 px-3 bg-transparent text-[13px] font-medium text-foreground hover:text-primary transition-colors flex-shrink-0 whitespace-nowrap cursor-pointer"
+                dir="rtl"
+              >
+                <span>{systemsLabel}</span>
+                <ChevronDown className="w-3.5 h-3.5 text-muted-foreground" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="min-w-[160px]" style={{ direction: "rtl" }}>
+              <DropdownMenuItem
+                onClick={() => {
+                  if (selectedSystems.length > 0) onSystemToggle("__all__");
+                }}
+                className={selectedSystems.length === 0 ? "bg-primary/10 font-semibold" : ""}
+                style={{ justifyContent: "flex-start", fontSize: 13, paddingInline: 14, paddingBlock: 6 }}
+              >
+                כל המערכות
+              </DropdownMenuItem>
+              {systems.map((sys) => (
+                <DropdownMenuItem
+                  key={sys}
+                  onClick={() => onSystemToggle(sys)}
+                  className={isSystemActive(sys) ? "bg-primary/10 font-semibold" : ""}
+                  style={{ justifyContent: "flex-start", fontSize: 13, paddingInline: 14, paddingBlock: 6 }}
+                >
+                  {sys}
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
 
+        {/* Sort button */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <button
@@ -132,62 +171,7 @@ export default function FiltersBar({
 
       {/* Filter Chips */}
       <div className="space-y-2.5" dir="rtl">
-        {/* Row 1: Systems */}
-        <div className="flex items-center justify-center gap-2 flex-wrap">
-          <button
-            className={chipStyle(selectedSystems.length === 0)}
-            onClick={() => {
-              if (selectedSystems.length > 0) {
-                onSystemToggle("__all__");
-              }
-            }}
-          >
-            כל המערכות
-          </button>
-          {visibleSystems.map((sys) => (
-            <button
-              key={sys}
-              className={chipStyle(isSystemActive(sys))}
-              onClick={() => onSystemToggle(sys)}
-            >
-              {sys}
-            </button>
-          ))}
-          {/* Show selected overflow systems as chips */}
-          {overflowSystems.filter((sys) => isSystemActive(sys)).map((sys) => (
-            <button
-              key={sys}
-              className={chipStyle(true)}
-              onClick={() => onSystemToggle(sys)}
-            >
-              {sys}
-            </button>
-          ))}
-          {overflowSystems.length > 0 && (
-            <DropdownMenu modal={false}>
-              <DropdownMenuTrigger asChild>
-                <button className="inline-flex items-center gap-1 px-3 py-0.5 border border-chip-border text-xs font-bold text-primary rounded-full bg-chip-inactive-bg hover:bg-secondary transition-colors cursor-pointer">
-                  עוד
-                  <ChevronDown className="w-3 h-3" />
-                </button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="center" style={{ direction: "rtl", textAlign: "center" }}>
-                {overflowSystems.map((sys) => (
-                  <DropdownMenuItem
-                    key={sys}
-                    onClick={() => onSystemToggle(sys)}
-                    className={isSystemActive(sys) ? "bg-primary/10 font-semibold" : ""}
-                    style={{ justifyContent: "center", fontSize: 13 }}
-                  >
-                    {sys}
-                  </DropdownMenuItem>
-                ))}
-              </DropdownMenuContent>
-            </DropdownMenu>
-          )}
-        </div>
-
-        {/* Row 2: Topics */}
+        {/* Row 1: Topics */}
         <div className="flex items-center justify-center gap-2 flex-wrap">
           <button
             className={chipStyle(selectedTopics.length === 0)}
@@ -210,7 +194,7 @@ export default function FiltersBar({
           ))}
         </div>
 
-        {/* Row 3: Special filters + clear */}
+        {/* Row 2: Special filters + clear */}
         <div className="flex items-center w-full">
           <div className="flex-1 flex items-center justify-center gap-2 flex-wrap">
             <button
