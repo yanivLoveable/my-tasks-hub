@@ -67,14 +67,16 @@ export default function FiltersBar({
   );
   const currentSortLabel = currentSort ? `${currentSort.main} ${currentSort.sub}` : "תאריך יעד (ישן לחדש)";
 
-  const hasActiveFlags =
+  const selectedSystems = Array.isArray(uiState.selectedSystems) ? uiState.selectedSystems : [];
+  const selectedTopics = Array.isArray(uiState.selectedTopics) ? uiState.selectedTopics : [];
+
+  const hasActiveFilters =
     uiState.flags.overdueOnly ||
     uiState.flags.groupOnly ||
     uiState.flags.delegationOnly ||
-    uiState.flags.personalOnly;
-
-  const selectedSystems = Array.isArray(uiState.selectedSystems) ? uiState.selectedSystems : [];
-  const selectedTopics = Array.isArray(uiState.selectedTopics) ? uiState.selectedTopics : [];
+    uiState.flags.personalOnly ||
+    selectedSystems.length > 0 ||
+    selectedTopics.length > 0;
   const isSystemActive = (sys: string) => selectedSystems.includes(sys);
   const isTopicActive = (topic: string) => selectedTopics.includes(topic);
 
@@ -270,11 +272,11 @@ export default function FiltersBar({
 
           <button
             className={`text-[12px] whitespace-nowrap bg-transparent border-none p-0 transition-colors ${
-              hasActiveFlags
+              hasActiveFilters
                 ? "text-primary hover:text-primary/80 underline underline-offset-2 cursor-pointer"
                 : "text-muted-foreground/40 cursor-default no-underline"
             }`}
-            onClick={hasActiveFlags ? onClearAll : undefined}
+            onClick={hasActiveFilters ? onClearAll : undefined}
           >
             נקה הכל
           </button>

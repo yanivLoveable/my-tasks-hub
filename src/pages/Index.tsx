@@ -140,6 +140,8 @@ const Index = () => {
           onClearAll={() =>
             setUiState((prev) => ({
               ...prev,
+              selectedSystems: [],
+              selectedTopics: [],
               flags: { overdueOnly: false, groupOnly: false, delegationOnly: false, personalOnly: false },
               currentPage: 1,
             }))
