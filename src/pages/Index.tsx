@@ -173,7 +173,7 @@ const Index = () => {
           currentPage={currentPage}
           totalItems={sorted.length}
           pageSize={PAGE_SIZE}
-          onPageChange={(p) => updateUi({ currentPage: p })}
+          onPageChange={(p) => { updateUi({ currentPage: p }); window.scrollTo({ top: 0, behavior: "smooth" }); }}
           onFeedbackClick={() => setFooterFeedbackOpen(true)}
           onSupportClick={() => setFooterSupportOpen(true)}
         />
