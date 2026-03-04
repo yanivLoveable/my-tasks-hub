@@ -1,4 +1,4 @@
-import { useMemo, useCallback } from "react";
+import { useMemo, useCallback, useState } from "react";
 import { useTasks } from "@/hooks/useTasks";
 import { useLocalStorageState } from "@/hooks/useLocalStorageState";
 import { DEFAULT_UI_STATE, type UIState, type SortMode, type SortDirection } from "@/types/task";
@@ -10,6 +10,8 @@ import FiltersBar from "@/components/FiltersBar";
 import TaskList from "@/components/TaskList";
 import PaginationFooter from "@/components/PaginationFooter";
 import Banner from "@/components/Banner";
+import FeedbackModal from "@/components/FeedbackModal";
+import SupportModal from "@/components/SupportModal";
 
 const PAGE_SIZE = 20;
 
@@ -26,6 +28,9 @@ const Index = () => {
     getCooldownTime,
     loadTasks,
   } = useTasks();
+
+  const [footerFeedbackOpen, setFooterFeedbackOpen] = useState(false);
+  const [footerSupportOpen, setFooterSupportOpen] = useState(false);
 
   const [uiState, setUiState] = useLocalStorageState<UIState>(
     "notifCenter.uiState",
@@ -169,8 +174,13 @@ const Index = () => {
           totalItems={sorted.length}
           pageSize={PAGE_SIZE}
           onPageChange={(p) => updateUi({ currentPage: p })}
+          onFeedbackClick={() => setFooterFeedbackOpen(true)}
+          onSupportClick={() => setFooterSupportOpen(true)}
         />
       </div>
+
+      <FeedbackModal open={footerFeedbackOpen} onOpenChange={setFooterFeedbackOpen} />
+      <SupportModal open={footerSupportOpen} onOpenChange={setFooterSupportOpen} />
     </div>
   );
 };
