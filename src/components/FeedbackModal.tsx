@@ -69,7 +69,7 @@ export default function FeedbackModal({ open, onOpenChange }: FeedbackModalProps
 
             {/* Title & Subtitle */}
             <div className="text-center space-y-2">
-              <DialogTitle className="text-[22px] font-extrabold text-primary leading-relaxed tracking-wide">
+              <DialogTitle className="text-[26px] font-extrabold text-primary leading-[1.6] tracking-wide">
                 נשמח לשמוע ממך
               </DialogTitle>
               <DialogDescription className="text-[14px] text-muted-foreground">
@@ -95,17 +95,17 @@ export default function FeedbackModal({ open, onOpenChange }: FeedbackModalProps
             {/* Buttons – centered, Submit right / Cancel left in RTL */}
             <div className="flex items-center justify-center gap-4 w-full">
               <button
-                onClick={handleClose}
-                className="h-11 px-6 rounded-xl border border-border text-[14px] font-semibold text-primary hover:bg-secondary transition-colors"
-              >
-                ביטול
-              </button>
-              <button
                 onClick={handleSubmit}
                 disabled={!text.trim()}
                 className="h-11 px-10 rounded-xl bg-[hsl(252,40%,60%)] text-white text-[14px] font-semibold hover:bg-[hsl(252,40%,52%)] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 שלח משוב
+              </button>
+              <button
+                onClick={handleClose}
+                className="h-11 px-6 rounded-xl border border-border text-[14px] font-semibold text-primary hover:bg-secondary transition-colors"
+              >
+                ביטול
               </button>
             </div>
           </div>
