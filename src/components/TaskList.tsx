@@ -39,17 +39,17 @@ export default function TaskList({ tasks, loading, hasActiveFilters, onClearFilt
 
   if (tasks.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-20 text-muted-foreground" dir="rtl">
-        <div className="w-14 h-14 rounded-full bg-secondary flex items-center justify-center mb-4">
-          <SearchX size={26} className="text-muted-foreground/60" />
+      <div className="flex flex-col items-center justify-center py-24 text-muted-foreground" dir="rtl">
+        <div className="w-14 h-14 rounded-full bg-secondary flex items-center justify-center mb-5">
+          <SearchX size={26} className="text-muted-foreground/50" />
         </div>
-        <p className="text-[15px] font-bold text-foreground">
+        <p className="text-[14px] font-semibold text-muted-foreground">
           לא נמצאו משימות התואמות את הסינון הנבחר
         </p>
         {hasActiveFilters && onClearFilters && (
           <button
             onClick={onClearFilters}
-            className="mt-4 h-9 px-5 rounded-lg bg-primary text-primary-foreground text-[13px] font-semibold hover:bg-primary/90 transition-colors"
+            className="mt-5 h-9 px-6 rounded-lg border border-primary text-primary text-[13px] font-semibold hover:bg-primary/5 transition-colors"
           >
             נקה סינונים
           </button>
