@@ -80,17 +80,22 @@ export default function FiltersBar({
   const isSystemActive = (sys: string) => selectedSystems.includes(sys);
   const isTopicActive = (topic: string) => selectedTopics.includes(topic);
 
+  // When DOCS is the only selected system, disable topics, delegation, and group
+  const isDocsOnly = selectedSystems.length === 1 && selectedSystems[0] === "DOCS";
+
   const systemsLabel = selectedSystems.length === 0
     ? "כל המערכות"
     : selectedSystems.length === 1
       ? selectedSystems[0]
       : `${selectedSystems.length} מערכות`;
 
-  const chipStyle = (active: boolean) =>
-    `inline-flex items-center gap-1.5 px-3 py-0.5 border text-xs font-medium rounded-full transition-all duration-150 cursor-pointer select-none whitespace-nowrap ${
-      active
-        ? "bg-chip-active-bg text-chip-active-text border-chip-active-bg"
-        : "bg-chip-inactive-bg text-chip-inactive-text border-chip-border hover:bg-secondary"
+  const chipStyle = (active: boolean, disabled = false) =>
+    `inline-flex items-center gap-1.5 px-3 py-0.5 border text-xs font-medium rounded-full transition-all duration-150 select-none whitespace-nowrap ${
+      disabled
+        ? "bg-muted text-muted-foreground/40 border-muted cursor-not-allowed opacity-50"
+        : active
+          ? "bg-chip-active-bg text-chip-active-text border-chip-active-bg cursor-pointer"
+          : "bg-chip-inactive-bg text-chip-inactive-text border-chip-border hover:bg-secondary cursor-pointer"
     }`;
 
   return (
@@ -184,9 +189,9 @@ export default function FiltersBar({
         {/* Row 1: Topics */}
         <div className="flex items-center justify-center gap-2 flex-wrap">
           <button
-            className={chipStyle(selectedTopics.length === 0)}
+            className={chipStyle(selectedTopics.length === 0, isDocsOnly)}
             onClick={() => {
-              if (selectedTopics.length > 0) {
+              if (!isDocsOnly && selectedTopics.length > 0) {
                 onTopicToggle("__all__");
               }
             }}
@@ -196,8 +201,8 @@ export default function FiltersBar({
           {topics.map((topic) => (
             <button
               key={topic}
-              className={chipStyle(isTopicActive(topic))}
-              onClick={() => onTopicToggle(topic)}
+              className={chipStyle(isTopicActive(topic), isDocsOnly)}
+              onClick={() => !isDocsOnly && onTopicToggle(topic)}
             >
               {topic}
             </button>
@@ -226,8 +231,8 @@ export default function FiltersBar({
               <Tooltip>
                 <TooltipTrigger asChild>
                   <button
-                    className={chipStyle(uiState.flags.groupOnly)}
-                    onClick={() => onFlagToggle("groupOnly")}
+                    className={chipStyle(uiState.flags.groupOnly, isDocsOnly)}
+                    onClick={() => !isDocsOnly && onFlagToggle("groupOnly")}
                   >
                     <Users className="w-3.5 h-3.5" />
                     קבוצה
@@ -256,8 +261,8 @@ export default function FiltersBar({
               <Tooltip>
                 <TooltipTrigger asChild>
                   <button
-                    className={chipStyle(uiState.flags.delegationOnly)}
-                    onClick={() => onFlagToggle("delegationOnly")}
+                    className={chipStyle(uiState.flags.delegationOnly, isDocsOnly)}
+                    onClick={() => !isDocsOnly && onFlagToggle("delegationOnly")}
                   >
                     <ArrowLeftRight className="w-3.5 h-3.5" />
                     דליגציה
