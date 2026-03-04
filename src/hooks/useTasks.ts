@@ -7,7 +7,7 @@ import { MOCK_TASKS } from "@/data/mockTasks";
 // import { mapApiToTasks } from "@/utils/mapTasks";
 import type { Task } from "@/types/task";
 const COOLDOWN_KEY = "notifCenter.refreshCooldownUntil";
-const COOLDOWN_MS = 10 * 60 * 1000;
+const COOLDOWN_MS = 5 * 60 * 1000;
 
 export interface BannerMessage {
   type: "error" | "warning" | "success" | "info";

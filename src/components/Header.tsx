@@ -1,8 +1,8 @@
 import { useState } from "react";
-import { MessageSquare, Headphones } from "lucide-react";
+import { MessageSquare } from "lucide-react";
 import RefreshPopover from "@/components/RefreshPopover";
 import FeedbackModal from "@/components/FeedbackModal";
-import SupportModal from "@/components/SupportModal";
+import { formatDateTimeHebrew } from "@/utils/format";
 
 interface HeaderProps {
   lastUpdated: Date | null;
@@ -20,7 +20,6 @@ export default function Header({
   cooldownTime,
 }: HeaderProps) {
   const [feedbackOpen, setFeedbackOpen] = useState(false);
-  const [supportOpen, setSupportOpen] = useState(false);
 
   return (
     <>
@@ -29,6 +28,11 @@ export default function Header({
           MATCAM
         </span>
         <div className="flex items-center gap-3">
+          {lastUpdated && (
+            <span className="text-xs text-muted-foreground/60 select-none">
+              עדכון אחרון: {formatDateTimeHebrew(lastUpdated)}
+            </span>
+          )}
           <RefreshPopover
             lastUpdated={lastUpdated}
             onRefresh={onRefresh}
@@ -49,18 +53,10 @@ export default function Header({
               </span>
             </span>
           </button>
-          <button
-            title="תמיכה טכנית"
-            className="flex items-center justify-center w-8 h-8 rounded-md transition-colors text-muted-foreground hover:text-primary"
-            onClick={() => setSupportOpen(true)}
-          >
-            <Headphones size={18} />
-          </button>
         </div>
       </div>
 
       <FeedbackModal open={feedbackOpen} onOpenChange={setFeedbackOpen} />
-      <SupportModal open={supportOpen} onOpenChange={setSupportOpen} />
     </>
   );
 }

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { RotateCw } from "lucide-react";
 import {
   Tooltip,
@@ -11,6 +11,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { formatDateTimeHebrew } from "@/utils/format";
 
 interface RefreshPopoverProps {
   lastUpdated: Date | null;
@@ -20,20 +21,13 @@ interface RefreshPopoverProps {
   cooldownTime: string;
 }
 
-const AUTO_REFRESH_INTERVAL_MS = 10 * 60 * 1000; // 10 min
-const STALE_THRESHOLD_MS = 60 * 60 * 1000; // 60 min
+const COOLDOWN_MS = 5 * 60 * 1000;
+const STALE_THRESHOLD_MS = 60 * 60 * 1000;
 
-function formatHHMM(d: Date): string {
-  return `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
-}
-
-function getCountdown(lastUpdated: Date | null): string {
-  if (!lastUpdated) return "--:--";
-  const nextRefresh = lastUpdated.getTime() + AUTO_REFRESH_INTERVAL_MS;
-  const remaining = Math.max(0, nextRefresh - Date.now());
-  const mins = Math.floor(remaining / 60000);
-  const secs = Math.floor((remaining % 60000) / 1000);
-  return `${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
+function getRemainingMinutes(lastUpdated: Date | null): number {
+  if (!lastUpdated) return 0;
+  const elapsed = Date.now() - lastUpdated.getTime();
+  return Math.max(0, Math.ceil((COOLDOWN_MS - elapsed) / 60000));
 }
 
 function isStale(lastUpdated: Date | null): boolean {
@@ -48,38 +42,47 @@ export default function RefreshPopover({
   cooldown,
   cooldownTime,
 }: RefreshPopoverProps) {
+  const [popoverOpen, setPopoverOpen] = useState(false);
   const [, setTick] = useState(0);
   const stale = isStale(lastUpdated);
+  const remaining = getRemainingMinutes(lastUpdated);
 
-  // Tick every second to update countdown
+  // Tick every second when popover is open to update remaining time
   useEffect(() => {
+    if (!popoverOpen) return;
     const id = setInterval(() => setTick((t) => t + 1), 1000);
     return () => clearInterval(id);
-  }, []);
+  }, [popoverOpen]);
+
+  const handleClick = useCallback(() => {
+    if (refreshing) return;
+    if (cooldown) {
+      // Show the "up to date" popover
+      setPopoverOpen(true);
+    } else {
+      onRefresh();
+    }
+  }, [cooldown, refreshing, onRefresh]);
 
   const tooltipText = stale
     ? "הנתונים לא התרעננו זמן רב, מומלץ לבצע רענון ידני"
     : cooldown
-      ? `הרענון יהיה זמין שוב בשעה ${cooldownTime}`
+      ? `הרענון יהיה זמין שוב בעוד ${remaining} דקות`
       : "רענון נתונים";
 
   return (
     <TooltipProvider delayDuration={300}>
-      <Popover>
+      <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
         <Tooltip>
           <TooltipTrigger asChild>
             <PopoverTrigger asChild>
               <button
-                className={`flex items-center justify-center w-8 h-8 rounded-md transition-colors disabled:opacity-40 disabled:cursor-not-allowed ${
+                className={`flex items-center justify-center w-8 h-8 rounded-md transition-colors ${
                   stale
                     ? "text-warning hover:text-warning/80"
                     : "text-muted-foreground hover:text-primary"
                 }`}
-                onClick={(e) => {
-                  // Don't open popover on click if we want to refresh
-                  // Let the popover handle display, refresh on button inside
-                }}
-                disabled={false}
+                onClick={handleClick}
               >
                 <RotateCw
                   size={18}
@@ -96,47 +99,22 @@ export default function RefreshPopover({
           side="bottom"
           align="end"
           dir="rtl"
-          className="w-auto min-w-[220px] p-3"
+          className="w-auto min-w-[260px] p-3 shadow-sm"
         >
-          <div className="flex flex-col gap-2 text-[12px]">
-            <div className="flex items-center gap-2 text-muted-foreground">
-              <span
-                className={`w-2 h-2 rounded-full inline-block flex-shrink-0 ${
-                  stale ? "bg-warning" : "bg-success"
-                }`}
-              />
-              <span>
-                עדכון אחרון:{" "}
-                <span className="font-semibold text-foreground">
-                  {lastUpdated ? formatHHMM(lastUpdated) : "--:--"}
-                </span>
+          <div className="flex flex-col gap-1.5 text-[12px] text-muted-foreground">
+            <p>
+              הנתונים מעודכנים נכון ל-
+              <span className="font-semibold text-foreground">
+                {lastUpdated ? formatDateTimeHebrew(lastUpdated) : "--"}
               </span>
-              <span className="text-muted-foreground/40">|</span>
-              <span>
-                רענון אוטומטי בעוד{" "}
-                <span className="font-semibold text-foreground">
-                  {getCountdown(lastUpdated)}
-                </span>
-              </span>
-            </div>
-            {stale && (
-              <p className="text-[11px] text-warning leading-tight">
-                הנתונים לא התרעננו זמן רב, מומלץ לבצע רענון ידני
-              </p>
-            )}
-            <button
-              className="mt-1 flex items-center justify-center gap-1.5 w-full h-8 rounded-md bg-primary text-primary-foreground text-[12px] font-medium hover:bg-primary/90 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-              onClick={onRefresh}
-              disabled={refreshing || cooldown}
-            >
-              <RotateCw size={14} className={refreshing ? "animate-spin" : ""} />
-              {refreshing ? "מרענן..." : "רענן עכשיו"}
-            </button>
-            {cooldown && !refreshing && (
-              <p className="text-[10px] text-muted-foreground text-center">
-                הרענון יהיה זמין שוב בשעה {cooldownTime}
-              </p>
-            )}
+            </p>
+            <p>
+              ניתן לרענן שוב בעוד{" "}
+              <span className="font-semibold text-foreground">
+                {remaining}
+              </span>{" "}
+              דקות
+            </p>
           </div>
         </PopoverContent>
       </Popover>
