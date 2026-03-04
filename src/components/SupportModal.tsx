@@ -49,7 +49,7 @@ export default function SupportModal({ open, onOpenChange }: SupportModalProps) 
               <span className="font-bold text-primary">4050</span>.
             </p>
             <p className="mt-1">
-              לחלופין, ניתן לפתוח פנייה באמצעות ה<span className="font-bold text-primary">צ׳אטבוט</span> שלנו בעמוד הבית של SNOW.
+              לחלופין, ניתן לפתוח פנייה באמצעות ה<span className="font-bold text-primary">צ׳אטבוט</span> בעמוד הבית של SNOW.
             </p>
           </div>
 
