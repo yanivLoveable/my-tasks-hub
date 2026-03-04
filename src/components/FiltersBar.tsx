@@ -148,12 +148,13 @@ export default function FiltersBar({
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <button
-              className="flex items-center gap-1.5 bg-background border border-input text-muted-foreground hover:text-primary hover:border-primary transition-colors flex-shrink-0 whitespace-nowrap text-[13px]"
+              className="flex items-center gap-1.5 bg-background border border-input text-muted-foreground hover:text-primary hover:border-primary transition-colors flex-shrink-0 whitespace-nowrap text-xs"
               title="מיון"
               style={{ height: 36, paddingInline: 10, borderRadius: 4 }}
             >
-              <ArrowUpDown size={14} />
-              <span>{currentSortLabel}</span>
+              <ArrowUpDown size={13} />
+              <span className="text-xs font-medium">{currentSort?.main ?? "תאריך יעד"}</span>
+              <span className="text-[10px] text-muted-foreground">{currentSort?.sub ?? "(ישן לחדש)"}</span>
             </button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="min-w-[180px]" style={{ direction: "rtl" }}>
