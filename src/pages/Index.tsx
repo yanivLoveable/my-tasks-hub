@@ -115,7 +115,7 @@ const Index = () => {
           cooldown={isOnCooldown()}
           cooldownTime={getCooldownTime()}
         />
-        <ControlsBar totalTasks={sorted.length} />
+        <ControlsBar totalTasks={tasks.length} />
         <FiltersBar
           tasks={tasks}
           uiState={validatedState}
@@ -145,7 +145,7 @@ const Index = () => {
       {/* Content */}
       <div className="mx-auto" style={{ maxWidth: 1104 }}>
         {!loading && (validatedState.selectedSystems.length > 0 || validatedState.selectedTopics.length > 0 || validatedState.flags.overdueOnly || validatedState.flags.groupOnly || validatedState.flags.delegationOnly || validatedState.searchQuery.trim()) && (
-          <p className="text-xs text-muted-foreground/60 text-center mt-4 mb--2" dir="rtl">
+          <p className="text-xs text-muted-foreground/60 text-right mt-4 px-2" dir="rtl">
             בהתאם לסינון, מוצגות {sorted.length} משימות
           </p>
         )}
