@@ -11,7 +11,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { formatDateTimeHebrew } from "@/utils/format";
+import { formatTime } from "@/utils/dates";
 
 interface RefreshPopoverProps {
   lastUpdated: Date | null;
@@ -104,7 +104,7 @@ export default function RefreshPopover({
           <div className="flex items-center gap-3 text-[13px] text-foreground">
             <Clock size={16} className="text-primary flex-shrink-0" />
             <span className="whitespace-nowrap">
-              הנתונים עדכניים ל-{lastUpdated ? formatDateTimeHebrew(lastUpdated) : "--"}.
+              הנתונים עדכניים ל-{lastUpdated ? formatTime(lastUpdated) : "--"}.
               {" "}ניתן לרענן שוב בעוד {remaining} דקות
             </span>
             <button
