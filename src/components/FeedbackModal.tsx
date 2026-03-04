@@ -36,7 +36,7 @@ export default function FeedbackModal({ open, onOpenChange }: FeedbackModalProps
   return (
     <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent
-        className="max-w-[440px] rounded-3xl px-12 py-12 overflow-hidden border-none [&>button:last-child]:hidden"
+        className="w-[420px] max-w-[90vw] rounded-3xl px-10 py-10 overflow-hidden border-none [&>button:last-child]:hidden"
         dir="rtl"
       >
         {/* Close button – top-left */}
