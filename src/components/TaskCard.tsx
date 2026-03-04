@@ -61,7 +61,7 @@ export default function TaskCard({ task }: TaskCardProps) {
               {task.title}
             </span>
             {task.identifier && (
-              <Tooltip>
+              <Tooltip open={copied ? true : undefined}>
                 <TooltipTrigger asChild>
                   <span
                     className="text-[11px] font-mono text-muted-foreground flex-shrink-0 select-none cursor-pointer hover:text-primary transition-colors"
@@ -70,7 +70,7 @@ export default function TaskCard({ task }: TaskCardProps) {
                     {task.identifier}
                   </span>
                 </TooltipTrigger>
-                <TooltipContent side="top" dir="rtl" className="text-[11px]">
+                <TooltipContent side="top" dir="rtl" className="text-[11px]" key={copied ? "copied" : "default"}>
                   {copied ? "הועתק!" : "לחץ להעתקה"}
                 </TooltipContent>
               </Tooltip>
