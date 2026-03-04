@@ -112,7 +112,7 @@ const Index = () => {
       />
 
       {/* Header area with gray bg */}
-      <div className="bg-header-bg border-b border-header-border pb-5">
+      <div className="bg-header-bg border-b border-header-border pb-3">
         <Header
           lastUpdated={lastUpdated}
           onRefresh={refresh}
