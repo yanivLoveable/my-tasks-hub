@@ -89,26 +89,12 @@ export default function FiltersBar({
       {/* Search + Systems Dropdown + Sort */}
       <div className="flex items-center gap-2 mb-3">
         {/* Unified search bar with integrated systems dropdown */}
-        <div className="relative flex-1 flex items-center bg-background border border-input rounded-xl overflow-hidden" style={{ boxShadow: "inset 0 1px 3px rgba(0,0,0,0.06)" }}>
-          {/* Search icon */}
-          <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/60 pointer-events-none" />
-          {/* Search input */}
-          <input
-            type="text"
-            placeholder="חיפוש לפי כותרת, מזהה או תאריך..."
-            className="flex-1 h-9 pr-9 pl-2 bg-transparent border-none focus:outline-none transition-colors text-[13px]"
-            dir="rtl"
-            value={searchInput}
-            onChange={(e) => handleSearchChange(e.target.value)}
-          />
-          {/* Vertical separator */}
-          <div className="w-px h-5 bg-input flex-shrink-0" />
-          {/* Systems dropdown */}
+        <div className="relative flex-1 flex items-center bg-background border border-input rounded-xl overflow-hidden" dir="rtl" style={{ boxShadow: "inset 0 1px 3px rgba(0,0,0,0.06)" }}>
+          {/* Systems dropdown (right side in RTL) */}
           <DropdownMenu modal={false}>
             <DropdownMenuTrigger asChild>
               <button
                 className="flex items-center gap-1.5 h-9 px-3 bg-transparent text-[13px] font-medium text-foreground hover:text-primary transition-colors flex-shrink-0 whitespace-nowrap cursor-pointer"
-                dir="rtl"
               >
                 <span>{systemsLabel}</span>
                 <ChevronDown className="w-3.5 h-3.5 text-muted-foreground" />
@@ -136,6 +122,20 @@ export default function FiltersBar({
               ))}
             </DropdownMenuContent>
           </DropdownMenu>
+          {/* Vertical separator */}
+          <div className="w-px h-5 bg-input flex-shrink-0" />
+          {/* Search input */}
+          <div className="relative flex-1">
+            <input
+              type="text"
+              placeholder="חיפוש לפי כותרת, מזהה או תאריך..."
+              className="w-full h-9 pr-3 pl-8 bg-transparent border-none focus:outline-none transition-colors text-[13px]"
+              dir="rtl"
+              value={searchInput}
+              onChange={(e) => handleSearchChange(e.target.value)}
+            />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/60 pointer-events-none" />
+          </div>
         </div>
 
         {/* Sort button */}
