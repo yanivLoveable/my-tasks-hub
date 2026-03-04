@@ -88,7 +88,7 @@ export default function PaginationFooter({
 
         {/* Item count */}
         <span className="text-[12px] text-muted-foreground">
-          עמוד {currentPage} מתוך {totalPages}·מציג {start}-{end} מתוך {totalItems} משימות
+          מציג {start}-{end} מתוך {totalItems} משימות
         </span>
 
         {/* Footer links */}
