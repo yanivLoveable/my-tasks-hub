@@ -13,6 +13,8 @@ export interface Task {
   assignedToRole?: string;
   updatedAt?: Date;
   overdueDays?: number;
+  delegatedFrom?: string;
+  groupName?: string;
 }
 
 export type SortMode = "default" | "startDate" | "dueDate";
