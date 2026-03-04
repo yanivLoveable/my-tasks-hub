@@ -15,7 +15,7 @@ export default function SupportModal({ open, onOpenChange }: SupportModalProps) 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
-        className="w-[400px] max-w-[90vw] rounded-2xl px-8 py-7 overflow-hidden border-none [&>button:last-child]:hidden"
+        className="w-[420px] max-w-[90vw] rounded-2xl px-8 py-7 overflow-hidden border-none [&>button:last-child]:hidden"
         dir="rtl"
       >
         {/* Close button – top-left */}
