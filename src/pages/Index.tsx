@@ -149,7 +149,21 @@ const Index = () => {
             בהתאם לסינון, מוצגות {sorted.length} משימות
           </p>
         )}
-        <TaskList tasks={paginatedTasks} loading={loading} />
+        <TaskList
+          tasks={paginatedTasks}
+          loading={loading}
+          hasActiveFilters={validatedState.selectedSystems.length > 0 || validatedState.selectedTopics.length > 0 || validatedState.flags.overdueOnly || validatedState.flags.groupOnly || validatedState.flags.delegationOnly || !!validatedState.searchQuery.trim()}
+          onClearFilters={() =>
+            setUiState((prev) => ({
+              ...prev,
+              searchQuery: "",
+              selectedSystems: [],
+              selectedTopics: [],
+              flags: { overdueOnly: false, groupOnly: false, delegationOnly: false },
+              currentPage: 1,
+            }))
+          }
+        />
         <PaginationFooter
           currentPage={currentPage}
           totalItems={sorted.length}
