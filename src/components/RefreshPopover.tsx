@@ -99,21 +99,14 @@ export default function RefreshPopover({
           side="bottom"
           align="end"
           dir="rtl"
-          className="w-auto min-w-[260px] p-3 shadow-sm"
+          className="w-auto min-w-[280px] p-4 rounded-3xl bg-secondary border border-border shadow-md"
         >
-          <div className="flex flex-col gap-1.5 text-[12px] text-muted-foreground">
+          <div className="flex flex-col gap-2.5 text-sm text-foreground text-right">
             <p>
-              הנתונים מעודכנים נכון ל-
-              <span className="font-semibold text-foreground">
-                {lastUpdated ? formatDateTimeHebrew(lastUpdated) : "--"}
-              </span>
+              הנתונים מעודכנים נכון ל- {lastUpdated ? formatDateTimeHebrew(lastUpdated) : "--"}
             </p>
             <p>
-              ניתן לרענן שוב בעוד{" "}
-              <span className="font-semibold text-foreground">
-                {remaining}
-              </span>{" "}
-              דקות
+              ניתן לרענן שוב בעוד {remaining} דקות
             </p>
           </div>
         </PopoverContent>
