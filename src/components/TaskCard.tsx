@@ -1,3 +1,4 @@
+import { useState, useCallback } from "react";
 import type { Task } from "@/types/task";
 import { formatDateHebrew } from "@/utils/dates";
 import { ExternalLink, ArrowLeftRight, Users } from "lucide-react";
@@ -16,11 +17,22 @@ const isDocs = (source: string) =>
   source === "DOCS_APPROVAL" || source === "DOCS";
 
 export default function TaskCard({ task }: TaskCardProps) {
+  const [copied, setCopied] = useState(false);
+
   const handleClick = () => {
     if (task.url) {
       window.open(task.url, "_blank", "noopener,noreferrer");
     }
   };
+
+  const handleCopyId = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!task.identifier) return;
+    navigator.clipboard.writeText(task.identifier).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    });
+  }, [task.identifier]);
 
   const showCategory = !isDocs(task.source) && !!task.category;
   const hasMetaLine = !!task.delegatedFrom || !!task.groupName;
@@ -51,20 +63,15 @@ export default function TaskCard({ task }: TaskCardProps) {
             {task.identifier && (
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <span className="text-[11px] font-mono text-muted-foreground flex-shrink-0 select-none cursor-help hover:text-primary transition-colors">
+                  <span
+                    className="text-[11px] font-mono text-muted-foreground flex-shrink-0 select-none cursor-pointer hover:text-primary transition-colors"
+                    onClick={handleCopyId}
+                  >
                     {task.identifier}
                   </span>
                 </TooltipTrigger>
                 <TooltipContent side="top" dir="rtl" className="text-[11px]">
-                  <span>מזהה משימה: {task.identifier}</span>
-                  <br />
-                  <span>מערכת: {task.systemLabel}</span>
-                  {task.status && (
-                    <>
-                      <br />
-                      <span>סטטוס: {task.status}</span>
-                    </>
-                  )}
+                  {copied ? "הועתק!" : "לחץ להעתקה"}
                 </TooltipContent>
               </Tooltip>
             )}
