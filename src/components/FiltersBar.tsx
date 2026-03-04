@@ -153,7 +153,7 @@ export default function FiltersBar({
         </div>
 
         {/* Sort button */}
-        <DropdownMenu>
+        <DropdownMenu modal={false}>
           <DropdownMenuTrigger asChild>
             <button
               className="flex items-center gap-1.5 bg-background border border-input text-muted-foreground hover:text-primary hover:border-primary transition-colors flex-shrink-0 whitespace-nowrap text-xs"
