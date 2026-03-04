@@ -150,6 +150,7 @@ const Index = () => {
       </div>
 
       {/* Content */}
+      {/* Content */}
       <div className="mx-auto" style={{ maxWidth: 1104 }}>
         {!loading && (validatedState.selectedSystems.length > 0 || validatedState.selectedTopics.length > 0 || validatedState.flags.overdueOnly || validatedState.flags.groupOnly || validatedState.flags.delegationOnly || validatedState.flags.personalOnly || validatedState.searchQuery.trim()) && (
           <p className="text-xs text-muted-foreground/60 text-right mt-4 px-2" dir="rtl">
@@ -171,15 +172,17 @@ const Index = () => {
             }))
           }
         />
-        <PaginationFooter
-          currentPage={currentPage}
-          totalItems={sorted.length}
-          pageSize={PAGE_SIZE}
-          onPageChange={(p) => { updateUi({ currentPage: p }); window.scrollTo({ top: 0, behavior: "smooth" }); }}
-          onFeedbackClick={() => setFooterFeedbackOpen(true)}
-          onSupportClick={() => setFooterSupportOpen(true)}
-        />
       </div>
+
+      {/* Footer – full width like header */}
+      <PaginationFooter
+        currentPage={currentPage}
+        totalItems={sorted.length}
+        pageSize={PAGE_SIZE}
+        onPageChange={(p) => { updateUi({ currentPage: p }); window.scrollTo({ top: 0, behavior: "smooth" }); }}
+        onFeedbackClick={() => setFooterFeedbackOpen(true)}
+        onSupportClick={() => setFooterSupportOpen(true)}
+      />
 
       <FeedbackModal open={footerFeedbackOpen} onOpenChange={setFooterFeedbackOpen} />
       <SupportModal open={footerSupportOpen} onOpenChange={setFooterSupportOpen} />
