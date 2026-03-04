@@ -29,8 +29,8 @@ export default function Header({
 
   return (
     <>
-      <div className="flex items-center justify-between px-8 py-2.5" dir="rtl">
-        <span className="text-lg font-extrabold text-primary tracking-wide">
+      <div className="flex items-center justify-between px-8 py-1.5" dir="rtl">
+        <span className="text-base font-extrabold text-primary tracking-wide">
           MATCAM
         </span>
         <div className="flex items-center gap-3">
