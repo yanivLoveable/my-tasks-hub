@@ -37,19 +37,17 @@ export default function SupportModal({ open, onOpenChange }: SupportModalProps) 
             <DialogTitle className="text-[20px] font-extrabold text-primary leading-snug tracking-wide">
               צריך עזרה?
             </DialogTitle>
-            <DialogDescription className="text-[13px] text-muted-foreground">
+            <DialogDescription className="text-[14px] font-semibold text-foreground/70">
               אנחנו כאן בשבילך
             </DialogDescription>
           </div>
 
           {/* Instructions */}
-          <div className="w-full space-y-2 text-[13px] text-muted-foreground leading-relaxed text-center">
+          <div className="w-full text-[13px] text-muted-foreground leading-relaxed text-center mt-1">
             <p>
-              לתמיכה טכנית ניתן לפנות למוקד התמיכה בשלוחה{" "}
+              לתמיכה טכנית ניתן לפנות למוקד התמיכה במספר{" "}
               <span className="font-bold text-primary">4050</span>.
-            </p>
-            <p>
-              לחלופין, ניתן לפתוח פנייה באמצעות הצ׳אטבוט שלנו לקבלת מענה מהיר.
+              {" "}לחלופין, ניתן לפתוח פנייה באמצעות הצ׳אטבוט שלנו בעמוד הבית של SNOW.
             </p>
           </div>
 
