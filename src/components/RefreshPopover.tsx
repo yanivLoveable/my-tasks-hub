@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { RotateCw } from "lucide-react";
+import { RotateCw, Clock, X } from "lucide-react";
 import {
   Tooltip,
   TooltipContent,
@@ -99,15 +99,20 @@ export default function RefreshPopover({
           side="bottom"
           align="end"
           dir="rtl"
-          className="w-auto min-w-[280px] p-4 rounded-3xl bg-secondary border border-border shadow-md"
+          className="w-auto max-w-[420px] px-4 py-2.5 rounded-xl bg-background border border-primary/30 shadow-sm"
         >
-          <div className="flex flex-col gap-2.5 text-sm text-foreground text-right">
-            <p>
-              הנתונים מעודכנים נכון ל- {lastUpdated ? formatDateTimeHebrew(lastUpdated) : "--"}
-            </p>
-            <p>
-              ניתן לרענן שוב בעוד {remaining} דקות
-            </p>
+          <div className="flex items-center gap-3 text-[13px] text-foreground">
+            <Clock size={16} className="text-primary flex-shrink-0" />
+            <span className="whitespace-nowrap">
+              הנתונים עדכניים ל-{lastUpdated ? formatDateTimeHebrew(lastUpdated) : "--"}.
+              {" "}ניתן לרענן שוב בעוד {remaining} דקות
+            </span>
+            <button
+              onClick={() => setPopoverOpen(false)}
+              className="flex-shrink-0 w-5 h-5 flex items-center justify-center rounded-full text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"
+            >
+              <X size={13} />
+            </button>
           </div>
         </PopoverContent>
       </Popover>
