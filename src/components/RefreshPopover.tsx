@@ -64,11 +64,7 @@ export default function RefreshPopover({
     }
   }, [cooldown, refreshing, onRefresh]);
 
-  const tooltipText = stale
-    ? "הנתונים לא התרעננו זמן רב, מומלץ לבצע רענון ידני"
-    : cooldown
-      ? `הרענון יהיה זמין שוב בעוד ${remaining} דקות`
-      : "רענון נתונים";
+  const tooltipText = "רענון נתונים";
 
   return (
     <TooltipProvider delayDuration={300}>
@@ -105,7 +101,7 @@ export default function RefreshPopover({
             <Clock size={16} className="text-primary flex-shrink-0" />
             <span className="whitespace-nowrap">
               הנתונים עדכניים ל-{lastUpdated ? formatTime(lastUpdated) : "--"}.
-              {" "}ניתן לרענן שוב בעוד {remaining} דקות
+              {" "}ניתן לרענן שוב בעוד <span className="font-bold">{remaining}</span> דקות
             </span>
             <button
               onClick={() => setPopoverOpen(false)}
