@@ -21,7 +21,7 @@ interface FiltersBarProps {
   onSearch: (q: string) => void;
   onSystemToggle: (s: string) => void;
   onTopicToggle: (t: string) => void;
-  onFlagToggle: (flag: "overdueOnly" | "groupOnly" | "delegationOnly") => void;
+  onFlagToggle: (flag: "overdueOnly" | "groupOnly" | "delegationOnly" | "personalOnly") => void;
   onSortChange: (mode: SortMode, dir: SortDirection) => void;
   onClearAll: () => void;
 }
@@ -70,7 +70,8 @@ export default function FiltersBar({
   const hasActiveFlags =
     uiState.flags.overdueOnly ||
     uiState.flags.groupOnly ||
-    uiState.flags.delegationOnly;
+    uiState.flags.delegationOnly ||
+    uiState.flags.personalOnly;
 
   const selectedSystems = Array.isArray(uiState.selectedSystems) ? uiState.selectedSystems : [];
   const selectedTopics = Array.isArray(uiState.selectedTopics) ? uiState.selectedTopics : [];
@@ -238,7 +239,8 @@ export default function FiltersBar({
               <Tooltip>
                 <TooltipTrigger asChild>
                   <button
-                    className={`${chipStyle(false)} cursor-help opacity-70`}
+                    className={chipStyle(uiState.flags.personalOnly)}
+                    onClick={() => onFlagToggle("personalOnly")}
                   >
                     <User className="w-3.5 h-3.5" />
                     אישי
@@ -252,7 +254,8 @@ export default function FiltersBar({
               <Tooltip>
                 <TooltipTrigger asChild>
                   <button
-                    className={`${chipStyle(false)} cursor-help opacity-70`}
+                    className={chipStyle(uiState.flags.delegationOnly)}
+                    onClick={() => onFlagToggle("delegationOnly")}
                   >
                     <ArrowLeftRight className="w-3.5 h-3.5" />
                     דליגציה

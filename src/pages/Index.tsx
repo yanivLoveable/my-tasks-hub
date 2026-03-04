@@ -140,7 +140,7 @@ const Index = () => {
           onClearAll={() =>
             setUiState((prev) => ({
               ...prev,
-              flags: { overdueOnly: false, groupOnly: false, delegationOnly: false },
+              flags: { overdueOnly: false, groupOnly: false, delegationOnly: false, personalOnly: false },
               currentPage: 1,
             }))
           }
@@ -149,7 +149,7 @@ const Index = () => {
 
       {/* Content */}
       <div className="mx-auto" style={{ maxWidth: 1104 }}>
-        {!loading && (validatedState.selectedSystems.length > 0 || validatedState.selectedTopics.length > 0 || validatedState.flags.overdueOnly || validatedState.flags.groupOnly || validatedState.flags.delegationOnly || validatedState.searchQuery.trim()) && (
+        {!loading && (validatedState.selectedSystems.length > 0 || validatedState.selectedTopics.length > 0 || validatedState.flags.overdueOnly || validatedState.flags.groupOnly || validatedState.flags.delegationOnly || validatedState.flags.personalOnly || validatedState.searchQuery.trim()) && (
           <p className="text-xs text-muted-foreground/60 text-right mt-4 px-2" dir="rtl">
             בהתאם לסינון, מוצגות {sorted.length} משימות
           </p>
@@ -157,14 +157,14 @@ const Index = () => {
         <TaskList
           tasks={paginatedTasks}
           loading={loading}
-          hasActiveFilters={validatedState.selectedSystems.length > 0 || validatedState.selectedTopics.length > 0 || validatedState.flags.overdueOnly || validatedState.flags.groupOnly || validatedState.flags.delegationOnly || !!validatedState.searchQuery.trim()}
+          hasActiveFilters={validatedState.selectedSystems.length > 0 || validatedState.selectedTopics.length > 0 || validatedState.flags.overdueOnly || validatedState.flags.groupOnly || validatedState.flags.delegationOnly || validatedState.flags.personalOnly || !!validatedState.searchQuery.trim()}
           onClearFilters={() =>
             setUiState((prev) => ({
               ...prev,
               searchQuery: "",
               selectedSystems: [],
               selectedTopics: [],
-              flags: { overdueOnly: false, groupOnly: false, delegationOnly: false },
+              flags: { overdueOnly: false, groupOnly: false, delegationOnly: false, personalOnly: false },
               currentPage: 1,
             }))
           }
