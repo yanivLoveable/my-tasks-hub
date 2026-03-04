@@ -22,7 +22,15 @@ export function filterTasks(tasks: Task[], state: UIState): Task[] {
   }
 
   if (state.flags.groupOnly) {
-    result = result.filter((t) => !!t.assignedToRole);
+    result = result.filter((t) => !!t.groupName);
+  }
+
+  if (state.flags.delegationOnly) {
+    result = result.filter((t) => !!t.delegatedFrom);
+  }
+
+  if (state.flags.personalOnly) {
+    result = result.filter((t) => !t.groupName && !t.delegatedFrom);
   }
 
   // Search

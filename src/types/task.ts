@@ -28,6 +28,7 @@ export interface UIState {
     overdueOnly: boolean;
     groupOnly: boolean;
     delegationOnly: boolean;
+    personalOnly: boolean;
   };
   sortMode: SortMode;
   sortDirection: SortDirection;
@@ -42,6 +43,7 @@ export const DEFAULT_UI_STATE: UIState = {
     overdueOnly: false,
     groupOnly: false,
     delegationOnly: false,
+    personalOnly: false,
   },
   sortMode: "default",
   sortDirection: "asc",
