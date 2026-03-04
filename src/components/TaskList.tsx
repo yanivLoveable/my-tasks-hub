@@ -1,9 +1,12 @@
 import type { Task } from "@/types/task";
 import TaskCard from "./TaskCard";
+import { SearchX } from "lucide-react";
 
 interface TaskListProps {
   tasks: Task[];
   loading: boolean;
+  hasActiveFilters?: boolean;
+  onClearFilters?: () => void;
 }
 
 function SkeletonCard() {
@@ -23,7 +26,7 @@ function SkeletonCard() {
   );
 }
 
-export default function TaskList({ tasks, loading }: TaskListProps) {
+export default function TaskList({ tasks, loading, hasActiveFilters, onClearFilters }: TaskListProps) {
   if (loading) {
     return (
       <div className="space-y-2 mt-4">
@@ -36,9 +39,21 @@ export default function TaskList({ tasks, loading }: TaskListProps) {
 
   if (tasks.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-16 text-muted-foreground">
-        <p className="text-lg font-semibold">אין משימות להצגה</p>
-        <p className="text-sm mt-1">נסה לשנות את הסינון או החיפוש</p>
+      <div className="flex flex-col items-center justify-center py-20 text-muted-foreground" dir="rtl">
+        <div className="w-14 h-14 rounded-full bg-secondary flex items-center justify-center mb-4">
+          <SearchX size={26} className="text-muted-foreground/60" />
+        </div>
+        <p className="text-[15px] font-bold text-foreground">
+          לא נמצאו משימות התואמות את הסינון הנבחר
+        </p>
+        {hasActiveFilters && onClearFilters && (
+          <button
+            onClick={onClearFilters}
+            className="mt-4 h-9 px-5 rounded-lg bg-primary text-primary-foreground text-[13px] font-semibold hover:bg-primary/90 transition-colors"
+          >
+            נקה סינונים
+          </button>
+        )}
       </div>
     );
   }
