@@ -92,7 +92,7 @@ export default function FiltersBar({
   const chipStyle = (active: boolean, disabled = false) =>
     `inline-flex items-center gap-1.5 px-3 py-0.5 border text-xs font-medium rounded-full transition-all duration-150 select-none whitespace-nowrap ${
       disabled
-        ? "bg-muted text-muted-foreground/40 border-muted cursor-not-allowed opacity-50"
+        ? "bg-muted/60 text-muted-foreground/30 border-muted/40 cursor-not-allowed opacity-60"
         : active
           ? "bg-chip-active-bg text-chip-active-text border-chip-active-bg cursor-pointer"
           : "bg-chip-inactive-bg text-chip-inactive-text border-chip-border hover:bg-secondary cursor-pointer"
