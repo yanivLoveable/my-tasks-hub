@@ -8,7 +8,7 @@ export default function ControlsBar({ totalTasks }: ControlsBarProps) {
   return (
     <div className="flex flex-col items-center pt-1 pb-1 px-8">
       <div className="flex items-center gap-2">
-        <h1 className="text-[22px] font-extrabold text-primary leading-tight">
+        <h1 className="text-[28px] font-extrabold text-primary leading-tight">
           מרכז המשימות וההתראות
         </h1>
         <Bell size={18} strokeWidth={2.5} className="text-primary" />
