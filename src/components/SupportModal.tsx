@@ -47,7 +47,9 @@ export default function SupportModal({ open, onOpenChange }: SupportModalProps) 
             <p>
               לתמיכה טכנית ניתן לפנות למוקד התמיכה במספר{" "}
               <span className="font-bold text-primary">4050</span>.
-              {" "}לחלופין, ניתן לפתוח פנייה באמצעות הצ׳אטבוט שלנו בעמוד הבית של SNOW.
+            </p>
+            <p className="mt-1">
+              לחלופין, ניתן לפתוח פנייה באמצעות ה<span className="font-bold text-primary">צ׳אטבוט</span> שלנו בעמוד הבית של SNOW.
             </p>
           </div>
 
