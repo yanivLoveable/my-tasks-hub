@@ -7,6 +7,12 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { TriangleAlert, Users, User, ArrowLeftRight } from "lucide-react";
 
 interface FiltersBarProps {
@@ -197,35 +203,65 @@ export default function FiltersBar({
         {/* Row 2: Special filters + clear */}
         <div className="flex items-center w-full">
           <div className="flex-1 flex items-center justify-center gap-2 flex-wrap">
-            <button
-              className={chipStyle(uiState.flags.overdueOnly)}
-              onClick={() => onFlagToggle("overdueOnly")}
-            >
-              <TriangleAlert className="w-3.5 h-3.5" />
-              חורגות
-            </button>
+            <TooltipProvider delayDuration={200}>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <button
+                    className={chipStyle(uiState.flags.overdueOnly)}
+                    onClick={() => onFlagToggle("overdueOnly")}
+                  >
+                    <TriangleAlert className="w-3.5 h-3.5" />
+                    חורגות
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent side="bottom" dir="rtl" className="text-[11px]">
+                  משימות בעלות תאריך יעד שעבר
+                </TooltipContent>
+              </Tooltip>
 
-            <button
-              className={`${chipStyle(false)} cursor-help opacity-70`}
-            >
-              <ArrowLeftRight className="w-3.5 h-3.5" />
-              דליגציה
-            </button>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <button
+                    className={chipStyle(uiState.flags.groupOnly)}
+                    onClick={() => onFlagToggle("groupOnly")}
+                  >
+                    <Users className="w-3.5 h-3.5" />
+                    קבוצה
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent side="bottom" dir="rtl" className="text-[11px]">
+                  משימות שממתינות לקבוצה הכוללת אותך
+                </TooltipContent>
+              </Tooltip>
 
-            <button
-              className={`${chipStyle(false)} cursor-help opacity-70`}
-            >
-              <User className="w-3.5 h-3.5" />
-              אישי
-            </button>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <button
+                    className={`${chipStyle(false)} cursor-help opacity-70`}
+                  >
+                    <User className="w-3.5 h-3.5" />
+                    אישי
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent side="bottom" dir="rtl" className="text-[11px]">
+                  משימות שממתינות לטיפולך האישי
+                </TooltipContent>
+              </Tooltip>
 
-            <button
-              className={chipStyle(uiState.flags.groupOnly)}
-              onClick={() => onFlagToggle("groupOnly")}
-            >
-              <Users className="w-3.5 h-3.5" />
-              קבוצה
-            </button>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <button
+                    className={`${chipStyle(false)} cursor-help opacity-70`}
+                  >
+                    <ArrowLeftRight className="w-3.5 h-3.5" />
+                    דליגציה
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent side="bottom" dir="rtl" className="text-[11px]">
+                  משימות שהועברו אליך מאדם אחר
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           </div>
 
           <button
