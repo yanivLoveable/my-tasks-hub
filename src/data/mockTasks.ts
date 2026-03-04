@@ -7,7 +7,7 @@ export const MOCK_TASKS: Task[] = [
     title: "אישור תקציב שנתי למחלקה", identifier: "ERP-112233", url: "#",
     status: "open", priority: "high",
     startDate: new Date("2025-07-01"), dueDate: new Date("2025-07-30"),
-    category: "רכש וכספים", assignedToRole: "רכש וכספים",
+    category: "רכש וכספים", assignedToRole: "רכש וכספים", delegatedFrom: "יוסי כהן", groupName: "צוות תקציבים",
     updatedAt: new Date("2025-07-01"), overdueDays: 217,
   },
   {
@@ -31,7 +31,7 @@ export const MOCK_TASKS: Task[] = [
     title: "בדיקת יתרות ספקים", identifier: "ERP-200009", url: "#",
     status: "open", priority: "high",
     startDate: new Date("2026-01-05"), dueDate: new Date("2026-02-01"),
-    category: "רכש וכספים", assignedToRole: "צוות מאשרי שכר",
+    category: "רכש וכספים", assignedToRole: "צוות מאשרי שכר", groupName: "צוות מאשרי שכר",
     updatedAt: new Date("2026-01-05"), overdueDays: 30,
   },
   {
@@ -48,7 +48,7 @@ export const MOCK_TASKS: Task[] = [
     title: "עדכון נוהל עבודה מהבית", identifier: "DOCS-991234", url: "#",
     status: "open", priority: "medium",
     startDate: new Date("2025-08-15"), dueDate: new Date("2025-09-01"),
-    category: "משאבי אנוש", assignedToRole: "משאבי אנוש",
+    category: "משאבי אנוש", assignedToRole: "משאבי אנוש", delegatedFrom: "שרה לוי",
     updatedAt: new Date("2025-08-15"), overdueDays: 184,
   },
   {
@@ -89,7 +89,7 @@ export const MOCK_TASKS: Task[] = [
     title: "סקירת דרישות לפרויקט דיגיטציה", identifier: "JIRA-778899", url: "#",
     status: "open", priority: "medium",
     startDate: new Date("2025-12-01"), dueDate: new Date("2026-01-10"),
-    category: "תפעול", assignedToRole: "תפעול",
+    category: "תפעול", assignedToRole: "תפעול", delegatedFrom: "דני אברהם", groupName: "צוות דיגיטציה",
     updatedAt: new Date("2025-12-01"), overdueDays: 52,
   },
   {
@@ -146,7 +146,7 @@ export const MOCK_TASKS: Task[] = [
     title: "הקמת סביבת בדיקות חדשה", identifier: "SNOW-200014", url: "#",
     status: "open", priority: "medium",
     startDate: new Date("2026-02-12"), dueDate: new Date("2026-03-20"),
-    category: "IT", assignedToRole: "צוות אבטחה",
+    category: "IT", assignedToRole: "צוות אבטחה", groupName: "צוות אבטחה",
     updatedAt: new Date("2026-02-12"),
   },
   {
