@@ -14,17 +14,13 @@ export async function waitForJob(
 
   while (true) {
     if (signal?.aborted) throw new Error("Polling aborted");
-    if (Date.now() - start > POLL_TIMEOUT) {
-      throw new Error("Polling timeout: job took too long");
-    }
+    if (Date.now() - start > POLL_TIMEOUT) throw new Error("Polling timeout: job took too long");
 
     const result = await pollJobStatus(token, runId, signal);
     onUpdate?.(result.status);
 
-    if (result.status === "succeeded" || result.status === "failed") {
-      return result;
-    }
+    if (result.status === "succeeded" || result.status === "failed") return result;
 
-    await new Promise((resolve) => setTimeout(resolve, POLL_INTERVAL));
+    await new Promise((r) => setTimeout(r, POLL_INTERVAL));
   }
 }

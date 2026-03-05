@@ -1,17 +1,24 @@
 import { useState, useCallback } from "react";
 
+function safeParse<T>(raw: string | null, fallback: T): T {
+  if (!raw) return fallback;
+
+  // Handle common bad values
+  if (raw === "undefined" || raw === "null") return fallback;
+
+  try {
+    return JSON.parse(raw) as T;
+  } catch {
+    return fallback;
+  }
+}
+
 export function useLocalStorageState<T>(
   key: string,
   defaultValue: T
 ): [T, (value: T | ((prev: T) => T)) => void] {
   const [state, setState] = useState<T>(() => {
-    try {
-      const stored = localStorage.getItem(key);
-      if (stored) return JSON.parse(stored) as T;
-    } catch {
-      // ignore
-    }
-    return defaultValue;
+    return safeParse<T>(localStorage.getItem(key), defaultValue);
   });
 
   const setValue = useCallback(

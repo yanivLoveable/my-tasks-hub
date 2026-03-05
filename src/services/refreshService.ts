@@ -1,23 +1,13 @@
-import { USER_ID } from "@/config";
-import { httpGet, httpPost } from "./http";
-import type { RefreshResponse } from "@/types/api";
+import { httpPost, httpGet } from "./http";
+import type { RefreshResponse, JobRunResponse } from "@/types/api";
 
-export async function triggerRefresh(token: string): Promise<RefreshResponse> {
+export async function triggerRefresh(token: string, userId: string): Promise<RefreshResponse> {
   return httpPost<RefreshResponse>(
-    `/api/work-items/user-tasks/refresh?userId=${encodeURIComponent(USER_ID)}`,
-    undefined,
-    { Authorization: `Bearer ${token}` }
+    `/api/work-items/user-tasks/refresh?userId=${encodeURIComponent(userId)}`,
+    token
   );
 }
 
-export async function pollJobStatus(
-  token: string,
-  runId: string,
-  signal?: AbortSignal
-): Promise<import("@/types/api").JobRunResponse> {
-  return httpGet<import("@/types/api").JobRunResponse>(
-    `/api/jobs/runs/${runId}`,
-    token,
-    signal
-  );
+export async function pollJobStatus(token: string, runId: string, signal?: AbortSignal): Promise<JobRunResponse> {
+  return httpGet<JobRunResponse>(`/api/jobs/runs/${runId}`, token, signal);
 }
