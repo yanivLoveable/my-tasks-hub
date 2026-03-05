@@ -1,6 +1,12 @@
-import React, { createContext, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, {
+  createContext,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import Keycloak from "keycloak-js";
-import { KEYCLOAK_CLIENT_ID, KEYCLOAK_REALM, KEYCLOAK_URL } from "@/config";
 import { exchangeKeycloakToken } from "@/services/authClient";
 
 export type AuthStatus = "loading" | "ready" | "error";
@@ -39,7 +45,10 @@ function decodeJwtPayload<T>(token: string): T | null {
   try {
     const base64Url = parts[1];
     const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
-    const padded = base64.padEnd(base64.length + ((4 - (base64.length % 4)) % 4), "=");
+    const padded = base64.padEnd(
+      base64.length + ((4 - (base64.length % 4)) % 4),
+      "="
+    );
     const json = atob(padded);
     return JSON.parse(json);
   } catch {
@@ -67,22 +76,47 @@ function getStoredTokenInfo() {
   return { token, payload, expMs, isValid, user: userFromPayload(payload) };
 }
 
-export function AuthProvider({ children }: { children: React.ReactNode }) {
+/** ---------------- MOCK PROVIDER (no Keycloak) ---------------- */
+function MockAuthProvider({ children }: { children: React.ReactNode }) {
+  const value = useMemo<AuthContextValue>(
+    () => ({
+      user: null,
+      status: "ready",
+      authenticate: async () => {
+        // In mock mode we don't authenticate. If some code calls it, fail loudly:
+        throw new Error("Auth disabled (missing Keycloak config).");
+      },
+      logout: () => {},
+    }),
+    []
+  );
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+}
+
+/** ---------------- REAL PROVIDER (Keycloak enabled) ---------------- */
+function RealAuthProvider({
+  children,
+  keycloakUrl,
+  keycloakRealm,
+  keycloakClientId,
+}: {
+  children: React.ReactNode;
+  keycloakUrl: string;
+  keycloakRealm: string;
+  keycloakClientId: string;
+}) {
   const [status, setStatus] = useState<AuthStatus>("loading");
   const [user, setUser] = useState<User | null>(null);
-
-  if (!KEYCLOAK_URL || !KEYCLOAK_REALM || !KEYCLOAK_CLIENT_ID) {
-    throw new Error("Missing Keycloak config: VITE_KEYCLOAK_URL / VITE_KEYCLOAK_REALM / VITE_KEYCLOAK_CLIENT_ID");
-  }
 
   const keycloak = useMemo(
     () =>
       new Keycloak({
-        url: KEYCLOAK_URL.replace(/\/$/, ""),
-        realm: KEYCLOAK_REALM,
-        clientId: KEYCLOAK_CLIENT_ID,
+        url: keycloakUrl.replace(/\/$/, ""),
+        realm: keycloakRealm,
+        clientId: keycloakClientId,
       }),
-    []
+    [keycloakUrl, keycloakRealm, keycloakClientId]
   );
 
   const keycloakInitPromiseRef = useRef<Promise<boolean> | null>(null);
@@ -90,7 +124,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const initKeycloakOnce = useCallback(() => {
     if (!keycloakInitPromiseRef.current) {
-      keycloakInitPromiseRef.current = keycloak.init({ onLoad: "login-required" });
+      keycloakInitPromiseRef.current = keycloak.init({
+        onLoad: "login-required",
+        checkLoginIframe: false,
+      });
     }
     return keycloakInitPromiseRef.current;
   }, [keycloak]);
@@ -102,7 +139,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const keycloakToken = keycloak.token;
     if (!keycloakToken) throw new Error("Missing Keycloak token");
 
-    // exchange KC token => API token
+    // Exchange Keycloak token => API access token
     const apiAccessToken = await exchangeKeycloakToken(keycloakToken);
     localStorage.setItem(ACCESS_TOKEN_KEY, apiAccessToken);
 
@@ -132,7 +169,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     ensureInFlightRef.current = (async () => {
       setStatus("loading");
 
-      // If stored API token valid, use it
       const info = getStoredTokenInfo();
       if (info.isValid) {
         setUser(info.user);
@@ -140,7 +176,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         return;
       }
 
-      // Else authenticate again
       await authenticate();
       const info2 = getStoredTokenInfo();
       setUser(info2.user);
@@ -166,7 +201,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     void ensureAuthenticated();
   }, [ensureAuthenticated]);
 
-  // refresh token near expiry (API token exp is in JWT)
+  // Refresh near expiry (API token exp in JWT)
   useEffect(() => {
     if (status !== "ready") return;
     const { expMs, isValid } = getStoredTokenInfo();
@@ -188,4 +223,29 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+}
+
+/** ---------------- EXPORT (chooses mock vs real) ---------------- */
+export function AuthProvider({ children }: { children: React.ReactNode }) {
+  const keycloakUrl = import.meta.env.VITE_KEYCLOAK_URL as string | undefined;
+  const keycloakRealm = import.meta.env.VITE_KEYCLOAK_REALM as string | undefined;
+  const keycloakClientId = import.meta.env.VITE_KEYCLOAK_CLIENT_ID as
+    | string
+    | undefined;
+
+  const isConfigured = Boolean(keycloakUrl && keycloakRealm && keycloakClientId);
+
+  if (!isConfigured) {
+    return <MockAuthProvider>{children}</MockAuthProvider>;
+  }
+
+  return (
+    <RealAuthProvider
+      keycloakUrl={keycloakUrl!}
+      keycloakRealm={keycloakRealm!}
+      keycloakClientId={keycloakClientId!}
+    >
+      {children}
+    </RealAuthProvider>
+  );
 }
