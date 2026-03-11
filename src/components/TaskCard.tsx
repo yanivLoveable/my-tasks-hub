@@ -92,7 +92,7 @@ export default function TaskCard({ task }: TaskCardProps) {
             )}
             {task.overdueDays && task.overdueDays > 0 && (
               <span className="text-overdue font-bold">
-                | חריגה: {Math.min(task.overdueDays, 82)} ימים
+                | חריגה: {task.overdueDays} ימים
               </span>
             )}
           </div>

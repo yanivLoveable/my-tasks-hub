@@ -12,6 +12,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { formatTime } from "@/utils/dates";
+import { getRefreshCooldownRemainingMinutes } from "@/utils/refreshCooldown";
 
 interface RefreshPopoverProps {
   lastUpdated: Date | null;
@@ -21,14 +22,7 @@ interface RefreshPopoverProps {
   cooldownTime: string;
 }
 
-const COOLDOWN_MS = 5 * 60 * 1000;
 const STALE_THRESHOLD_MS = 60 * 60 * 1000;
-
-function getRemainingMinutes(lastUpdated: Date | null): number {
-  if (!lastUpdated) return 0;
-  const elapsed = Date.now() - lastUpdated.getTime();
-  return Math.max(0, Math.ceil((COOLDOWN_MS - elapsed) / 60000));
-}
 
 function isStale(lastUpdated: Date | null): boolean {
   if (!lastUpdated) return false;
@@ -45,7 +39,7 @@ export default function RefreshPopover({
   const [popoverOpen, setPopoverOpen] = useState(false);
   const [, setTick] = useState(0);
   const stale = isStale(lastUpdated);
-  const remaining = getRemainingMinutes(lastUpdated);
+  const remaining = getRefreshCooldownRemainingMinutes();
 
   // Tick every second when popover is open to update remaining time
   useEffect(() => {

@@ -44,19 +44,19 @@ describe("Flow 5 — Refresh + cooldown + messaging", () => {
 
   it("cooldown prevents immediate re-refresh", () => {
     vi.setSystemTime(new Date("2026-03-05T10:00:00"));
-    preloadCooldown(new Date("2026-03-05T10:10:00").getTime());
+    preloadCooldown(new Date("2026-03-05T10:05:00").getTime());
 
     const cooldownVal = Number(localStorage.getItem("notifCenter.refreshCooldownUntil"));
     expect(cooldownVal).toBeGreaterThan(Date.now());
   });
 
-  it("cooldown expires after 10 minutes", () => {
+  it("cooldown expires after 5 minutes", () => {
     vi.setSystemTime(new Date("2026-03-05T10:00:00"));
-    preloadCooldown(new Date("2026-03-05T10:10:00").getTime());
+    preloadCooldown(new Date("2026-03-05T10:05:00").getTime());
 
-    expect(Date.now()).toBeLessThan(new Date("2026-03-05T10:10:00").getTime());
+    expect(Date.now()).toBeLessThan(new Date("2026-03-05T10:05:00").getTime());
 
-    vi.setSystemTime(new Date("2026-03-05T10:11:00"));
-    expect(Date.now()).toBeGreaterThan(new Date("2026-03-05T10:10:00").getTime());
+    vi.setSystemTime(new Date("2026-03-05T10:06:00"));
+    expect(Date.now()).toBeGreaterThan(new Date("2026-03-05T10:05:00").getTime());
   });
 });

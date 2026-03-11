@@ -78,11 +78,6 @@ describe("getOverdueDays", () => {
     const past = new Date(Date.now() - 86400000 * 5);
     expect(getOverdueDays(past)).toBeGreaterThanOrEqual(5);
   });
-
-  it("caps at 82 days", () => {
-    const longPast = new Date(Date.now() - 86400000 * 200);
-    expect(getOverdueDays(longPast)).toBe(82);
-  });
 });
 
 describe("formatTime", () => {

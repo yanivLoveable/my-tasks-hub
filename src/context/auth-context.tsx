@@ -7,7 +7,7 @@ import React, {
   useState,
 } from "react";
 import Keycloak from "keycloak-js";
-import { exchangeKeycloakToken } from "@/services/authClient";
+import { getAccessToken as getApiAccessToken } from "@/services/authService";
 
 export type AuthStatus = "loading" | "ready" | "error";
 
@@ -37,7 +37,13 @@ export const AuthContext = createContext<AuthContextValue>({
 const ACCESS_TOKEN_KEY = "notifCenter.apiAccessToken";
 const USER_KEY = "notifCenter.user";
 
-type JWTPayload = Partial<User> & { exp?: number };
+type JWTPayload = Partial<User> & {
+  exp?: number;
+  sub?: string;
+  preferred_username?: string;
+  email?: string;
+  name?: string;
+};
 
 function decodeJwtPayload<T>(token: string): T | null {
   const parts = token.split(".");
@@ -58,11 +64,17 @@ function decodeJwtPayload<T>(token: string): T | null {
 
 function userFromPayload(p: JWTPayload | null): User | null {
   if (!p) return null;
-  const id = typeof p.id === "string" ? p.id : "";
+  const id =
+    (typeof p.id === "string" && p.id) ||
+    (typeof p.sub === "string" && p.sub) ||
+    "";
   if (!id) return null;
   return {
     id,
-    username: typeof p.username === "string" ? p.username : undefined,
+    username:
+      (typeof p.username === "string" && p.username) ||
+      (typeof p.preferred_username === "string" && p.preferred_username) ||
+      undefined,
     name: typeof p.name === "string" ? p.name : undefined,
     email: typeof p.email === "string" ? p.email : undefined,
   };
@@ -140,8 +152,7 @@ function RealAuthProvider({
     if (!keycloakToken) throw new Error("Missing Keycloak token");
 
     // Exchange Keycloak token => API access token
-    const apiAccessToken = await exchangeKeycloakToken(keycloakToken);
-    localStorage.setItem(ACCESS_TOKEN_KEY, apiAccessToken);
+    const apiAccessToken = await getApiAccessToken(keycloakToken);
 
     const payload = decodeJwtPayload<JWTPayload>(apiAccessToken);
     const u = userFromPayload(payload);
@@ -233,7 +244,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     | string
     | undefined;
 
-  const isConfigured = Boolean(keycloakUrl && keycloakRealm && keycloakClientId);
+  const isPlaceholder = (v: string | undefined) =>
+    !v || v.trim() === "" || v.includes("<") || v.includes(">");
+
+  const isValidUrl = (v: string | undefined) => {
+    if (!v) return false;
+    try {
+      // keycloak-js expects a real absolute URL
+      const u = new URL(v);
+      return u.protocol === "http:" || u.protocol === "https:";
+    } catch {
+      return false;
+    }
+  };
+
+  const isConfigured =
+    !isPlaceholder(keycloakUrl) &&
+    !isPlaceholder(keycloakRealm) &&
+    !isPlaceholder(keycloakClientId) &&
+    isValidUrl(keycloakUrl);
 
   if (!isConfigured) {
     return <MockAuthProvider>{children}</MockAuthProvider>;

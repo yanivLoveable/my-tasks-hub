@@ -40,14 +40,12 @@ export function formatDateHebrew(d: Date | null | undefined): string {
   return `${day}/${month}/${year}`;
 }
 
-const MAX_OVERDUE_DAYS = 82;
-
 export function getOverdueDays(dueDate: Date | null | undefined): number {
   if (!dueDate) return 0;
   const now = new Date();
   const diff = now.getTime() - dueDate.getTime();
   if (diff <= 0) return 0;
-  return Math.min(Math.ceil(diff / (1000 * 60 * 60 * 24)), MAX_OVERDUE_DAYS);
+  return Math.ceil(diff / (1000 * 60 * 60 * 24));
 }
 
 export function formatTime(d: Date): string {

@@ -2,11 +2,17 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { MOCK_TASKS } from "@/data/mockTasks";
 import type { Task } from "@/types/task";
 import { useAuth } from "@/hooks/use-auth";
-//import { fetchUserTasks } from "@/services/tasksService"; //Keycloak-ready
-//import { mapApiToTask } from "@/utils/mapTasks"; //Keycloak-ready
-
-const COOLDOWN_KEY = "notifCenter.refreshCooldownUntil";
-const COOLDOWN_MS = 10 * 60 * 1000;
+import { fetchUserTasks } from "@/services/tasksService";
+import { triggerRefresh } from "@/services/refreshService";
+import { waitForJob } from "@/services/jobsService";
+import { mapApiToTasks } from "@/utils/mapTasks";
+import { APP_ENV } from "@/config";
+import {
+  isOnRefreshCooldown,
+  setRefreshCooldownUntilMs,
+  getRefreshCooldownUntilMs,
+  REFRESH_COOLDOWN_MS,
+} from "@/utils/refreshCooldown";
 
 export interface BannerMessage {
   type: "error" | "warning" | "success" | "info";
@@ -14,8 +20,7 @@ export interface BannerMessage {
 }
 
 export function useTasks() {
-  const { isReady, user } = useAuth(); 
-  //const { isReady, user ,authenticate } = useAuth(); //Keycloak-ready
+  const { isReady, user, authenticate } = useAuth();
 
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
@@ -25,54 +30,56 @@ export function useTasks() {
 
   const abortRef = useRef<AbortController | null>(null);
 
+  // Default developer workflow: show mock tasks in dev.
+  // Switch to real Keycloak+API mode by setting VITE_APP_ENV to "test" or "prod".
+  const shouldUseMock = APP_ENV === "dev" || !user?.id;
+
   const loadTasks = useCallback(async () => {
     try {
       setLoading(true);
       setBanner(null);
 
-      // For now: do NOT call backend. Keep mock tasks.
-      // We only enforce "auth ready" so later switching to real API is clean.
-      //if (!isReady) return; //Keycloak-ready
+      abortRef.current?.abort();
+      abortRef.current = new AbortController();
 
-      // Optional sanity check (won’t block UI if you prefer):
-      // if (!user?.id) setBanner({ type: "warning", text: "מחובר אך חסר userId מה-SSO" });
+      if (shouldUseMock) {
+        await new Promise((r) => setTimeout(r, 300));
+        setTasks(MOCK_TASKS);
+        setLastUpdated(new Date());
+        return;
+      }
 
-      await new Promise((r) => setTimeout(r, 300));
-      setTasks(MOCK_TASKS);
-
-      //const token = await authenticate(); //Keycloak-ready
-      //const apiItems = await fetchUserTasks(token, user.id); //Keycloak-ready
-      //setTasks(mapApiToTasks(apiItems)); //Keycloak-ready
+      const token = await authenticate();
+      const apiItems = await fetchUserTasks(token, user.id, abortRef.current.signal);
+      setTasks(mapApiToTasks(apiItems));
 
       setLastUpdated(new Date());
     } catch (err: unknown) {
+      if (abortRef.current?.signal.aborted) return;
       const msg = err instanceof Error ? err.message : String(err);
       setBanner({ type: "error", text: msg });
     } finally {
       setLoading(false);
     }
-  }, [isReady]);
+  }, [authenticate, shouldUseMock, user?.id]);
 
   useEffect(() => {
+    // In real API mode we need auth ready; in mock mode we should not block UI.
+    if (!shouldUseMock && !isReady) return;
     void loadTasks();
-  }, [loadTasks]);
+  }, [isReady, shouldUseMock, loadTasks]);
 
-  const getCooldownEnd = (): number => {
-    const stored = localStorage.getItem(COOLDOWN_KEY);
-    return stored ? parseInt(stored, 10) : 0;
-  };
-
-  const isOnCooldown = (): boolean => Date.now() < getCooldownEnd();
+  const isOnCooldown = (): boolean => isOnRefreshCooldown();
 
   const getCooldownTime = (): string => {
-    const end = getCooldownEnd();
+    const end = getRefreshCooldownUntilMs();
     if (end <= Date.now()) return "";
     const d = new Date(end);
     return `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
   };
 
   const refresh = useCallback(async () => {
-    if (!isReady || refreshing) return;
+    if ((!shouldUseMock && !isReady) || refreshing) return;
     if (isOnCooldown()) return;
 
     abortRef.current?.abort();
@@ -83,12 +90,22 @@ export function useTasks() {
       setBanner({ type: "info", text: "מתבצע רענון נתונים..." });
 
       // cooldown starts immediately on click
-      localStorage.setItem(COOLDOWN_KEY, String(Date.now() + COOLDOWN_MS));
+      setRefreshCooldownUntilMs(Date.now() + REFRESH_COOLDOWN_MS);
 
-      // Mock refresh delay (later replace with triggerRefresh + polling)
-      await new Promise((r) => setTimeout(r, 1200));
+      if (shouldUseMock) {
+        await new Promise((r) => setTimeout(r, 1200));
+        setTasks(MOCK_TASKS);
+      } else {
+        const token = await authenticate();
+        const res = await triggerRefresh(token, user!.id);
+        const job = await waitForJob(token, res.runId, undefined, abortRef.current.signal);
+        if (job.status === "failed") {
+          throw new Error(job.errorMessage || "רענון נכשל");
+        }
+        const apiItems = await fetchUserTasks(token, user!.id, abortRef.current.signal);
+        setTasks(mapApiToTasks(apiItems));
+      }
 
-      setTasks(MOCK_TASKS);
       setLastUpdated(new Date());
       setBanner({ type: "success", text: "הנתונים עודכנו בהצלחה" });
 
@@ -96,13 +113,14 @@ export function useTasks() {
         setBanner((b) => (b?.type === "success" ? null : b));
       }, 2000);
     } catch (err: unknown) {
+      if (abortRef.current?.signal.aborted) return;
       const msg = err instanceof Error ? err.message : String(err);
       setBanner({ type: "error", text: msg });
     } finally {
       setRefreshing(false);
       abortRef.current = null;
     }
-  }, [isReady, refreshing]);
+  }, [authenticate, isReady, isOnCooldown, refreshing, shouldUseMock, user?.id]);
 
   useEffect(() => {
     return () => abortRef.current?.abort();

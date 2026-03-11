@@ -1,6 +1,22 @@
 import "@testing-library/jest-dom";
 import { vi } from "vitest";
 
+// Radix Tooltip triggers timer-based internal state updates.
+// We don't test tooltip behavior here, so mock it to reduce act(...) warnings.
+vi.mock("@/components/ui/tooltip", async () => {
+  const React = await import("react");
+  const Fragment = React.Fragment;
+  return {
+    TooltipProvider: ({ children }: { children: React.ReactNode }) =>
+      React.createElement(Fragment, null, children),
+    Tooltip: ({ children }: { children: React.ReactNode }) =>
+      React.createElement(Fragment, null, children),
+    TooltipTrigger: ({ children }: { children: React.ReactNode }) =>
+      React.createElement(Fragment, null, children),
+    TooltipContent: () => null,
+  };
+});
+
 Object.defineProperty(window, "matchMedia", {
   writable: true,
   value: (query: string) => ({

@@ -97,7 +97,7 @@ export default function FeedbackModal({ open, onOpenChange }: FeedbackModalProps
               <button
                 onClick={handleSubmit}
                 disabled={!text.trim()}
-                className="h-10 px-8 rounded-xl bg-[hsl(252,40%,60%)] text-white text-[13px] font-semibold hover:bg-[hsl(252,40%,52%)] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                className="h-10 px-8 rounded-xl bg-action text-white text-[13px] font-semibold hover:bg-actionHover transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 שלח משוב
               </button>

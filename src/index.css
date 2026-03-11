@@ -48,6 +48,9 @@
     --warning: 38 92% 50%;
     --info: 217 91% 60%;
 
+    --action: 252 40% 60%;
+    --action-hover: 252 40% 52%;
+
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 240 5.3% 26.1%;
     --sidebar-primary: 240 5.9% 10%;
