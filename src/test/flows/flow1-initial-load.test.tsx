@@ -13,7 +13,7 @@ describe("Flow 1 — Initial load + baseline UI", () => {
   it("renders RTL layout with header elements", async () => {
     renderApp(<Index />);
     await waitFor(() => {
-      expect(screen.getByText("MATCAM")).toBeInTheDocument();
+      expect(screen.getByText("YANIV")).toBeInTheDocument();
     });
     expect(screen.getByText("מרכז המשימות וההתראות")).toBeInTheDocument();
   });
