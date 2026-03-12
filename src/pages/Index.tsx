@@ -149,8 +149,8 @@ const Index = () => {
         />
       </div>
 
-      {/* Content */}
-      {/* Content */}
+      {/* Main content – light gray bg */}
+      <div className="bg-content-bg flex-1">
       <div className="mx-auto" style={{ maxWidth: 1104 }}>
         {!loading && (validatedState.selectedSystems.length > 0 || validatedState.selectedTopics.length > 0 || validatedState.flags.overdueOnly || validatedState.flags.groupOnly || validatedState.flags.delegationOnly || validatedState.flags.personalOnly || validatedState.searchQuery.trim()) && (
           <p className="text-[11px] text-muted-foreground/60 text-right mt-1 mb-0 px-2 leading-tight" dir="rtl">
