@@ -59,6 +59,7 @@ export default function Header({
                 <button
                   className="flex items-center justify-center w-8 h-8 rounded-full border border-primary text-primary hover:bg-primary/5 transition-colors"
                   onClick={() => setFeedbackOpen(true)}
+                  aria-label="שלח משוב"
                 >
                   <span className="relative inline-flex items-center justify-center w-[16px] h-[16px]">
                     <MessageSquare size={16} />
