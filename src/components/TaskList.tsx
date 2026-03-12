@@ -59,7 +59,7 @@ export default function TaskList({ tasks, loading, hasActiveFilters, onClearFilt
   }
 
   return (
-    <div className="space-y-2 mt-4">
+    <div className="space-y-2">
       {tasks.map((task) => (
         <TaskCard key={task.id} task={task} />
       ))}
