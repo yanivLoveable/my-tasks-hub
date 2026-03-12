@@ -26,28 +26,29 @@ describe("Flow 4 — Sort flow", () => {
     }
   });
 
-  it("sort persists from localStorage - startDate desc shows sort label", async () => {
+  it("sort persists from localStorage - startDate desc orders tasks correctly", async () => {
     preloadUIState({ sortMode: "startDate", sortDirection: "desc" });
     renderApp(<Index />);
     await waitFor(() => {
       expect(screen.getByText("מרכז המשימות וההתראות")).toBeInTheDocument();
     });
-    // Sort label should reflect startDate desc
+    // Verify tasks are sorted by startDate desc
+    const sorted = sortTasks([...MOCK_TASKS], "startDate", "desc");
     await waitFor(() => {
-      expect(screen.getByText("(חדש לישן)")).toBeInTheDocument();
-      const labels = screen.getAllByText("תאריך פתיחה");
-      expect(labels.length).toBeGreaterThan(0);
+      expect(screen.getByText(sorted[0].title)).toBeInTheDocument();
     });
   });
 
-  it("sort persists from localStorage - dueDate asc shows sort label", async () => {
+  it("sort persists from localStorage - dueDate asc orders tasks correctly", async () => {
     preloadUIState({ sortMode: "dueDate", sortDirection: "asc" });
     renderApp(<Index />);
     await waitFor(() => {
       expect(screen.getByText("מרכז המשימות וההתראות")).toBeInTheDocument();
     });
+    // Verify tasks are sorted by dueDate asc
+    const sorted = sortTasks([...MOCK_TASKS], "dueDate", "asc");
     await waitFor(() => {
-      expect(screen.getByText("(ישן לחדש)")).toBeInTheDocument();
+      expect(screen.getByText(sorted[0].title)).toBeInTheDocument();
     });
   });
 

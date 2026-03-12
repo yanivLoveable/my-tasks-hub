@@ -20,7 +20,11 @@ describe("Flow 6 — Persistence across reload", () => {
     await waitFor(() => {
       expect(screen.getByText(/בהתאם לסינון, מוצגות/)).toBeInTheDocument();
     });
-    expect(screen.getByText("(חדש לישן)")).toBeInTheDocument();
+    // Verify overdue filter is active by checking filtered count matches overdue tasks
+    const overdueCount = MOCK_TASKS.filter((t) => t.overdueDays && t.overdueDays > 0).length;
+    const filterText = screen.getByText(/בהתאם לסינון, מוצגות/).textContent || "";
+    const count = parseInt(filterText.match(/\d+/)?.[0] || "0");
+    expect(count).toBe(overdueCount);
   });
 
   it("restores selected systems from localStorage", async () => {
