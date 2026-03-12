@@ -122,13 +122,13 @@ export default function TaskCard({ task }: TaskCardProps) {
         {/* External link button - circle */}
         <button
           title="פתח משימה"
-          className="w-[34px] h-[34px] flex-shrink-0 bg-info/15 border-none rounded-full flex items-center justify-center cursor-pointer hover:bg-info/25 transition-colors"
+          className="w-[34px] h-[34px] flex-shrink-0 bg-task-action/15 border-none rounded-full flex items-center justify-center cursor-pointer hover:bg-task-action/25 transition-colors"
           onClick={(e) => {
             e.stopPropagation();
             handleClick();
           }}
         >
-          <ExternalLink size={15} strokeWidth={2.5} className="text-primary" />
+          <ExternalLink size={15} strokeWidth={2.5} className="text-task-action" />
         </button>
       </div>
     </TooltipProvider>

@@ -147,7 +147,7 @@ export default function FiltersBar({
               </Tooltip>
             </TooltipProvider>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="min-w-[180px]" style={{ direction: "rtl" }}>
+          <DropdownMenuContent align="end" className="min-w-[200px]" style={{ direction: "rtl" }}>
             {SORT_OPTIONS.map((opt) => {
               const isActive = uiState.sortMode === opt.mode && uiState.sortDirection === opt.dir;
               return (
@@ -157,8 +157,11 @@ export default function FiltersBar({
                   className={isActive ? "bg-primary/10" : ""}
                   style={{ paddingInline: 14, paddingBlock: 7 }}
                 >
-                  <span style={{ fontSize: 13, fontWeight: 500, color: "hsl(var(--foreground))" }}>{opt.main}</span>
-                  <span style={{ fontSize: 11, color: "hsl(var(--muted-foreground))", marginRight: 4 }}>{opt.sub}</span>
+                  <div className="flex items-center gap-2 flex-1">
+                    {isActive && <Check size={14} className="text-primary flex-shrink-0" />}
+                    <span style={{ fontSize: 13, fontWeight: 500, color: "hsl(var(--foreground))" }}>{opt.main}</span>
+                    <span style={{ fontSize: 10, color: "hsl(var(--muted-foreground))" }}>{opt.sub}</span>
+                  </div>
                 </DropdownMenuItem>
               );
             })}

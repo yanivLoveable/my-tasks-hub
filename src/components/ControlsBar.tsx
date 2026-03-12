@@ -11,7 +11,7 @@ export default function ControlsBar({ totalTasks }: ControlsBarProps) {
         <h1 className="text-[28px] font-extrabold text-primary leading-tight">
           מרכז המשימות וההתראות
         </h1>
-        <Bell size={18} strokeWidth={2.5} className="text-primary" />
+        <Bell size={18} strokeWidth={2.5} className="text-alert-red" />
       </div>
       <div className="text-[13px] text-muted-foreground flex items-center gap-1.5">
         <span>
