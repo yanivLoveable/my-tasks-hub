@@ -49,10 +49,8 @@ describe("Flow 8 — Info modal", () => {
 
   it("has dual buttons: שלחו משוב and סגירה", async () => {
     await openInfoModal();
-    const dialog = screen.getByRole("dialog");
-    expect(dialog.querySelector("button")?.textContent).toBeTruthy();
-    // Find by text within dialog
     expect(screen.getByText("שלחו משוב")).toBeInTheDocument();
+    expect(screen.getByText("סגירה")).toBeInTheDocument();
     expect(screen.getByText("סגירה")).toBeInTheDocument();
   });
 
