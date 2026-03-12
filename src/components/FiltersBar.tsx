@@ -132,7 +132,7 @@ export default function FiltersBar({
       {/* Search + Sort */}
       <div className="flex items-center gap-2 mb-3">
         {/* Search bar */}
-        <div className="relative flex-1 flex items-center bg-background border border-input rounded-xl overflow-hidden focus-within:border-primary focus-within:ring-1 focus-within:ring-primary transition-all" dir="rtl" style={{ boxShadow: "inset 0 1px 3px rgba(0,0,0,0.06)" }}>
+        <div className="relative flex-1 flex items-center bg-background border border-primary rounded-xl overflow-hidden focus-within:ring-1 focus-within:ring-primary transition-all" dir="rtl" style={{ boxShadow: "inset 0 1px 3px rgba(0,0,0,0.06)" }}>
           <div className="relative flex-1">
             <input
               type="text"
