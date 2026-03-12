@@ -87,7 +87,6 @@ export function useTasks() {
 
     try {
       setRefreshing(true);
-      setBanner({ type: "info", text: "מתבצע רענון נתונים..." });
 
       // cooldown starts immediately on click
       setRefreshCooldownUntilMs(Date.now() + REFRESH_COOLDOWN_MS);
