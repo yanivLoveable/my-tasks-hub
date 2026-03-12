@@ -313,8 +313,8 @@ export default function FiltersBar({
               <Tooltip>
                 <TooltipTrigger asChild>
                   <button
-                    className={chipStyle(uiState.flags.personalOnly)}
-                    onClick={() => onFlagToggle("personalOnly")}
+                    className={chipStyle(uiState.flags.personalOnly, isDocsOnly)}
+                    onClick={() => !isDocsOnly && onFlagToggle("personalOnly")}
                   >
                     <User className="w-3.5 h-3.5" />
                     אישי
