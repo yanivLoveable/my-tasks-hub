@@ -240,6 +240,9 @@ export default function FiltersBar({
                     style={{ justifyContent: "flex-start", fontSize: 13, paddingInline: 14, paddingBlock: 6 }}
                   >
                     {getSystemLabel(sys)}
+                    {systemCounts[sys] != null && (
+                      <span className="text-[10px] opacity-60 mr-1">({systemCounts[sys]})</span>
+                    )}
                   </DropdownMenuItem>
                 ))}
               </DropdownMenuContent>
