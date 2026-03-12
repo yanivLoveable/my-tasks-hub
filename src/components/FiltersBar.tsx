@@ -27,10 +27,10 @@ interface FiltersBarProps {
 }
 
 const SORT_OPTIONS: { main: string; sub: string; mode: SortMode; dir: SortDirection }[] = [
-  { main: "תאריך יעד", sub: "(ישן לחדש)", mode: "dueDate", dir: "asc" },
-  { main: "תאריך יעד", sub: "(חדש לישן)", mode: "dueDate", dir: "desc" },
-  { main: "תאריך פתיחה", sub: "(ישן לחדש)", mode: "startDate", dir: "asc" },
-  { main: "תאריך פתיחה", sub: "(חדש לישן)", mode: "startDate", dir: "desc" },
+  { main: "תאריך פתיחה", sub: "מהישן לחדש", mode: "startDate", dir: "asc" },
+  { main: "תאריך פתיחה", sub: "מהחדש לישן", mode: "startDate", dir: "desc" },
+  { main: "תאריך יעד", sub: "מהישן לחדש", mode: "dueDate", dir: "asc" },
+  { main: "תאריך יעד", sub: "מהחדש לישן", mode: "dueDate", dir: "desc" },
 ];
 
 // Primary systems shown as buttons; others go in "More" dropdown
