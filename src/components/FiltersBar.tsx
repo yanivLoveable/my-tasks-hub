@@ -1,4 +1,4 @@
-import { Search, ArrowUpDown, ChevronDown, X } from "lucide-react";
+import { Search, ArrowUpDown, ChevronDown, X, Check } from "lucide-react";
 import type { Task, UIState, SortMode, SortDirection } from "@/types/task";
 import { useMemo, useState } from "react";
 import {
