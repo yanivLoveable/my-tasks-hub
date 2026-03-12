@@ -1,4 +1,4 @@
-import { Search, ArrowUpDown, ChevronDown, X, Check } from "lucide-react";
+import { Search, ArrowUpDown, ChevronDown, X } from "lucide-react";
 import type { Task, UIState, SortMode, SortDirection } from "@/types/task";
 import { useMemo, useState } from "react";
 import {
@@ -100,6 +100,14 @@ export default function FiltersBar({
 
   const getSystemLabel = (sys: string) => SYSTEM_LABELS[sys] || sys;
 
+  // Get current sort option label for tooltip
+  const getCurrentSortLabel = () => {
+    const current = SORT_OPTIONS.find(
+      (opt) => opt.mode === uiState.sortMode && opt.dir === uiState.sortDirection
+    );
+    return current ? `מיון לפי ${current.main} ${current.sub}` : "מיון";
+  };
+
   const chipStyle = (active: boolean, disabled = false) =>
     `inline-flex items-center gap-1.5 px-3 py-0.5 border text-xs font-medium rounded-full transition-all duration-150 select-none whitespace-nowrap ${
       disabled
@@ -143,7 +151,7 @@ export default function FiltersBar({
                 </DropdownMenuTrigger>
               </TooltipTrigger>
               <TooltipContent side="bottom" dir="rtl" className="text-[11px]">
-                מיון
+                {getCurrentSortLabel()}
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
@@ -154,14 +162,11 @@ export default function FiltersBar({
                 <DropdownMenuItem
                   key={`${opt.mode}-${opt.dir}`}
                   onClick={() => onSortChange(opt.mode, opt.dir)}
-                  className={isActive ? "bg-primary/10" : ""}
-                  style={{ paddingInline: 14, paddingBlock: 7 }}
+                  className={isActive ? "bg-muted" : "hover:bg-muted/50"}
+                  style={{ paddingInline: 14, paddingBlock: 7, justifyContent: "flex-start" }}
                 >
-                  <div className="flex items-center gap-2 flex-1">
-                    {isActive && <Check size={14} className="text-primary flex-shrink-0" />}
-                    <span style={{ fontSize: 13, fontWeight: 500, color: "hsl(var(--foreground))" }}>{opt.main}</span>
-                    <span style={{ fontSize: 10, color: "hsl(var(--muted-foreground))" }}>{opt.sub}</span>
-                  </div>
+                  <span style={{ fontSize: 13, fontWeight: 500, color: "hsl(var(--foreground))" }}>{opt.main}</span>
+                  <span style={{ fontSize: 10, color: "hsl(var(--muted-foreground))", marginInlineStart: 4 }}>{opt.sub}</span>
                 </DropdownMenuItem>
               );
             })}
