@@ -169,62 +169,64 @@ export default function FiltersBar({
         </DropdownMenu>
       </div>
 
-      {/* System Filter Row - RTL: "עוד" pinned to left */}
-      <div className="flex items-center justify-center gap-2 flex-wrap mb-2.5" dir="rtl">
-        <button
-          className={chipStyle(selectedSystems.length === 0)}
-          onClick={() => {
-            if (selectedSystems.length > 0) onSystemToggle("__all__");
-          }}
-        >
-          כלל המערכות
-        </button>
-        {primarySystems.map((sys) => (
+      {/* System Filter Row - centered group */}
+      <div className="flex items-center justify-center mb-2.5" dir="rtl">
+        <div className="flex items-center gap-2 flex-wrap justify-center">
           <button
-            key={sys}
-            className={chipStyle(isSystemActive(sys))}
-            onClick={() => onSystemToggle(sys)}
+            className={chipStyle(selectedSystems.length === 0)}
+            onClick={() => {
+              if (selectedSystems.length > 0) onSystemToggle("__all__");
+            }}
           >
-            {getSystemLabel(sys)}
+            כלל המערכות
           </button>
-        ))}
-        {/* Tags for systems selected from "More" - appear to right of "עוד" */}
-        {moreSelectedSystems.map((sys) => (
-          <span
-            key={`tag-${sys}`}
-            className="inline-flex items-center gap-1 px-2.5 py-0.5 bg-primary/10 text-primary text-xs font-medium rounded-full"
-          >
-            {getSystemLabel(sys)}
+          {primarySystems.map((sys) => (
             <button
+              key={sys}
+              className={chipStyle(isSystemActive(sys))}
               onClick={() => onSystemToggle(sys)}
-              className="hover:text-primary/70 transition-colors cursor-pointer"
             >
-              <X className="w-3 h-3" />
+              {getSystemLabel(sys)}
             </button>
-          </span>
-        ))}
-        {moreSystems.length > 0 && (
-          <DropdownMenu modal={false}>
-            <DropdownMenuTrigger asChild>
-              <button className={`${chipStyle(moreSelectedSystems.length > 0)} gap-1`} style={{ marginInlineStart: "auto" }}>
-                עוד
-                <ChevronDown className="w-3 h-3" />
+          ))}
+          {/* Tags for systems selected from "More" */}
+          {moreSelectedSystems.map((sys) => (
+            <span
+              key={`tag-${sys}`}
+              className="inline-flex items-center gap-1 px-2.5 py-0.5 bg-primary/10 text-primary text-xs font-medium rounded-full"
+            >
+              {getSystemLabel(sys)}
+              <button
+                onClick={() => onSystemToggle(sys)}
+                className="hover:text-primary/70 transition-colors cursor-pointer"
+              >
+                <X className="w-3 h-3" />
               </button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="min-w-[140px]" style={{ direction: "rtl" }}>
-              {moreSystems.map((sys) => (
-                <DropdownMenuItem
-                  key={sys}
-                  onClick={() => onSystemToggle(sys)}
-                  className={isSystemActive(sys) ? "bg-primary/10 font-semibold" : ""}
-                  style={{ justifyContent: "flex-start", fontSize: 13, paddingInline: 14, paddingBlock: 6 }}
-                >
-                  {getSystemLabel(sys)}
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
-        )}
+            </span>
+          ))}
+          {moreSystems.length > 0 && (
+            <DropdownMenu modal={false}>
+              <DropdownMenuTrigger asChild>
+                <button className={`${chipStyle(moreSelectedSystems.length > 0)} gap-1`}>
+                  עוד
+                  <ChevronDown className="w-3 h-3" />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="min-w-[140px]" style={{ direction: "rtl" }}>
+                {moreSystems.map((sys) => (
+                  <DropdownMenuItem
+                    key={sys}
+                    onClick={() => onSystemToggle(sys)}
+                    className={isSystemActive(sys) ? "bg-primary/10 font-semibold" : ""}
+                    style={{ justifyContent: "flex-start", fontSize: 13, paddingInline: 14, paddingBlock: 6 }}
+                  >
+                    {getSystemLabel(sys)}
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
+        </div>
       </div>
 
       {/* Filter Chips */}
