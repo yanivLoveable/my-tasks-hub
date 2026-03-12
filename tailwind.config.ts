@@ -33,6 +33,7 @@ export default {
         "alert-red": "hsl(var(--alert-red))",
         action: "hsl(var(--action))",
         actionHover: "hsl(var(--action-hover))",
+        "content-bg": "hsl(var(--content-bg))",
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
