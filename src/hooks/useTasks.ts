@@ -87,7 +87,6 @@ export function useTasks() {
 
     try {
       setRefreshing(true);
-      setBanner({ type: "info", text: "מתבצע רענון נתונים..." });
 
       // cooldown starts immediately on click
       setRefreshCooldownUntilMs(Date.now() + REFRESH_COOLDOWN_MS);
@@ -107,11 +106,6 @@ export function useTasks() {
       }
 
       setLastUpdated(new Date());
-      setBanner({ type: "success", text: "הנתונים עודכנו בהצלחה" });
-
-      window.setTimeout(() => {
-        setBanner((b) => (b?.type === "success" ? null : b));
-      }, 2000);
     } catch (err: unknown) {
       if (abortRef.current?.signal.aborted) return;
       const msg = err instanceof Error ? err.message : String(err);

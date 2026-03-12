@@ -169,7 +169,7 @@ export default function FiltersBar({
         </DropdownMenu>
       </div>
 
-      {/* System Filter Row */}
+      {/* System Filter Row - RTL: "עוד" pinned to left */}
       <div className="flex items-center justify-center gap-2 flex-wrap mb-2.5" dir="rtl">
         <button
           className={chipStyle(selectedSystems.length === 0)}
@@ -188,10 +188,25 @@ export default function FiltersBar({
             {getSystemLabel(sys)}
           </button>
         ))}
+        {/* Tags for systems selected from "More" - appear to right of "עוד" */}
+        {moreSelectedSystems.map((sys) => (
+          <span
+            key={`tag-${sys}`}
+            className="inline-flex items-center gap-1 px-2.5 py-0.5 bg-primary/10 text-primary text-xs font-medium rounded-full"
+          >
+            {getSystemLabel(sys)}
+            <button
+              onClick={() => onSystemToggle(sys)}
+              className="hover:text-primary/70 transition-colors cursor-pointer"
+            >
+              <X className="w-3 h-3" />
+            </button>
+          </span>
+        ))}
         {moreSystems.length > 0 && (
           <DropdownMenu modal={false}>
             <DropdownMenuTrigger asChild>
-              <button className={`${chipStyle(moreSelectedSystems.length > 0)} gap-1`}>
+              <button className={`${chipStyle(moreSelectedSystems.length > 0)} gap-1`} style={{ marginInlineStart: "auto" }}>
                 עוד
                 <ChevronDown className="w-3 h-3" />
               </button>
@@ -210,21 +225,6 @@ export default function FiltersBar({
             </DropdownMenuContent>
           </DropdownMenu>
         )}
-        {/* Tags for systems selected from "More" */}
-        {moreSelectedSystems.map((sys) => (
-          <span
-            key={`tag-${sys}`}
-            className="inline-flex items-center gap-1 px-2.5 py-0.5 bg-primary/10 text-primary text-xs font-medium rounded-full"
-          >
-            {getSystemLabel(sys)}
-            <button
-              onClick={() => onSystemToggle(sys)}
-              className="hover:text-primary/70 transition-colors"
-            >
-              <X className="w-3 h-3" />
-            </button>
-          </span>
-        ))}
       </div>
 
       {/* Filter Chips */}
