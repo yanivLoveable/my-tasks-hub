@@ -29,7 +29,7 @@ function SkeletonCard() {
 export default function TaskList({ tasks, loading, hasActiveFilters, onClearFilters }: TaskListProps) {
   if (loading) {
     return (
-      <div className="space-y-2 mt-4">
+      <div className="space-y-2">
         {Array.from({ length: 5 }).map((_, i) => (
           <SkeletonCard key={i} />
         ))}
