@@ -92,7 +92,7 @@ export default function PaginationFooter({
         </span>
 
         {/* Footer links */}
-        <div className="flex items-center gap-3 text-[12px] text-muted-foreground mt-2">
+        <div className="flex items-center gap-3 text-[12px] text-muted-foreground">
           <button onClick={onFeedbackClick} className="hover:text-primary transition-colors">שלח משוב</button>
           <span>|</span>
           <button onClick={onSupportClick} className="hover:text-primary transition-colors">לתמיכה</button>

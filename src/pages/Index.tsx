@@ -176,7 +176,7 @@ const Index = () => {
             }
           />
         </div>
-      </div>
+        <div className="pb-2" />
       </div>
 
       {/* Footer – full width like header */}
