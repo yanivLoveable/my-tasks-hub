@@ -235,7 +235,7 @@ export default function FiltersBar({
       </div>
 
       {/* Filter Chips */}
-      <div className="space-y-2.5" dir="rtl">
+      <div className="space-y-1.5" dir="rtl">
         {/* Row 1: Topics */}
         <div className="flex items-center justify-center gap-2 flex-wrap">
           <button
