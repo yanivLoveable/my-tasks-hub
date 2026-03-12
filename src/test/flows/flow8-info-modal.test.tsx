@@ -47,47 +47,20 @@ describe("Flow 8 — Info modal", () => {
     expect(snowEl.classList.contains("font-bold")).toBe(true);
   });
 
-  it("has dual buttons: שלחו משוב and סגירה", async () => {
+  it("does not display footer elements", async () => {
     await openInfoModal();
-    expect(screen.getByText("שלחו משוב")).toBeInTheDocument();
-    expect(screen.getByText("סגירה")).toBeInTheDocument();
-    expect(screen.getByText("סגירה")).toBeInTheDocument();
-  });
-
-  it("closes modal when סגירה button is clicked", async () => {
-    await openInfoModal();
-    await userEvent.click(screen.getByText("סגירה"));
-    await waitFor(() => {
-      expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
-    });
+    expect(screen.queryByText("אם יש לכם שאלות או הצעות לשיפור נשמח לשמוע")).not.toBeInTheDocument();
+    expect(screen.queryByText("שלחו משוב")).not.toBeInTheDocument();
+    expect(screen.queryByText("סגירה")).not.toBeInTheDocument();
   });
 
   it("closes modal when X button is clicked", async () => {
     await openInfoModal();
     const dialog = screen.getByRole("dialog");
-    // First button inside dialog content is the custom X close
     const buttons = dialog.querySelectorAll("button");
     await userEvent.click(buttons[0]);
     await waitFor(() => {
       expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
     });
-  });
-
-  it("opens feedback modal when שלחו משוב is clicked", async () => {
-    await openInfoModal();
-    await userEvent.click(screen.getByText("שלחו משוב"));
-    await waitFor(() => {
-      expect(screen.getByText("נשמח לשמוע ממך")).toBeInTheDocument();
-    });
-  });
-
-  it("only one dialog is open after switching to feedback", async () => {
-    await openInfoModal();
-    await userEvent.click(screen.getByText("שלחו משוב"));
-    await waitFor(() => {
-      expect(screen.getByText("נשמח לשמוע ממך")).toBeInTheDocument();
-    });
-    const dialogs = screen.getAllByRole("dialog");
-    expect(dialogs).toHaveLength(1);
   });
 });
