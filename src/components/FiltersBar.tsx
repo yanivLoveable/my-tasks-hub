@@ -1,4 +1,4 @@
-import { Search, ArrowUpDown, ChevronDown, X } from "lucide-react";
+import { Search, ArrowUpDown, ChevronDown, X, Check } from "lucide-react";
 import type { Task, UIState, SortMode, SortDirection } from "@/types/task";
 import { useMemo, useState } from "react";
 import {
@@ -27,10 +27,10 @@ interface FiltersBarProps {
 }
 
 const SORT_OPTIONS: { main: string; sub: string; mode: SortMode; dir: SortDirection }[] = [
-  { main: "תאריך יעד", sub: "(ישן לחדש)", mode: "dueDate", dir: "asc" },
-  { main: "תאריך יעד", sub: "(חדש לישן)", mode: "dueDate", dir: "desc" },
-  { main: "תאריך פתיחה", sub: "(ישן לחדש)", mode: "startDate", dir: "asc" },
-  { main: "תאריך פתיחה", sub: "(חדש לישן)", mode: "startDate", dir: "desc" },
+  { main: "תאריך פתיחה", sub: "מהישן לחדש", mode: "startDate", dir: "asc" },
+  { main: "תאריך פתיחה", sub: "מהחדש לישן", mode: "startDate", dir: "desc" },
+  { main: "תאריך יעד", sub: "מהישן לחדש", mode: "dueDate", dir: "asc" },
+  { main: "תאריך יעד", sub: "מהחדש לישן", mode: "dueDate", dir: "desc" },
 ];
 
 // Primary systems shown as buttons; others go in "More" dropdown
@@ -147,7 +147,7 @@ export default function FiltersBar({
               </Tooltip>
             </TooltipProvider>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="min-w-[180px]" style={{ direction: "rtl" }}>
+          <DropdownMenuContent align="end" className="min-w-[200px]" style={{ direction: "rtl" }}>
             {SORT_OPTIONS.map((opt) => {
               const isActive = uiState.sortMode === opt.mode && uiState.sortDirection === opt.dir;
               return (
@@ -157,8 +157,11 @@ export default function FiltersBar({
                   className={isActive ? "bg-primary/10" : ""}
                   style={{ paddingInline: 14, paddingBlock: 7 }}
                 >
-                  <span style={{ fontSize: 13, fontWeight: 500, color: "hsl(var(--foreground))" }}>{opt.main}</span>
-                  <span style={{ fontSize: 11, color: "hsl(var(--muted-foreground))", marginRight: 4 }}>{opt.sub}</span>
+                  <div className="flex items-center gap-2 flex-1">
+                    {isActive && <Check size={14} className="text-primary flex-shrink-0" />}
+                    <span style={{ fontSize: 13, fontWeight: 500, color: "hsl(var(--foreground))" }}>{opt.main}</span>
+                    <span style={{ fontSize: 10, color: "hsl(var(--muted-foreground))" }}>{opt.sub}</span>
+                  </div>
                 </DropdownMenuItem>
               );
             })}
