@@ -128,11 +128,14 @@ const Index = () => {
           onSystemToggle={handleSystemToggle}
           onTopicToggle={handleTopicToggle}
           onFlagToggle={(flag) =>
-            setUiState((prev) => ({
-              ...prev,
-              flags: { ...prev.flags, [flag]: !prev.flags[flag] },
-              currentPage: 1,
-            }))
+            setUiState((prev) => {
+              const newVal = !prev.flags[flag];
+              const newFlags = { ...prev.flags, [flag]: newVal };
+              // Mutual exclusion: group ↔ personal
+              if (newVal && flag === "groupOnly") newFlags.personalOnly = false;
+              if (newVal && flag === "personalOnly") newFlags.groupOnly = false;
+              return { ...prev, flags: newFlags, currentPage: 1 };
+            })
           }
           onSortChange={(mode: SortMode, dir: SortDirection) =>
             updateUi({ sortMode: mode, sortDirection: dir })
