@@ -51,7 +51,6 @@ export default function RefreshPopover({
   const handleClick = useCallback(() => {
     if (refreshing) return;
     if (cooldown) {
-      // Show the "up to date" popover
       setPopoverOpen(true);
     } else {
       onRefresh();
@@ -67,15 +66,15 @@ export default function RefreshPopover({
           <TooltipTrigger asChild>
             <PopoverTrigger asChild>
               <button
-                className={`flex items-center justify-center w-8 h-8 rounded-md transition-colors ${
+                className={`flex items-center justify-center w-8 h-8 rounded-full border transition-colors ${
                   stale
-                    ? "text-warning hover:text-warning/80"
-                    : "text-muted-foreground hover:text-primary"
+                    ? "border-warning text-warning hover:bg-warning/5"
+                    : "border-primary text-primary hover:bg-primary/5"
                 }`}
                 onClick={handleClick}
               >
                 <RotateCw
-                  size={18}
+                  size={16}
                   className={refreshing ? "animate-spin" : ""}
                 />
               </button>

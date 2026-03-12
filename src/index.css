@@ -34,7 +34,7 @@
 
     --radius: 0.75rem;
 
-    --header-bg: 225 18% 95%;
+    --header-bg: 0 0% 100%;
     --header-border: 230 24% 92%;
 
     --chip-active-bg: 249 100% 16%;
@@ -50,6 +50,8 @@
 
     --action: 252 40% 60%;
     --action-hover: 252 40% 52%;
+
+    --overlay: 0 0% 0% / 0.08;
 
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 240 5.3% 26.1%;
