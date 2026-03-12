@@ -159,21 +159,23 @@ const Index = () => {
             </p>
           </div>
         )}
-        <TaskList
-          tasks={paginatedTasks}
-          loading={loading}
-          hasActiveFilters={validatedState.selectedSystems.length > 0 || validatedState.selectedTopics.length > 0 || validatedState.flags.overdueOnly || validatedState.flags.groupOnly || validatedState.flags.delegationOnly || validatedState.flags.personalOnly || !!validatedState.searchQuery.trim()}
-          onClearFilters={() =>
-            setUiState((prev) => ({
-              ...prev,
-              searchQuery: "",
-              selectedSystems: [],
-              selectedTopics: [],
-              flags: { overdueOnly: false, groupOnly: false, delegationOnly: false, personalOnly: false },
-              currentPage: 1,
-            }))
-          }
-        />
+        <div className="pt-2">
+          <TaskList
+            tasks={paginatedTasks}
+            loading={loading}
+            hasActiveFilters={validatedState.selectedSystems.length > 0 || validatedState.selectedTopics.length > 0 || validatedState.flags.overdueOnly || validatedState.flags.groupOnly || validatedState.flags.delegationOnly || validatedState.flags.personalOnly || !!validatedState.searchQuery.trim()}
+            onClearFilters={() =>
+              setUiState((prev) => ({
+                ...prev,
+                searchQuery: "",
+                selectedSystems: [],
+                selectedTopics: [],
+                flags: { overdueOnly: false, groupOnly: false, delegationOnly: false, personalOnly: false },
+                currentPage: 1,
+              }))
+            }
+          />
+        </div>
       </div>
       </div>
 
