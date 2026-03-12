@@ -203,6 +203,9 @@ export default function FiltersBar({
               onClick={() => onSystemToggle(sys)}
             >
               {getSystemLabel(sys)}
+              {systemCounts[sys] != null && (
+                <span className="text-[10px] opacity-60">({systemCounts[sys]})</span>
+              )}
             </button>
           ))}
           {/* Tags for systems selected from "More" */}
