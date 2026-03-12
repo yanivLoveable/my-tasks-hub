@@ -43,7 +43,7 @@ export default function PaginationFooter({
   }
 
   return (
-    <div className="bg-header-bg border-t border-header-border mt-6">
+    <div className="bg-background border-t border-header-border mt-0">
       <div className="flex flex-col items-center gap-3 py-6">
         {/* Pagination controls */}
         <div className="flex items-center gap-1">

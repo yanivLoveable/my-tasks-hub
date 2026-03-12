@@ -173,6 +173,7 @@ const Index = () => {
           }
         />
       </div>
+      </div>
 
       {/* Footer – full width like header */}
       <PaginationFooter
