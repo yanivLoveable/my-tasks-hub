@@ -100,6 +100,14 @@ export default function FiltersBar({
 
   const getSystemLabel = (sys: string) => SYSTEM_LABELS[sys] || sys;
 
+  // Get current sort option label for tooltip
+  const getCurrentSortLabel = () => {
+    const current = SORT_OPTIONS.find(
+      (opt) => opt.mode === uiState.sortMode && opt.dir === uiState.sortDirection
+    );
+    return current ? `מיון לפי ${current.main} ${current.sub}` : "מיון";
+  };
+
   const chipStyle = (active: boolean, disabled = false) =>
     `inline-flex items-center gap-1.5 px-3 py-0.5 border text-xs font-medium rounded-full transition-all duration-150 select-none whitespace-nowrap ${
       disabled
