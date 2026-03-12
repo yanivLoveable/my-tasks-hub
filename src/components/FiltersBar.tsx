@@ -130,23 +130,23 @@ export default function FiltersBar({
 
         {/* Sort button – icon only */}
         <DropdownMenu modal={false}>
-          <DropdownMenuTrigger asChild>
-            <TooltipProvider delayDuration={200}>
-              <Tooltip>
-                <TooltipTrigger asChild>
+          <TooltipProvider delayDuration={200}>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <DropdownMenuTrigger asChild>
                   <button
                     className="flex items-center justify-center bg-background border border-input text-muted-foreground hover:text-primary hover:border-primary transition-colors flex-shrink-0 cursor-pointer"
                     style={{ height: 36, width: 36, borderRadius: 4 }}
                   >
                     <ArrowUpDown size={16} />
                   </button>
-                </TooltipTrigger>
-                <TooltipContent side="bottom" dir="rtl" className="text-[11px]">
-                  מיון
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          </DropdownMenuTrigger>
+                </DropdownMenuTrigger>
+              </TooltipTrigger>
+              <TooltipContent side="bottom" dir="rtl" className="text-[11px]">
+                מיון
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
           <DropdownMenuContent align="end" className="min-w-[200px]" style={{ direction: "rtl" }}>
             {SORT_OPTIONS.map((opt) => {
               const isActive = uiState.sortMode === opt.mode && uiState.sortDirection === opt.dir;
