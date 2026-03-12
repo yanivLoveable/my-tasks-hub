@@ -12,6 +12,7 @@ import PaginationFooter from "@/components/PaginationFooter";
 import Banner from "@/components/Banner";
 import FeedbackModal from "@/components/FeedbackModal";
 import SupportModal from "@/components/SupportModal";
+import BackToTop from "@/components/BackToTop";
 
 const PAGE_SIZE = 20;
 
@@ -195,6 +196,8 @@ const Index = () => {
 
       <FeedbackModal open={footerFeedbackOpen} onOpenChange={setFooterFeedbackOpen} />
       <SupportModal open={footerSupportOpen} onOpenChange={setFooterSupportOpen} />
+
+      <BackToTop />
     </div>
   );
 };
