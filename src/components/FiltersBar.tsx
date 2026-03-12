@@ -26,6 +26,16 @@ interface FiltersBarProps {
   onClearAll: () => void;
 }
 
+// Helper: count tasks per system
+const useSystemCounts = (tasks: Task[]) =>
+  useMemo(() => {
+    const counts: Record<string, number> = {};
+    for (const t of tasks) {
+      counts[t.systemLabel] = (counts[t.systemLabel] || 0) + 1;
+    }
+    return counts;
+  }, [tasks]);
+
 const SORT_OPTIONS: { main: string; sub: string; mode: SortMode; dir: SortDirection }[] = [
   { main: "תאריך פתיחה", sub: "מהישן לחדש", mode: "startDate", dir: "asc" },
   { main: "תאריך פתיחה", sub: "מהחדש לישן", mode: "startDate", dir: "desc" },
