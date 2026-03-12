@@ -151,7 +151,7 @@ export default function FiltersBar({
                 </DropdownMenuTrigger>
               </TooltipTrigger>
               <TooltipContent side="bottom" dir="rtl" className="text-[11px]">
-                מיון
+                {getCurrentSortLabel()}
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
@@ -162,14 +162,11 @@ export default function FiltersBar({
                 <DropdownMenuItem
                   key={`${opt.mode}-${opt.dir}`}
                   onClick={() => onSortChange(opt.mode, opt.dir)}
-                  className={isActive ? "bg-primary/10" : ""}
-                  style={{ paddingInline: 14, paddingBlock: 7 }}
+                  className={isActive ? "bg-muted" : "hover:bg-muted/50"}
+                  style={{ paddingInline: 14, paddingBlock: 7, justifyContent: "flex-start" }}
                 >
-                  <div className="flex items-center gap-2 flex-1">
-                    {isActive && <Check size={14} className="text-primary flex-shrink-0" />}
-                    <span style={{ fontSize: 13, fontWeight: 500, color: "hsl(var(--foreground))" }}>{opt.main}</span>
-                    <span style={{ fontSize: 10, color: "hsl(var(--muted-foreground))" }}>{opt.sub}</span>
-                  </div>
+                  <span style={{ fontSize: 13, fontWeight: 500, color: "hsl(var(--foreground))" }}>{opt.main}</span>
+                  <span style={{ fontSize: 10, color: "hsl(var(--muted-foreground))", marginInlineStart: 4 }}>{opt.sub}</span>
                 </DropdownMenuItem>
               );
             })}
