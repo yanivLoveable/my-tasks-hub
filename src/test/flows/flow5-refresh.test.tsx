@@ -14,7 +14,7 @@ describe("Flow 5 — Refresh + cooldown + messaging", () => {
     vi.useRealTimers();
   });
 
-  it("clicking refresh shows info banner then success", async () => {
+  it("clicking refresh triggers refresh and shows spinning icon", async () => {
     vi.setSystemTime(new Date("2026-03-05T10:00:00"));
     renderApp(<Index />);
 
@@ -31,14 +31,18 @@ describe("Flow 5 — Refresh + cooldown + messaging", () => {
 
     fireEvent.click(refreshBtn!);
 
+    // The refresh icon should have animate-spin class during refresh
     await waitFor(() => {
-      expect(screen.getByText("מתבצע רענון נתונים...")).toBeInTheDocument();
+      const icon = refreshBtn!.querySelector(".lucide-rotate-cw");
+      expect(icon?.classList.contains("animate-spin")).toBe(true);
     });
 
     await vi.advanceTimersByTimeAsync(1500);
 
+    // After refresh completes, spinning stops
     await waitFor(() => {
-      expect(screen.getByText("הנתונים עודכנו בהצלחה")).toBeInTheDocument();
+      const icon = refreshBtn!.querySelector(".lucide-rotate-cw");
+      expect(icon?.classList.contains("animate-spin")).toBe(false);
     });
   });
 
