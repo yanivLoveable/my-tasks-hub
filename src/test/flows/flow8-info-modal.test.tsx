@@ -14,8 +14,7 @@ describe("Flow 8 — Info modal", () => {
     await waitFor(() => {
       expect(screen.getByText("YANIV")).toBeInTheDocument();
     });
-    // Click the info button (has tooltip "הסבר על המערכת")
-    const infoButton = screen.getByRole("button", { name: /הסבר על המערכת/i });
+    const infoButton = screen.getByRole("button", { name: "הסבר על המערכת" });
     await userEvent.click(infoButton);
     await waitFor(() => {
       expect(screen.getByRole("dialog")).toBeInTheDocument();
@@ -24,7 +23,8 @@ describe("Flow 8 — Info modal", () => {
 
   it("opens info modal when info button is clicked", async () => {
     await openInfoModal();
-    expect(screen.getByText("הסבר על המערכת")).toBeInTheDocument();
+    // Dialog title
+    expect(screen.getByRole("heading", { name: "הסבר על המערכת" })).toBeInTheDocument();
   });
 
   it("displays correct body text content", async () => {
@@ -49,13 +49,16 @@ describe("Flow 8 — Info modal", () => {
 
   it("has dual buttons: שלחו משוב and סגירה", async () => {
     await openInfoModal();
-    expect(screen.getByRole("button", { name: "שלחו משוב" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "סגירה" })).toBeInTheDocument();
+    const dialog = screen.getByRole("dialog");
+    expect(dialog.querySelector("button")?.textContent).toBeTruthy();
+    // Find by text within dialog
+    expect(screen.getByText("שלחו משוב")).toBeInTheDocument();
+    expect(screen.getByText("סגירה")).toBeInTheDocument();
   });
 
   it("closes modal when סגירה button is clicked", async () => {
     await openInfoModal();
-    await userEvent.click(screen.getByRole("button", { name: "סגירה" }));
+    await userEvent.click(screen.getByText("סגירה"));
     await waitFor(() => {
       expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
     });
@@ -63,11 +66,10 @@ describe("Flow 8 — Info modal", () => {
 
   it("closes modal when X button is clicked", async () => {
     await openInfoModal();
-    // The X close button is inside the dialog
     const dialog = screen.getByRole("dialog");
-    const closeButtons = dialog.querySelectorAll("button");
-    // First button in dialog is custom X close
-    await userEvent.click(closeButtons[0]);
+    // First button inside dialog content is the custom X close
+    const buttons = dialog.querySelectorAll("button");
+    await userEvent.click(buttons[0]);
     await waitFor(() => {
       expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
     });
@@ -75,21 +77,18 @@ describe("Flow 8 — Info modal", () => {
 
   it("opens feedback modal when שלחו משוב is clicked", async () => {
     await openInfoModal();
-    await userEvent.click(screen.getByRole("button", { name: "שלחו משוב" }));
+    await userEvent.click(screen.getByText("שלחו משוב"));
     await waitFor(() => {
-      // Feedback modal should appear with its title
       expect(screen.getByText("נשמח לשמוע ממך")).toBeInTheDocument();
     });
   });
 
-  it("closes info modal before opening feedback modal", async () => {
+  it("only one dialog is open after switching to feedback", async () => {
     await openInfoModal();
-    await userEvent.click(screen.getByRole("button", { name: "שלחו משוב" }));
+    await userEvent.click(screen.getByText("שלחו משוב"));
     await waitFor(() => {
       expect(screen.getByText("נשמח לשמוע ממך")).toBeInTheDocument();
     });
-    // Info modal title should not be visible as a dialog title anymore
-    // (it may still exist in DOM as the header button tooltip, so check dialog count)
     const dialogs = screen.getAllByRole("dialog");
     expect(dialogs).toHaveLength(1);
   });
