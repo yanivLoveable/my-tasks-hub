@@ -91,7 +91,7 @@ export default function TaskCard({ task }: TaskCardProps) {
               <span>יעד: {formatDateHebrew(task.dueDate)}</span>
             )}
             {task.overdueDays && task.overdueDays > 0 && (
-              <span className="text-overdue font-bold">
+              <span className="text-alert-red font-bold">
                 | חריגה: {task.overdueDays} ימים
               </span>
             )}
