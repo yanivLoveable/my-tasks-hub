@@ -99,7 +99,7 @@ export default function Header({
       {/* Info Modal */}
       <Dialog open={infoOpen} onOpenChange={setInfoOpen}>
         <DialogContent
-          className="w-[420px] max-w-[90vw] rounded-2xl px-8 py-7 overflow-hidden border-none [&>button:last-child]:hidden"
+          className="w-[420px] max-w-[90vw] rounded-2xl px-8 py-6 overflow-hidden border-none [&>button:last-child]:hidden"
           dir="rtl"
         >
           {/* Close button – top-left (RTL) */}
@@ -110,25 +110,25 @@ export default function Header({
             <X size={14} />
           </button>
 
-          <div className="flex flex-col items-center gap-4">
+          <div className="flex flex-col items-center gap-2.5">
             {/* Icon */}
-            <div className="w-14 h-14 rounded-full bg-secondary flex items-center justify-center">
-              <Info size={26} className="text-primary" />
+            <div className="w-12 h-12 rounded-full bg-secondary flex items-center justify-center">
+              <Info size={22} className="text-primary" />
             </div>
 
             {/* Title */}
-            <DialogTitle className="text-[20px] font-extrabold text-primary leading-snug tracking-wide text-center">
+            <DialogTitle className="text-[18px] font-extrabold text-primary leading-snug tracking-wide text-center">
               הסבר על המערכת
             </DialogTitle>
 
             {/* Body text */}
-            <div className="text-[13px] text-foreground leading-[1.85] w-full space-y-3">
+            <div className="text-[13px] text-foreground leading-[1.7] w-full space-y-1.5">
               <p>ברוכים הבאים למרכז המשימות וההתראות!</p>
               <p>
-                המערכת מרכזת עבורכם את כל המשימות, האישורים והממתינים לטיפולכם בארגון במקום אחד.
+                המערכת מרכזת עבורכם את כל המשימות והאישורים והממתינים לטיפולכם במקום אחד.
               </p>
               <p>המערכות המחוברות כרגע:</p>
-              <ul className="list-disc list-inside space-y-1.5 mr-1">
+              <ul className="list-disc list-inside space-y-0.5 mr-1">
                 <li><span className="font-bold">SNOW</span>: משימות ואישורים.</li>
                 <li><span className="font-bold">ERP</span>: משימות מ-WF עסקיים.</li>
                 <li><span className="font-bold">אישור מסמכים</span>: חתימות וסבבי אישורים.</li>
@@ -137,12 +137,12 @@ export default function Header({
             </div>
 
             {/* Footer divider + feedback */}
-            <div className="w-full mt-2 pt-4 border-t border-border flex flex-col items-center gap-2.5">
-              <p className="text-[12px] text-muted-foreground text-center">
+            <div className="w-full mt-1 pt-3 border-t border-border flex flex-col items-center gap-2">
+              <p className="text-[12px] text-foreground text-center">
                 אם יש לכם שאלות או הצעות לשיפור נשמח לשמוע
               </p>
               <button
-                className="h-10 px-8 rounded-xl bg-action text-white text-[13px] font-semibold hover:bg-actionHover transition-colors"
+                className="h-9 px-7 rounded-xl bg-action text-white text-[13px] font-semibold hover:bg-actionHover transition-colors"
                 onClick={() => {
                   setInfoOpen(false);
                   setFeedbackOpen(true);
