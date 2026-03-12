@@ -118,7 +118,7 @@ export default function FiltersBar({
     }`;
 
   return (
-    <div className="mx-auto px-6 pt-3" style={{ maxWidth: 760 }}>
+    <div className="mx-auto px-6 pt-2" style={{ maxWidth: 760 }}>
       {/* Search + Sort */}
       <div className="flex items-center gap-2 mb-3">
         {/* Search bar */}
@@ -235,7 +235,7 @@ export default function FiltersBar({
       </div>
 
       {/* Filter Chips */}
-      <div className="space-y-2.5" dir="rtl">
+      <div className="space-y-1.5" dir="rtl">
         {/* Row 1: Topics */}
         <div className="flex items-center justify-center gap-2 flex-wrap">
           <button
