@@ -43,61 +43,64 @@ export default function PaginationFooter({
   }
 
   return (
-    <div className="bg-primary border-t border-primary">
-      <div className="flex flex-col items-center gap-2 py-3">
-        {/* Pagination controls */}
-        <div className="flex items-center gap-1">
-          <button
-            className="p-1.5 rounded-md text-primary-foreground/60 hover:text-primary-foreground disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-            onClick={() => onPageChange(currentPage - 1)}
-            disabled={currentPage <= 1}
-            title="הקודם"
-          >
-            <ChevronRight size={16} />
-          </button>
+    <>
+      {/* Pagination – white background */}
+      <div className="bg-background border-t border-header-border">
+        <div className="flex flex-col items-center gap-2 py-3">
+          <div className="flex items-center gap-1">
+            <button
+              className="p-1.5 rounded-md text-muted-foreground hover:text-primary disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+              onClick={() => onPageChange(currentPage - 1)}
+              disabled={currentPage <= 1}
+              title="הקודם"
+            >
+              <ChevronRight size={16} />
+            </button>
 
-          {displayPages.map((p, i) =>
-            p === "ellipsis" ? (
-              <span key={`e-${i}`} className="px-1 text-primary-foreground/50 text-xs">
-                ...
-              </span>
-            ) : (
-              <button
-                key={p}
-                className={`min-w-[28px] h-7 rounded-md text-xs font-medium transition-colors ${
-                  p === currentPage
-                    ? "text-primary-foreground font-bold underline underline-offset-4"
-                    : "text-primary-foreground/60 hover:text-primary-foreground"
-                }`}
-                onClick={() => onPageChange(p)}
-              >
-                {p}
-              </button>
-            )
-          )}
+            {displayPages.map((p, i) =>
+              p === "ellipsis" ? (
+                <span key={`e-${i}`} className="px-1 text-muted-foreground text-xs">
+                  ...
+                </span>
+              ) : (
+                <button
+                  key={p}
+                  className={`min-w-[28px] h-7 rounded-md text-xs font-medium transition-colors ${
+                    p === currentPage
+                      ? "text-foreground font-bold underline underline-offset-4"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
+                  onClick={() => onPageChange(p)}
+                >
+                  {p}
+                </button>
+              )
+            )}
 
-          <button
-            className="p-1.5 rounded-md text-primary-foreground/60 hover:text-primary-foreground disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-            onClick={() => onPageChange(currentPage + 1)}
-            disabled={currentPage >= totalPages}
-            title="הבא"
-          >
-            <ChevronLeft size={16} />
-          </button>
+            <button
+              className="p-1.5 rounded-md text-muted-foreground hover:text-primary disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+              onClick={() => onPageChange(currentPage + 1)}
+              disabled={currentPage >= totalPages}
+              title="הבא"
+            >
+              <ChevronLeft size={16} />
+            </button>
+          </div>
+
+          <span className="text-[12px] text-muted-foreground">
+            מציג {start}-{end} מתוך {totalItems} משימות
+          </span>
         </div>
+      </div>
 
-        {/* Item count */}
-        <span className="text-[12px] text-primary-foreground/70">
-          מציג {start}-{end} מתוך {totalItems} משימות
-        </span>
-
-        {/* Footer links */}
-        <div className="flex items-center gap-3 text-[12px] text-primary-foreground/70">
+      {/* Footer links – dark blue background */}
+      <div className="bg-primary">
+        <div className="flex items-center justify-center gap-3 text-[12px] text-primary-foreground/70 py-2.5">
           <button onClick={onFeedbackClick} className="hover:text-primary-foreground transition-colors">שלח משוב</button>
           <span>|</span>
           <button onClick={onSupportClick} className="hover:text-primary-foreground transition-colors">לתמיכה</button>
         </div>
       </div>
-    </div>
+    </>
   );
 }
