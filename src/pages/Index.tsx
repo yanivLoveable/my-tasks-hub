@@ -196,6 +196,8 @@ const Index = () => {
 
       <FeedbackModal open={footerFeedbackOpen} onOpenChange={setFooterFeedbackOpen} />
       <SupportModal open={footerSupportOpen} onOpenChange={setFooterSupportOpen} />
+
+      <BackToTop />
     </div>
   );
 };
