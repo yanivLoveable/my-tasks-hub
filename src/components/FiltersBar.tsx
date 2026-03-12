@@ -26,6 +26,16 @@ interface FiltersBarProps {
   onClearAll: () => void;
 }
 
+// Helper: count tasks per system
+const useSystemCounts = (tasks: Task[]) =>
+  useMemo(() => {
+    const counts: Record<string, number> = {};
+    for (const t of tasks) {
+      counts[t.systemLabel] = (counts[t.systemLabel] || 0) + 1;
+    }
+    return counts;
+  }, [tasks]);
+
 const SORT_OPTIONS: { main: string; sub: string; mode: SortMode; dir: SortDirection }[] = [
   { main: "תאריך פתיחה", sub: "מהישן לחדש", mode: "startDate", dir: "asc" },
   { main: "תאריך פתיחה", sub: "מהחדש לישן", mode: "startDate", dir: "desc" },
@@ -89,6 +99,7 @@ export default function FiltersBar({
     selectedSystems.length > 0 ||
     selectedTopics.length > 0;
 
+  const systemCounts = useSystemCounts(tasks);
   const isSystemActive = (sys: string) => selectedSystems.includes(sys);
   const isTopicActive = (topic: string) => selectedTopics.includes(topic);
 
@@ -122,7 +133,7 @@ export default function FiltersBar({
       {/* Search + Sort */}
       <div className="flex items-center gap-2 mb-3">
         {/* Search bar */}
-        <div className="relative flex-1 flex items-center bg-background border border-input rounded-xl overflow-hidden focus-within:border-primary focus-within:ring-1 focus-within:ring-primary transition-all" dir="rtl" style={{ boxShadow: "inset 0 1px 3px rgba(0,0,0,0.06)" }}>
+        <div className="relative flex-1 flex items-center bg-background border border-primary rounded-xl overflow-hidden focus-within:ring-1 focus-within:ring-primary transition-all" dir="rtl" style={{ boxShadow: "inset 0 1px 3px rgba(0,0,0,0.06)" }}>
           <div className="relative flex-1">
             <input
               type="text"
@@ -192,6 +203,9 @@ export default function FiltersBar({
               onClick={() => onSystemToggle(sys)}
             >
               {getSystemLabel(sys)}
+              {systemCounts[sys] != null && (
+                <span className="text-[10px] opacity-60">({systemCounts[sys]})</span>
+              )}
             </button>
           ))}
           {/* Tags for systems selected from "More" */}
@@ -226,6 +240,9 @@ export default function FiltersBar({
                     style={{ justifyContent: "flex-start", fontSize: 13, paddingInline: 14, paddingBlock: 6 }}
                   >
                     {getSystemLabel(sys)}
+                    {systemCounts[sys] != null && (
+                      <span className="text-[10px] opacity-60 mr-1">({systemCounts[sys]})</span>
+                    )}
                   </DropdownMenuItem>
                 ))}
               </DropdownMenuContent>
