@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { MessageSquare, Info } from "lucide-react";
+import { MessageSquare, Info, X } from "lucide-react";
 import RefreshPopover from "@/components/RefreshPopover";
 import FeedbackModal from "@/components/FeedbackModal";
 import { formatDateTimeHebrew } from "@/utils/format";
@@ -10,10 +10,10 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+  Dialog,
+  DialogContent,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 interface HeaderProps {
   lastUpdated: Date | null;
@@ -75,63 +75,85 @@ export default function Header({
           </TooltipProvider>
 
           {/* Info button */}
-          <Popover open={infoOpen} onOpenChange={setInfoOpen}>
-            <TooltipProvider delayDuration={300}>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <PopoverTrigger asChild>
-                    <button
-                      className="flex items-center justify-center w-8 h-8 rounded-full border border-primary text-primary hover:bg-primary/5 transition-colors"
-                    >
-                      <Info size={16} />
-                    </button>
-                  </PopoverTrigger>
-                </TooltipTrigger>
-                <TooltipContent side="bottom" dir="rtl" className="text-[11px]">
-                  הסבר על המערכת
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-            <PopoverContent
-              side="bottom"
-              align="end"
-              className="w-[360px] p-5 rounded-xl"
-              dir="rtl"
-            >
-              <h3 className="text-[15px] font-extrabold text-primary mb-3">הסבר על המערכת</h3>
-              <div className="text-[13px] text-foreground leading-relaxed space-y-2">
-                <p>
-                  ברוכים הבאים למרכז המשימות וההתראות. המערכת מרכזת עבורכם את כל המשימות, האישורים והממתינים לטיפולכם בארגון במקום אחד.
-                </p>
-                <p>המערכות המחוברות כרגע:</p>
-                <ul className="list-disc list-inside space-y-0.5 text-[12px] text-muted-foreground mr-1">
-                  <li>SNOW: משימות ואישורים.</li>
-                  <li>ERP: משימות מ-WF עסקיים.</li>
-                  <li>אישור מסמכים: חתימות וסבבי אישורים.</li>
-                </ul>
-                <p>בהמשך ירוכזו כאן משימות ממערכות נוספות.</p>
-              </div>
-              <div className="mt-4 pt-3 border-t border-border">
-                <p className="text-[12px] text-muted-foreground mb-2">
-                  אם יש לכם שאלות או הצעות לשיפור נשמח לשמוע
-                </p>
+          <TooltipProvider delayDuration={300}>
+            <Tooltip>
+              <TooltipTrigger asChild>
                 <button
-                  className="h-8 px-5 rounded-lg bg-action text-white text-[12px] font-semibold hover:bg-actionHover transition-colors"
-                  onClick={() => {
-                    setInfoOpen(false);
-                    setFeedbackOpen(true);
-                  }}
+                  className="flex items-center justify-center w-8 h-8 rounded-full border border-primary text-primary hover:bg-primary/5 transition-colors"
+                  onClick={() => setInfoOpen(true)}
                 >
-                  שלחו משוב
+                  <Info size={16} />
                 </button>
-              </div>
-            </PopoverContent>
-          </Popover>
+              </TooltipTrigger>
+              <TooltipContent side="bottom" dir="rtl" className="text-[11px]">
+                הסבר על המערכת
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </div>
       </div>
 
       {/* Thin divider below the top row */}
       <div className="w-full border-b border-border" />
+
+      {/* Info Modal */}
+      <Dialog open={infoOpen} onOpenChange={setInfoOpen}>
+        <DialogContent
+          className="w-[420px] max-w-[90vw] rounded-2xl px-8 py-7 overflow-hidden border-none [&>button:last-child]:hidden"
+          dir="rtl"
+        >
+          {/* Close button – top-left (RTL) */}
+          <button
+            onClick={() => setInfoOpen(false)}
+            className="absolute left-4 top-4 rounded-full w-7 h-7 flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"
+          >
+            <X size={14} />
+          </button>
+
+          <div className="flex flex-col items-center gap-4">
+            {/* Icon */}
+            <div className="w-14 h-14 rounded-full bg-secondary flex items-center justify-center">
+              <Info size={26} className="text-primary" />
+            </div>
+
+            {/* Title */}
+            <DialogTitle className="text-[20px] font-extrabold text-primary leading-snug tracking-wide text-center">
+              הסבר על המערכת
+            </DialogTitle>
+
+            {/* Body text */}
+            <div className="text-[13px] text-foreground leading-[1.85] w-full space-y-3">
+              <p>ברוכים הבאים למרכז המשימות וההתראות!</p>
+              <p>
+                המערכת מרכזת עבורכם את כל המשימות, האישורים והממתינים לטיפולכם בארגון במקום אחד.
+              </p>
+              <p>המערכות המחוברות כרגע:</p>
+              <ul className="list-disc list-inside space-y-1.5 mr-1">
+                <li><span className="font-bold">SNOW</span>: משימות ואישורים.</li>
+                <li><span className="font-bold">ERP</span>: משימות מ-WF עסקיים.</li>
+                <li><span className="font-bold">אישור מסמכים</span>: חתימות וסבבי אישורים.</li>
+              </ul>
+              <p>בהמשך ירוכזו כאן משימות ממערכות נוספות.</p>
+            </div>
+
+            {/* Footer divider + feedback */}
+            <div className="w-full mt-2 pt-4 border-t border-border flex flex-col items-center gap-2.5">
+              <p className="text-[12px] text-muted-foreground text-center">
+                אם יש לכם שאלות או הצעות לשיפור נשמח לשמוע
+              </p>
+              <button
+                className="h-10 px-8 rounded-xl bg-action text-white text-[13px] font-semibold hover:bg-actionHover transition-colors"
+                onClick={() => {
+                  setInfoOpen(false);
+                  setFeedbackOpen(true);
+                }}
+              >
+                שלחו משוב
+              </button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       <FeedbackModal open={feedbackOpen} onOpenChange={setFeedbackOpen} />
     </>
