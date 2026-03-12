@@ -51,12 +51,12 @@ export default function Header({
             <Tooltip>
               <TooltipTrigger asChild>
                 <button
-                  className="flex items-center justify-center w-8 h-8 rounded-md transition-colors text-muted-foreground hover:text-primary"
+                  className="flex items-center justify-center w-8 h-8 rounded-full border border-primary text-primary hover:bg-primary/5 transition-colors"
                   onClick={() => setFeedbackOpen(true)}
                 >
-                  <span className="relative inline-flex items-center justify-center w-[18px] h-[18px]">
-                    <MessageSquare size={18} />
-                    <span className="absolute text-[7px] leading-none top-[44%] left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none">
+                  <span className="relative inline-flex items-center justify-center w-[16px] h-[16px]">
+                    <MessageSquare size={16} />
+                    <span className="absolute text-[6px] leading-none top-[44%] left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none">
                       ★
                     </span>
                   </span>

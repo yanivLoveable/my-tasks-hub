@@ -1,4 +1,4 @@
-import { Search, ArrowUpDown, ChevronDown } from "lucide-react";
+import { Search, ArrowUpDown, ChevronDown, X } from "lucide-react";
 import type { Task, UIState, SortMode, SortDirection } from "@/types/task";
 import { useMemo, useState } from "react";
 import {
@@ -33,6 +33,12 @@ const SORT_OPTIONS: { main: string; sub: string; mode: SortMode; dir: SortDirect
   { main: "תאריך פתיחה", sub: "(חדש לישן)", mode: "startDate", dir: "desc" },
 ];
 
+// Primary systems shown as buttons; others go in "More" dropdown
+const PRIMARY_SYSTEMS = ["SNOW", "ERP", "DOCS"];
+const SYSTEM_LABELS: Record<string, string> = {
+  DOCS: "אישור מסמכים",
+};
+
 export default function FiltersBar({
   tasks,
   uiState,
@@ -57,15 +63,20 @@ export default function FiltersBar({
     return Array.from(set).sort();
   }, [tasks]);
 
+  const primarySystems = useMemo(
+    () => PRIMARY_SYSTEMS.filter((s) => systems.includes(s)),
+    [systems]
+  );
+
+  const moreSystems = useMemo(
+    () => systems.filter((s) => !PRIMARY_SYSTEMS.includes(s)),
+    [systems]
+  );
+
   const topics = useMemo(() => {
     const set = new Set(tasks.map((t) => t.category).filter(Boolean) as string[]);
     return Array.from(set).sort();
   }, [tasks]);
-
-  const currentSort = SORT_OPTIONS.find(
-    (o) => o.mode === uiState.sortMode && o.dir === uiState.sortDirection
-  );
-  const currentSortLabel = currentSort ? `${currentSort.main} ${currentSort.sub}` : "תאריך יעד (ישן לחדש)";
 
   const selectedSystems = Array.isArray(uiState.selectedSystems) ? uiState.selectedSystems : [];
   const selectedTopics = Array.isArray(uiState.selectedTopics) ? uiState.selectedTopics : [];
@@ -77,17 +88,17 @@ export default function FiltersBar({
     uiState.flags.personalOnly ||
     selectedSystems.length > 0 ||
     selectedTopics.length > 0;
+
   const isSystemActive = (sys: string) => selectedSystems.includes(sys);
   const isTopicActive = (topic: string) => selectedTopics.includes(topic);
 
   // When DOCS is the only selected system, disable topics, delegation, and group
   const isDocsOnly = selectedSystems.length === 1 && selectedSystems[0] === "DOCS";
 
-  const systemsLabel = selectedSystems.length === 0
-    ? "כל המערכות"
-    : selectedSystems.length === 1
-      ? selectedSystems[0]
-      : `${selectedSystems.length} מערכות`;
+  // Systems selected from "More" dropdown that should show as tags
+  const moreSelectedSystems = selectedSystems.filter((s) => !PRIMARY_SYSTEMS.includes(s));
+
+  const getSystemLabel = (sys: string) => SYSTEM_LABELS[sys] || sys;
 
   const chipStyle = (active: boolean, disabled = false) =>
     `inline-flex items-center gap-1.5 px-3 py-0.5 border text-xs font-medium rounded-full transition-all duration-150 select-none whitespace-nowrap ${
@@ -100,45 +111,10 @@ export default function FiltersBar({
 
   return (
     <div className="mx-auto px-6 pt-3" style={{ maxWidth: 760 }}>
-      {/* Search + Systems Dropdown + Sort */}
+      {/* Search + Sort */}
       <div className="flex items-center gap-2 mb-3">
-        {/* Unified search bar with integrated systems dropdown */}
-        <div className="relative flex-1 flex items-center bg-background border border-input rounded-xl overflow-hidden" dir="rtl" style={{ boxShadow: "inset 0 1px 3px rgba(0,0,0,0.06)" }}>
-          {/* Systems dropdown (right side in RTL) */}
-          <DropdownMenu modal={false}>
-            <DropdownMenuTrigger asChild>
-              <button
-                className="flex items-center gap-1.5 h-9 px-3 bg-transparent text-[13px] font-medium text-foreground hover:text-primary transition-colors flex-shrink-0 whitespace-nowrap cursor-pointer"
-              >
-                <span>{systemsLabel}</span>
-                <ChevronDown className="w-3.5 h-3.5 text-muted-foreground" />
-              </button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="min-w-[160px]" style={{ direction: "rtl" }}>
-              <DropdownMenuItem
-                onClick={() => {
-                  if (selectedSystems.length > 0) onSystemToggle("__all__");
-                }}
-                className={selectedSystems.length === 0 ? "bg-primary/10 font-semibold" : ""}
-                style={{ justifyContent: "flex-start", fontSize: 13, paddingInline: 14, paddingBlock: 6 }}
-              >
-                כל המערכות
-              </DropdownMenuItem>
-              {systems.map((sys) => (
-                <DropdownMenuItem
-                  key={sys}
-                  onClick={() => onSystemToggle(sys)}
-                  className={isSystemActive(sys) ? "bg-primary/10 font-semibold" : ""}
-                  style={{ justifyContent: "flex-start", fontSize: 13, paddingInline: 14, paddingBlock: 6 }}
-                >
-                  {sys}
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
-          {/* Vertical separator */}
-          <div className="w-px h-5 bg-input flex-shrink-0" />
-          {/* Search input */}
+        {/* Search bar */}
+        <div className="relative flex-1 flex items-center bg-background border border-input rounded-xl overflow-hidden focus-within:border-primary focus-within:ring-1 focus-within:ring-primary transition-all" dir="rtl" style={{ boxShadow: "inset 0 1px 3px rgba(0,0,0,0.06)" }}>
           <div className="relative flex-1">
             <input
               type="text"
@@ -152,18 +128,24 @@ export default function FiltersBar({
           </div>
         </div>
 
-        {/* Sort button */}
+        {/* Sort button – icon only */}
         <DropdownMenu modal={false}>
           <DropdownMenuTrigger asChild>
-            <button
-              className="flex items-center gap-1.5 bg-background border border-input text-muted-foreground hover:text-primary hover:border-primary transition-colors flex-shrink-0 whitespace-nowrap text-xs"
-              title="מיון"
-              style={{ height: 36, paddingInline: 10, borderRadius: 4 }}
-            >
-              <ArrowUpDown size={13} />
-              <span className="text-xs font-medium">{currentSort?.main ?? "תאריך יעד"}</span>
-              <span className="text-[10px] text-muted-foreground">{currentSort?.sub ?? "(ישן לחדש)"}</span>
-            </button>
+            <TooltipProvider delayDuration={200}>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <button
+                    className="flex items-center justify-center bg-background border border-input text-muted-foreground hover:text-primary hover:border-primary transition-colors flex-shrink-0 cursor-pointer"
+                    style={{ height: 36, width: 36, borderRadius: 4 }}
+                  >
+                    <ArrowUpDown size={16} />
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent side="bottom" dir="rtl" className="text-[11px]">
+                  מיון
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="min-w-[180px]" style={{ direction: "rtl" }}>
             {SORT_OPTIONS.map((opt) => {
@@ -175,13 +157,71 @@ export default function FiltersBar({
                   className={isActive ? "bg-primary/10" : ""}
                   style={{ paddingInline: 14, paddingBlock: 7 }}
                 >
-                  <span style={{ fontSize: 13, fontWeight: 500, color: "rgb(17,24,39)" }}>{opt.main}</span>
-                  <span style={{ fontSize: 11, color: "rgb(156,163,175)", marginRight: 4 }}>{opt.sub}</span>
+                  <span style={{ fontSize: 13, fontWeight: 500, color: "hsl(var(--foreground))" }}>{opt.main}</span>
+                  <span style={{ fontSize: 11, color: "hsl(var(--muted-foreground))", marginRight: 4 }}>{opt.sub}</span>
                 </DropdownMenuItem>
               );
             })}
           </DropdownMenuContent>
         </DropdownMenu>
+      </div>
+
+      {/* System Filter Row */}
+      <div className="flex items-center justify-center gap-2 flex-wrap mb-2.5" dir="rtl">
+        <button
+          className={chipStyle(selectedSystems.length === 0)}
+          onClick={() => {
+            if (selectedSystems.length > 0) onSystemToggle("__all__");
+          }}
+        >
+          כלל המערכות
+        </button>
+        {primarySystems.map((sys) => (
+          <button
+            key={sys}
+            className={chipStyle(isSystemActive(sys))}
+            onClick={() => onSystemToggle(sys)}
+          >
+            {getSystemLabel(sys)}
+          </button>
+        ))}
+        {moreSystems.length > 0 && (
+          <DropdownMenu modal={false}>
+            <DropdownMenuTrigger asChild>
+              <button className={`${chipStyle(moreSelectedSystems.length > 0)} gap-1`}>
+                עוד
+                <ChevronDown className="w-3 h-3" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="min-w-[140px]" style={{ direction: "rtl" }}>
+              {moreSystems.map((sys) => (
+                <DropdownMenuItem
+                  key={sys}
+                  onClick={() => onSystemToggle(sys)}
+                  className={isSystemActive(sys) ? "bg-primary/10 font-semibold" : ""}
+                  style={{ justifyContent: "flex-start", fontSize: 13, paddingInline: 14, paddingBlock: 6 }}
+                >
+                  {getSystemLabel(sys)}
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )}
+        {/* Tags for systems selected from "More" */}
+        {moreSelectedSystems.map((sys) => (
+          <span
+            key={`tag-${sys}`}
+            className="inline-flex items-center gap-1 px-2.5 py-0.5 bg-primary/10 text-primary text-xs font-medium rounded-full"
+          >
+            {getSystemLabel(sys)}
+            <button
+              onClick={() => onSystemToggle(sys)}
+              className="hover:text-primary/70 transition-colors"
+            >
+              <X className="w-3 h-3" />
+            </button>
+          </span>
+        ))}
       </div>
 
       {/* Filter Chips */}
