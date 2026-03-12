@@ -99,6 +99,7 @@ export default function FiltersBar({
     selectedSystems.length > 0 ||
     selectedTopics.length > 0;
 
+  const systemCounts = useSystemCounts(tasks);
   const isSystemActive = (sys: string) => selectedSystems.includes(sys);
   const isTopicActive = (topic: string) => selectedTopics.includes(topic);
 
