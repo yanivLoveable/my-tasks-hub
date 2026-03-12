@@ -136,20 +136,28 @@ export default function Header({
               <p>בהמשך ירוכזו כאן משימות ממערכות נוספות.</p>
             </div>
 
-            {/* Footer divider + feedback */}
+            {/* Footer divider + dual buttons */}
             <div className="w-full mt-1 pt-3 border-t border-border flex flex-col items-center gap-2">
               <p className="text-[12px] text-foreground text-center">
                 אם יש לכם שאלות או הצעות לשיפור נשמח לשמוע
               </p>
-              <button
-                className="h-9 px-7 rounded-xl bg-action text-white text-[13px] font-semibold hover:bg-actionHover transition-colors"
-                onClick={() => {
-                  setInfoOpen(false);
-                  setFeedbackOpen(true);
-                }}
-              >
-                שלחו משוב
-              </button>
+              <div className="flex items-center justify-center gap-3 w-full">
+                <button
+                  className="h-10 px-7 rounded-xl bg-action text-white text-[13px] font-semibold hover:bg-actionHover transition-colors"
+                  onClick={() => {
+                    setInfoOpen(false);
+                    setFeedbackOpen(true);
+                  }}
+                >
+                  שלחו משוב
+                </button>
+                <button
+                  className="h-10 px-5 rounded-xl border border-border text-[13px] font-semibold text-primary hover:bg-secondary transition-colors"
+                  onClick={() => setInfoOpen(false)}
+                >
+                  סגירה
+                </button>
+              </div>
             </div>
           </div>
         </DialogContent>
