@@ -46,7 +46,7 @@ export default function PaginationFooter({
     <>
       {/* Pagination – white background */}
       <div className="bg-background border-t border-header-border">
-        <div className="flex flex-col items-center gap-2 py-3 pb-12">
+        <div className="flex flex-col items-center gap-2 pt-3 pb-16">
           <div className="flex items-center gap-1">
             <button
               className="p-1.5 rounded-md text-muted-foreground hover:text-primary disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
