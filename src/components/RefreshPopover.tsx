@@ -12,7 +12,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { formatTime } from "@/utils/dates";
-import { getRefreshCooldownRemainingMinutes } from "@/utils/refreshCooldown";
+import { getRefreshCooldownRemainingMinutes, isOnRefreshCooldown } from "@/utils/refreshCooldown";
 
 interface RefreshPopoverProps {
   lastUpdated: Date | null;
