@@ -71,7 +71,28 @@ export function useTasks() {
     void loadTasks();
   }, [isReady, shouldUseMock, loadTasks]);
 
-  const isOnCooldown = (): boolean => isOnRefreshCooldown();
+  // Start a timer to clear cooldown reactively
+  const startCooldownTimer = useCallback((durationMs: number) => {
+    if (cooldownTimerRef.current) clearTimeout(cooldownTimerRef.current);
+    setCooldown(true);
+    cooldownTimerRef.current = setTimeout(() => {
+      setCooldown(false);
+      cooldownTimerRef.current = null;
+    }, durationMs);
+  }, []);
+
+  // On mount, if there's an existing cooldown, schedule its expiry
+  useEffect(() => {
+    const remaining = getRefreshCooldownUntilMs() - Date.now();
+    if (remaining > 0) {
+      startCooldownTimer(remaining);
+    } else {
+      setCooldown(false);
+    }
+    return () => {
+      if (cooldownTimerRef.current) clearTimeout(cooldownTimerRef.current);
+    };
+  }, [startCooldownTimer]);
 
   const getCooldownTime = (): string => {
     const end = getRefreshCooldownUntilMs();
