@@ -137,7 +137,7 @@ export function useTasks() {
       setRefreshing(false);
       abortRef.current = null;
     }
-  }, [authenticate, isReady, isOnCooldown, refreshing, shouldUseMock, user?.id]);
+  }, [authenticate, isReady, startCooldownTimer, refreshing, shouldUseMock, user?.id]);
 
   useEffect(() => {
     return () => abortRef.current?.abort();
