@@ -25,7 +25,7 @@ const Index = () => {
     setBanner,
     lastUpdated,
     refresh,
-    isOnCooldown,
+    cooldown,
     getCooldownTime,
     loadTasks,
   } = useTasks();
