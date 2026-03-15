@@ -151,7 +151,7 @@ export function useTasks() {
     setBanner,
     lastUpdated,
     refresh,
-    isOnCooldown,
+    cooldown,
     getCooldownTime,
     loadTasks,
   };
