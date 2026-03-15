@@ -12,7 +12,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { formatTime } from "@/utils/dates";
-import { getRefreshCooldownRemainingMinutes } from "@/utils/refreshCooldown";
+import { getRefreshCooldownRemainingMinutes, isOnRefreshCooldown } from "@/utils/refreshCooldown";
 
 interface RefreshPopoverProps {
   lastUpdated: Date | null;
@@ -50,7 +50,8 @@ export default function RefreshPopover({
 
   const handleClick = useCallback(() => {
     if (refreshing) return;
-    if (cooldown) {
+    // Re-check cooldown in real-time as a safety net
+    if (cooldown && isOnRefreshCooldown()) {
       setPopoverOpen(true);
     } else {
       onRefresh();

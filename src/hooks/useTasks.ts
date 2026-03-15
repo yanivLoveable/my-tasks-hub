@@ -27,6 +27,8 @@ export function useTasks() {
   const [refreshing, setRefreshing] = useState(false);
   const [banner, setBanner] = useState<BannerMessage | null>(null);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
+  const [cooldown, setCooldown] = useState(() => isOnRefreshCooldown());
+  const cooldownTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const abortRef = useRef<AbortController | null>(null);
 
@@ -69,7 +71,28 @@ export function useTasks() {
     void loadTasks();
   }, [isReady, shouldUseMock, loadTasks]);
 
-  const isOnCooldown = (): boolean => isOnRefreshCooldown();
+  // Start a timer to clear cooldown reactively
+  const startCooldownTimer = useCallback((durationMs: number) => {
+    if (cooldownTimerRef.current) clearTimeout(cooldownTimerRef.current);
+    setCooldown(true);
+    cooldownTimerRef.current = setTimeout(() => {
+      setCooldown(false);
+      cooldownTimerRef.current = null;
+    }, durationMs);
+  }, []);
+
+  // On mount, if there's an existing cooldown, schedule its expiry
+  useEffect(() => {
+    const remaining = getRefreshCooldownUntilMs() - Date.now();
+    if (remaining > 0) {
+      startCooldownTimer(remaining);
+    } else {
+      setCooldown(false);
+    }
+    return () => {
+      if (cooldownTimerRef.current) clearTimeout(cooldownTimerRef.current);
+    };
+  }, [startCooldownTimer]);
 
   const getCooldownTime = (): string => {
     const end = getRefreshCooldownUntilMs();
@@ -80,7 +103,7 @@ export function useTasks() {
 
   const refresh = useCallback(async () => {
     if ((!shouldUseMock && !isReady) || refreshing) return;
-    if (isOnCooldown()) return;
+    if (isOnRefreshCooldown()) return;
 
     abortRef.current?.abort();
     abortRef.current = new AbortController();
@@ -90,6 +113,7 @@ export function useTasks() {
 
       // cooldown starts immediately on click
       setRefreshCooldownUntilMs(Date.now() + REFRESH_COOLDOWN_MS);
+      startCooldownTimer(REFRESH_COOLDOWN_MS);
 
       if (shouldUseMock) {
         await new Promise((r) => setTimeout(r, 1200));
@@ -114,7 +138,7 @@ export function useTasks() {
       setRefreshing(false);
       abortRef.current = null;
     }
-  }, [authenticate, isReady, isOnCooldown, refreshing, shouldUseMock, user?.id]);
+  }, [authenticate, isReady, startCooldownTimer, refreshing, shouldUseMock, user?.id]);
 
   useEffect(() => {
     return () => abortRef.current?.abort();
@@ -128,7 +152,7 @@ export function useTasks() {
     setBanner,
     lastUpdated,
     refresh,
-    isOnCooldown,
+    cooldown,
     getCooldownTime,
     loadTasks,
   };
