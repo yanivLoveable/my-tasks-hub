@@ -27,7 +27,7 @@ export default function BackToTop() {
     <button
       onClick={scrollToTop}
       className={cn(
-        "fixed bottom-16 left-1/2 -translate-x-1/2 z-40",
+        "fixed bottom-[52px] left-1/2 -translate-x-1/2 z-40",
         "px-4 py-2 rounded-full",
         "bg-action/75 backdrop-blur-sm text-white",
         "shadow-lg",
