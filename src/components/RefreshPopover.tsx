@@ -50,7 +50,8 @@ export default function RefreshPopover({
 
   const handleClick = useCallback(() => {
     if (refreshing) return;
-    if (cooldown) {
+    // Re-check cooldown in real-time as a safety net
+    if (cooldown && isOnRefreshCooldown()) {
       setPopoverOpen(true);
     } else {
       onRefresh();

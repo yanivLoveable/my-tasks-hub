@@ -103,7 +103,7 @@ export function useTasks() {
 
   const refresh = useCallback(async () => {
     if ((!shouldUseMock && !isReady) || refreshing) return;
-    if (isOnCooldown()) return;
+    if (isOnRefreshCooldown()) return;
 
     abortRef.current?.abort();
     abortRef.current = new AbortController();

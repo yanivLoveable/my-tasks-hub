@@ -118,7 +118,7 @@ const Index = () => {
           lastUpdated={lastUpdated}
           onRefresh={refresh}
           refreshing={refreshing}
-          cooldown={isOnCooldown()}
+          cooldown={cooldown}
           cooldownTime={getCooldownTime()}
         />
         <ControlsBar totalTasks={tasks.length} />
