@@ -63,4 +63,49 @@ describe("Flow 5 — Refresh + cooldown + messaging", () => {
     vi.setSystemTime(new Date("2026-03-05T10:06:00"));
     expect(Date.now()).toBeGreaterThan(new Date("2026-03-05T10:05:00").getTime());
   });
+
+  it("refresh works again after cooldown expires (5+ minutes)", async () => {
+    vi.setSystemTime(new Date("2026-03-05T10:00:00"));
+    renderApp(<Index />);
+
+    await waitFor(() => {
+      expect(screen.getByText(/מציג 1-20 מתוך/)).toBeInTheDocument();
+    });
+
+    const allButtons = screen.getAllByRole("button");
+    const refreshBtn = allButtons.find((btn) =>
+      btn.querySelector(".lucide-rotate-cw")
+    );
+    expect(refreshBtn).toBeTruthy();
+
+    // First refresh
+    fireEvent.click(refreshBtn!);
+    await waitFor(() => {
+      const icon = refreshBtn!.querySelector(".lucide-rotate-cw");
+      expect(icon?.classList.contains("animate-spin")).toBe(true);
+    });
+
+    // Wait for refresh to complete
+    await vi.advanceTimersByTimeAsync(1500);
+    await waitFor(() => {
+      const icon = refreshBtn!.querySelector(".lucide-rotate-cw");
+      expect(icon?.classList.contains("animate-spin")).toBe(false);
+    });
+
+    // Advance past the 5-minute cooldown
+    await vi.advanceTimersByTimeAsync(5 * 60 * 1000 + 1000);
+
+    // Click refresh again — should trigger a new refresh, not show popover
+    fireEvent.click(refreshBtn!);
+    await waitFor(() => {
+      const icon = refreshBtn!.querySelector(".lucide-rotate-cw");
+      expect(icon?.classList.contains("animate-spin")).toBe(true);
+    });
+
+    await vi.advanceTimersByTimeAsync(1500);
+    await waitFor(() => {
+      const icon = refreshBtn!.querySelector(".lucide-rotate-cw");
+      expect(icon?.classList.contains("animate-spin")).toBe(false);
+    });
+  });
 });

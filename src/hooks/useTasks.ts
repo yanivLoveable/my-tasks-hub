@@ -113,6 +113,7 @@ export function useTasks() {
 
       // cooldown starts immediately on click
       setRefreshCooldownUntilMs(Date.now() + REFRESH_COOLDOWN_MS);
+      startCooldownTimer(REFRESH_COOLDOWN_MS);
 
       if (shouldUseMock) {
         await new Promise((r) => setTimeout(r, 1200));
