@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
-import { screen, waitFor } from "@testing-library/react";
+import { screen, waitFor,within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { renderApp } from "@/test/renderApp";
 import { clearAllStorage } from "@/test/helpers/storage";
@@ -35,16 +35,19 @@ describe("Flow 8 — Info modal", () => {
 
   it("displays all three system names in the list", async () => {
     await openInfoModal();
-    expect(screen.getByText("SNOW")).toBeInTheDocument();
-    expect(screen.getByText("ERP")).toBeInTheDocument();
-    expect(screen.getByText("אישור מסמכים")).toBeInTheDocument();
+    const dialog = screen.getByRole("dialog");
+
+    expect(within(dialog).getByText("SNOW")).toBeInTheDocument();
+    expect(within(dialog).getByText("ERP")).toBeInTheDocument();
+    expect(within(dialog).getByText("אישור מסמכים")).toBeInTheDocument();
   });
 
   it("system names are bold", async () => {
     await openInfoModal();
-    const snowEl = screen.getByText("SNOW");
-    expect(snowEl.tagName).toBe("SPAN");
-    expect(snowEl.classList.contains("font-bold")).toBe(true);
+    const dialog = screen.getByRole("dialog");
+
+    const snowEl = within(dialog).getByText("SNOW", { selector: "span" });
+    expect(snowEl).toHaveClass("font-bold");
   });
 
   it("does not display footer elements", async () => {
