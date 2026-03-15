@@ -92,8 +92,9 @@ describe("Flow 5 — Refresh + cooldown + messaging", () => {
       expect(icon?.classList.contains("animate-spin")).toBe(false);
     });
 
-    // Advance past the 5-minute cooldown
-    await vi.advanceTimersByTimeAsync(5 * 60 * 1000 + 1000);
+    // Jump past the 5-minute cooldown
+    vi.setSystemTime(new Date("2026-03-05T10:06:00"));
+    await vi.advanceTimersByTimeAsync(1000);
 
     // Click refresh again — should trigger a new refresh, not show popover
     fireEvent.click(refreshBtn!);
