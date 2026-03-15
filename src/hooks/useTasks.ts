@@ -27,6 +27,8 @@ export function useTasks() {
   const [refreshing, setRefreshing] = useState(false);
   const [banner, setBanner] = useState<BannerMessage | null>(null);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
+  const [cooldown, setCooldown] = useState(() => isOnRefreshCooldown());
+  const cooldownTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const abortRef = useRef<AbortController | null>(null);
 
