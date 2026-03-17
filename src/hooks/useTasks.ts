@@ -1,9 +1,9 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { MOCK_SETS } from "@/data/mockTaskSets";
-
-const AUTO_REFRESH_INTERVAL_MS = 5 * 60 * 1000; // 5 minutes
-const MIN_REFETCH_GAP_MS = 60 * 1000; // 1 minute minimum between auto-refreshes
 import type { Task } from "@/types/task";
+
+const AUTO_REFRESH_INTERVAL_MS = 5 * 60 * 1000;
+const MIN_REFETCH_GAP_MS = 60 * 1000;
 import { useAuth } from "@/hooks/use-auth";
 import { fetchUserTasks } from "@/services/tasksService";
 import { triggerRefresh } from "@/services/refreshService";
