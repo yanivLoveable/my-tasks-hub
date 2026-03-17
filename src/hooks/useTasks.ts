@@ -30,6 +30,8 @@ export function useTasks() {
   const [cooldown, setCooldown] = useState(() => isOnRefreshCooldown());
   const cooldownTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  const mockIndexRef = useRef(0);
+
   const abortRef = useRef<AbortController | null>(null);
 
   // Default developer workflow: show mock tasks in dev.
