@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from "react";
-import { MOCK_TASKS } from "@/data/mockTasks";
+import { MOCK_SETS } from "@/data/mockTaskSets";
 import type { Task } from "@/types/task";
 import { useAuth } from "@/hooks/use-auth";
 import { fetchUserTasks } from "@/services/tasksService";
