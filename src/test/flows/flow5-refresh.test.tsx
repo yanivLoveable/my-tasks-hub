@@ -4,6 +4,14 @@ import { renderApp } from "@/test/renderApp";
 import { clearAllStorage, preloadCooldown } from "@/test/helpers/storage";
 import Index from "@/pages/Index";
 
+/** Helper: find the bold task count in "ממתינות לך X משימות" */
+function getTaskCount(): string {
+  // The count is rendered as a bold <span> inside the subtitle
+  const el = screen.getByText(/ממתינות לך/);
+  const bold = el.querySelector(".font-bold");
+  return bold?.textContent?.trim() ?? "";
+}
+
 describe("Flow 5 — Refresh + cooldown + messaging", () => {
   beforeEach(() => {
     clearAllStorage();
@@ -66,7 +74,7 @@ describe("Flow 5 — Refresh + cooldown + messaging", () => {
     renderApp(<Index />);
 
     await waitFor(() => {
-      expect(screen.getByText(/מציג 1-20 מתוך 33/)).toBeInTheDocument();
+      expect(getTaskCount()).toBe("33");
     });
 
     const allButtons = screen.getAllByRole("button");
@@ -79,7 +87,7 @@ describe("Flow 5 — Refresh + cooldown + messaging", () => {
 
     // After refresh, task count should change (v2 has 24 tasks)
     await waitFor(() => {
-      expect(screen.getByText(/24 משימות לביצוע/)).toBeInTheDocument();
+      expect(getTaskCount()).toBe("24");
     });
   });
 
@@ -138,20 +146,18 @@ describe("Flow 5b — Auto-refresh", () => {
     vi.setSystemTime(new Date("2026-03-05T10:00:00"));
     renderApp(<Index />);
 
-    // Initial load — v1 with 33 tasks
     await waitFor(() => {
-      expect(screen.getByText(/33 משימות לביצוע/)).toBeInTheDocument();
+      expect(getTaskCount()).toBe("33");
     });
 
-    // Advance 5 minutes — should trigger auto-refresh (loadTasks reloads same mock index 0)
+    // Advance 5 minutes — triggers auto-refresh interval (calls loadTasks, same mock index)
     await act(async () => {
-      await vi.advanceTimersByTimeAsync(5 * 60 * 1000 + 100);
+      await vi.advanceTimersByTimeAsync(5 * 60 * 1000 + 500);
     });
 
-    // The auto-refresh calls loadTasks (not refresh), so it reloads same dataset
-    // This verifies the interval fires without crashing
+    // Verifies the interval fires without crashing
     await waitFor(() => {
-      expect(screen.getByText(/משימות לביצוע/)).toBeInTheDocument();
+      expect(screen.getByText(/ממתינות לך/)).toBeInTheDocument();
     });
   });
 
@@ -160,7 +166,7 @@ describe("Flow 5b — Auto-refresh", () => {
     renderApp(<Index />);
 
     await waitFor(() => {
-      expect(screen.getByText(/33 משימות לביצוע/)).toBeInTheDocument();
+      expect(getTaskCount()).toBe("33");
     });
 
     // Advance time past the MIN_REFETCH_GAP (60s)
@@ -177,9 +183,9 @@ describe("Flow 5b — Auto-refresh", () => {
       await vi.advanceTimersByTimeAsync(500);
     });
 
-    // Should still show tasks (auto-refresh reloads same index)
+    // Should still render (auto-refresh reloads same index)
     await waitFor(() => {
-      expect(screen.getByText(/משימות לביצוע/)).toBeInTheDocument();
+      expect(screen.getByText(/ממתינות לך/)).toBeInTheDocument();
     });
   });
 
@@ -188,13 +194,11 @@ describe("Flow 5b — Auto-refresh", () => {
     renderApp(<Index />);
 
     await waitFor(() => {
-      expect(screen.getByText(/33 משימות לביצוע/)).toBeInTheDocument();
+      expect(getTaskCount()).toBe("33");
     });
 
     // Only 10 seconds later — within MIN_REFETCH_GAP
     vi.setSystemTime(new Date("2026-03-05T10:00:10"));
-
-    const loadingBefore = screen.queryByText(/טוען/);
 
     await act(async () => {
       Object.defineProperty(document, "visibilityState", {
@@ -207,6 +211,6 @@ describe("Flow 5b — Auto-refresh", () => {
     });
 
     // Should still show 33 tasks, no re-fetch triggered
-    expect(screen.getByText(/33 משימות לביצוע/)).toBeInTheDocument();
+    expect(getTaskCount()).toBe("33");
   });
 });
