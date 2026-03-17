@@ -48,7 +48,7 @@ export function useTasks() {
 
       if (shouldUseMock) {
         await new Promise((r) => setTimeout(r, 300));
-        setTasks(MOCK_TASKS);
+        setTasks(MOCK_SETS[mockIndexRef.current]);
         setLastUpdated(new Date());
         return;
       }
