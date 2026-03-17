@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from "react";
-import { MOCK_TASKS } from "@/data/mockTasks";
+import { MOCK_SETS } from "@/data/mockTaskSets";
 import type { Task } from "@/types/task";
 import { useAuth } from "@/hooks/use-auth";
 import { fetchUserTasks } from "@/services/tasksService";
@@ -30,6 +30,8 @@ export function useTasks() {
   const [cooldown, setCooldown] = useState(() => isOnRefreshCooldown());
   const cooldownTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  const mockIndexRef = useRef(0);
+
   const abortRef = useRef<AbortController | null>(null);
 
   // Default developer workflow: show mock tasks in dev.
@@ -46,7 +48,7 @@ export function useTasks() {
 
       if (shouldUseMock) {
         await new Promise((r) => setTimeout(r, 300));
-        setTasks(MOCK_TASKS);
+        setTasks(MOCK_SETS[mockIndexRef.current]);
         setLastUpdated(new Date());
         return;
       }
@@ -117,7 +119,8 @@ export function useTasks() {
 
       if (shouldUseMock) {
         await new Promise((r) => setTimeout(r, 1200));
-        setTasks(MOCK_TASKS);
+        mockIndexRef.current = (mockIndexRef.current + 1) % MOCK_SETS.length;
+        setTasks(MOCK_SETS[mockIndexRef.current]);
       } else {
         const token = await authenticate();
         const res = await triggerRefresh(token, user!.id);
