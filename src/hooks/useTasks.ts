@@ -1,5 +1,8 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { MOCK_SETS } from "@/data/mockTaskSets";
+
+const AUTO_REFRESH_INTERVAL_MS = 5 * 60 * 1000; // 5 minutes
+const MIN_REFETCH_GAP_MS = 60 * 1000; // 1 minute minimum between auto-refreshes
 import type { Task } from "@/types/task";
 import { useAuth } from "@/hooks/use-auth";
 import { fetchUserTasks } from "@/services/tasksService";
@@ -142,6 +145,30 @@ export function useTasks() {
       abortRef.current = null;
     }
   }, [authenticate, isReady, startCooldownTimer, refreshing, shouldUseMock, user?.id]);
+
+  // --- Auto-refresh: polling every 5 minutes (only when tab is visible) ---
+  useEffect(() => {
+    const id = setInterval(() => {
+      if (document.visibilityState === "visible") {
+        void loadTasks();
+      }
+    }, AUTO_REFRESH_INTERVAL_MS);
+    return () => clearInterval(id);
+  }, [loadTasks]);
+
+  // --- Auto-refresh: on tab focus if data is stale (>60s old) ---
+  useEffect(() => {
+    const handleVisibility = () => {
+      if (document.visibilityState !== "visible") return;
+      if (!lastUpdated) return;
+      const gap = Date.now() - lastUpdated.getTime();
+      if (gap >= MIN_REFETCH_GAP_MS) {
+        void loadTasks();
+      }
+    };
+    document.addEventListener("visibilitychange", handleVisibility);
+    return () => document.removeEventListener("visibilitychange", handleVisibility);
+  }, [loadTasks, lastUpdated]);
 
   useEffect(() => {
     return () => abortRef.current?.abort();
