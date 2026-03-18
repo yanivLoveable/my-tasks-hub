@@ -127,6 +127,7 @@ const Index = () => {
         <FiltersBar
           tasks={tasks}
           uiState={validatedState}
+          failedSystems={failedSystems}
           onSearch={(q) => updateUi({ searchQuery: q, currentPage: 1 })}
           onSystemToggle={handleSystemToggle}
           onTopicToggle={handleTopicToggle}

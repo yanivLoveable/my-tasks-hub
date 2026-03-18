@@ -199,18 +199,37 @@ export default function FiltersBar({
           >
             כלל המערכות
           </button>
-          {primarySystems.map((sys) => (
-            <button
-              key={sys}
-              className={chipStyle(isSystemActive(sys))}
-              onClick={() => onSystemToggle(sys)}
-            >
-              {getSystemLabel(sys)}
-              {systemCounts[sys] != null && (
-                <span className="text-[10px] opacity-60">({systemCounts[sys]})</span>
-              )}
-            </button>
-          ))}
+          {primarySystems.map((sys) => {
+            const sysFailed = failedSystems[sys];
+            const button = (
+              <button
+                key={sys}
+                className={chipStyle(isSystemActive(sys))}
+                onClick={() => onSystemToggle(sys)}
+              >
+                {getSystemLabel(sys)}
+                {systemCounts[sys] != null && (
+                  <span className="text-[10px] opacity-60">({systemCounts[sys]})</span>
+                )}
+                {sysFailed && (
+                  <AlertTriangle size={12} className="text-amber-500 flex-shrink-0" />
+                )}
+              </button>
+            );
+            if (sysFailed) {
+              return (
+                <TooltipProvider key={sys} delayDuration={200}>
+                  <Tooltip>
+                    <TooltipTrigger asChild>{button}</TooltipTrigger>
+                    <TooltipContent side="bottom" dir="rtl" className="text-[11px]">
+                      סונכרן לאחרונה ב-{formatDateTimeHebrew(sysFailed)}
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              );
+            }
+            return button;
+          })}
           {/* Tags for systems selected from "More" */}
           {moreSelectedSystems.map((sys) => (
             <span
