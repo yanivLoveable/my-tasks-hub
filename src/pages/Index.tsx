@@ -28,6 +28,7 @@ const Index = () => {
     cooldown,
     getCooldownTime,
     loadTasks,
+    failedSystems,
   } = useTasks();
 
   const [footerFeedbackOpen, setFooterFeedbackOpen] = useState(false);
