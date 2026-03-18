@@ -30,8 +30,10 @@ export default function Header({
   refreshing,
   cooldown,
   cooldownTime,
-  hasPartialFailure = false,
+  failedSystems = {},
 }: HeaderProps) {
+  const failedNames = Object.keys(failedSystems);
+  const hasPartialFailure = failedNames.length > 0;
   const [feedbackOpen, setFeedbackOpen] = useState(false);
   const [infoOpen, setInfoOpen] = useState(false);
 
