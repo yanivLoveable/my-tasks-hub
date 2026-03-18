@@ -31,6 +31,7 @@ export function useTasks() {
   const [banner, setBanner] = useState<BannerMessage | null>(null);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
   const [cooldown, setCooldown] = useState(() => isOnRefreshCooldown());
+  const [failedSystems, setFailedSystems] = useState<Record<string, Date>>({});
   const cooldownTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const mockIndexRef = useRef(0);
@@ -122,15 +123,32 @@ export function useTasks() {
 
       if (shouldUseMock) {
         await new Promise((r) => setTimeout(r, 1200));
-        mockIndexRef.current = (mockIndexRef.current + 1) % MOCK_SETS.length;
+      mockIndexRef.current = (mockIndexRef.current + 1) % MOCK_SETS.length;
         setTasks(MOCK_SETS[mockIndexRef.current]);
+        setFailedSystems({});
       } else {
         const token = await authenticate();
         const res = await triggerRefresh(token, user!.id);
         const job = await waitForJob(token, res.runId, undefined, abortRef.current.signal);
-        if (job.status === "failed") {
+
+        // Parse per-source results for partial failure detection
+        const sources = job.result?.sources ?? {};
+        const sourceEntries = Object.entries(sources);
+        const allFailed = sourceEntries.length > 0 && sourceEntries.every(([, info]) => info.status !== "succeeded");
+
+        if (job.status === "failed" || allFailed) {
           throw new Error(job.errorMessage || "רענון נכשל");
         }
+
+        // Track partially failed systems
+        const failed: Record<string, Date> = {};
+        for (const [sys, info] of sourceEntries) {
+          if (info.status !== "succeeded") {
+            failed[sys] = failedSystems[sys] ?? lastUpdated ?? new Date();
+          }
+        }
+        setFailedSystems(failed);
+
         const apiItems = await fetchUserTasks(token, user!.id, abortRef.current.signal);
         setTasks(mapApiToTasks(apiItems));
       }
@@ -185,5 +203,6 @@ export function useTasks() {
     cooldown,
     getCooldownTime,
     loadTasks,
+    failedSystems,
   };
 }

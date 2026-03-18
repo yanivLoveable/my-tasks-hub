@@ -28,6 +28,7 @@ const Index = () => {
     cooldown,
     getCooldownTime,
     loadTasks,
+    failedSystems,
   } = useTasks();
 
   const [footerFeedbackOpen, setFooterFeedbackOpen] = useState(false);
@@ -120,11 +121,13 @@ const Index = () => {
           refreshing={refreshing}
           cooldown={cooldown}
           cooldownTime={getCooldownTime()}
+          hasPartialFailure={Object.keys(failedSystems).length > 0}
         />
         <ControlsBar totalTasks={tasks.length} />
         <FiltersBar
           tasks={tasks}
           uiState={validatedState}
+          failedSystems={failedSystems}
           onSearch={(q) => updateUi({ searchQuery: q, currentPage: 1 })}
           onSystemToggle={handleSystemToggle}
           onTopicToggle={handleTopicToggle}
