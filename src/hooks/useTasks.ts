@@ -203,5 +203,6 @@ export function useTasks() {
     cooldown,
     getCooldownTime,
     loadTasks,
+    failedSystems,
   };
 }
