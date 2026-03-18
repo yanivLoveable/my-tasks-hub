@@ -59,6 +59,7 @@ export default function FiltersBar({
   onFlagToggle,
   onSortChange,
   onClearAll,
+  failedSystems = {},
 }: FiltersBarProps) {
   const [searchInput, setSearchInput] = useState(uiState.searchQuery);
 

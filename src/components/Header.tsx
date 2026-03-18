@@ -43,8 +43,20 @@ export default function Header({
         </span>
         <div className="flex items-center gap-3">
           {lastUpdated && (
-            <span className="text-xs text-muted-foreground/60 select-none">
+            <span className="inline-flex items-center gap-1.5 text-xs text-muted-foreground/60 select-none">
               עדכון אחרון: {formatDateTimeHebrew(lastUpdated)}
+              {hasPartialFailure && (
+                <TooltipProvider delayDuration={200}>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <AlertTriangle size={14} className="text-amber-500 cursor-help" />
+                    </TooltipTrigger>
+                    <TooltipContent side="bottom" dir="rtl" className="text-[11px] max-w-[260px]">
+                      רענון חלק מהמערכות נכשל. המידע המוצג עשוי להיות חלקי.
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              )}
             </span>
           )}
           <RefreshPopover
