@@ -125,7 +125,12 @@ export function useTasks() {
         await new Promise((r) => setTimeout(r, 1200));
       mockIndexRef.current = (mockIndexRef.current + 1) % MOCK_SETS.length;
         setTasks(MOCK_SETS[mockIndexRef.current]);
-        setFailedSystems({});
+        // Simulate partial failure every other refresh for visual testing
+        if (mockIndexRef.current % 2 === 1) {
+          setFailedSystems({ SNOW: new Date(Date.now() - 3 * 60 * 1000) });
+        } else {
+          setFailedSystems({});
+        }
       } else {
         const token = await authenticate();
         const res = await triggerRefresh(token, user!.id);
