@@ -30,6 +30,7 @@ export default function Header({
   refreshing,
   cooldown,
   cooldownTime,
+  hasPartialFailure = false,
 }: HeaderProps) {
   const [feedbackOpen, setFeedbackOpen] = useState(false);
   const [infoOpen, setInfoOpen] = useState(false);
