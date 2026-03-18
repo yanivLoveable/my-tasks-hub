@@ -123,8 +123,9 @@ export function useTasks() {
 
       if (shouldUseMock) {
         await new Promise((r) => setTimeout(r, 1200));
-        mockIndexRef.current = (mockIndexRef.current + 1) % MOCK_SETS.length;
+      mockIndexRef.current = (mockIndexRef.current + 1) % MOCK_SETS.length;
         setTasks(MOCK_SETS[mockIndexRef.current]);
+        setFailedSystems({});
       } else {
         const token = await authenticate();
         const res = await triggerRefresh(token, user!.id);
