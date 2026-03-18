@@ -121,6 +121,7 @@ const Index = () => {
           refreshing={refreshing}
           cooldown={cooldown}
           cooldownTime={getCooldownTime()}
+          hasPartialFailure={Object.keys(failedSystems).length > 0}
         />
         <ControlsBar totalTasks={tasks.length} />
         <FiltersBar
