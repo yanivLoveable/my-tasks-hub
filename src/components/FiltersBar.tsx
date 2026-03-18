@@ -24,6 +24,7 @@ interface FiltersBarProps {
   onFlagToggle: (flag: "overdueOnly" | "groupOnly" | "delegationOnly" | "personalOnly") => void;
   onSortChange: (mode: SortMode, dir: SortDirection) => void;
   onClearAll: () => void;
+  failedSystems?: Record<string, Date>;
 }
 
 // Helper: count tasks per system
