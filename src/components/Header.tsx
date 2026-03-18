@@ -21,6 +21,7 @@ interface HeaderProps {
   refreshing: boolean;
   cooldown: boolean;
   cooldownTime: string;
+  hasPartialFailure?: boolean;
 }
 
 export default function Header({
