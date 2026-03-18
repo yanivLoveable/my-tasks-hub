@@ -31,6 +31,7 @@ export function useTasks() {
   const [banner, setBanner] = useState<BannerMessage | null>(null);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
   const [cooldown, setCooldown] = useState(() => isOnRefreshCooldown());
+  const [failedSystems, setFailedSystems] = useState<Record<string, Date>>({});
   const cooldownTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const mockIndexRef = useRef(0);
