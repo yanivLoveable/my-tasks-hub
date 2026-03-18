@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { MessageSquare, Info, X } from "lucide-react";
+import { MessageSquare, Info, X, AlertTriangle } from "lucide-react";
 import RefreshPopover from "@/components/RefreshPopover";
 import FeedbackModal from "@/components/FeedbackModal";
 import { formatDateTimeHebrew } from "@/utils/format";
