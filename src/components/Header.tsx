@@ -21,7 +21,7 @@ interface HeaderProps {
   refreshing: boolean;
   cooldown: boolean;
   cooldownTime: string;
-  hasPartialFailure?: boolean;
+  failedSystems?: Record<string, Date>;
 }
 
 export default function Header({
@@ -30,8 +30,10 @@ export default function Header({
   refreshing,
   cooldown,
   cooldownTime,
-  hasPartialFailure = false,
+  failedSystems = {},
 }: HeaderProps) {
+  const failedNames = Object.keys(failedSystems);
+  const hasPartialFailure = failedNames.length > 0;
   const [feedbackOpen, setFeedbackOpen] = useState(false);
   const [infoOpen, setInfoOpen] = useState(false);
 
@@ -52,7 +54,7 @@ export default function Header({
                       <AlertTriangle size={14} className="text-amber-500 cursor-help" />
                     </TooltipTrigger>
                     <TooltipContent side="bottom" dir="rtl" className="text-[11px] max-w-[260px]">
-                      רענון חלק מהמערכות נכשל. המידע המוצג עשוי להיות חלקי.
+                      רענון חלק מהמערכות נכשל ({failedNames.join(", ")}). המידע המוצג עשוי להיות חלקי.
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
