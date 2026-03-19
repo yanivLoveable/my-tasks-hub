@@ -1,8 +1,8 @@
 import { pollJobStatus } from "./refreshService";
 import type { JobRunResponse } from "@/types/api";
 
-const POLL_INTERVAL = 1000;
-const POLL_TIMEOUT = 30000;
+const POLL_INTERVAL = 30_000;
+const POLL_TIMEOUT = 5 * 60 * 1000;
 
 export async function waitForJob(
   token: string,

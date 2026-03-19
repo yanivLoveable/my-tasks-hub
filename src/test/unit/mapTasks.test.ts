@@ -5,19 +5,21 @@ import type { ApiWorkItem } from "@/types/api";
 describe("mapApiToTask", () => {
   const baseItem: ApiWorkItem = {
     source: "ERP",
-    external_id: "ERP-001",
-    user_id: "u1",
-    payload: {
-      title: "Test Task",
-      taskID: "T-001",
-      url: "https://erp.example.com/task/1",
-      status: "open",
-      priority: "high",
-      assigmentDate: "2026-01-15T10:00:00",
-      dueDate: "2026-02-15T10:00:00",
-      categoryDesc: "Finance",
-    },
-    updated_at: "2026-01-15T10:00:00",
+    externalId: "ERP-001",
+    updatedAt: "2026-01-15T10:00:00Z",
+    title: "Test Task",
+    taskId: "T-001",
+    url: "https://erp.example.com/task/1",
+    status: "open",
+    priority: "high",
+    assignmentDate: "2026-01-15T10:00:00",
+    dueDate: "2026-02-15T10:00:00",
+    categoryDesc: "Finance",
+    category: null,
+    subCategory: null,
+    subCategoryDesc: null,
+    taskType: null,
+    assignedToRole: null,
   };
 
   it("maps source to correct systemLabel", () => {
@@ -35,8 +37,8 @@ describe("mapApiToTask", () => {
     expect(result.identifier).toBe("T-001");
   });
 
-  it("falls back to external_id when taskID missing", () => {
-    const item = { ...baseItem, payload: { ...baseItem.payload, taskID: undefined } };
+  it("falls back to externalId when taskId missing", () => {
+    const item = { ...baseItem, taskId: undefined };
     expect(mapApiToTask(item).identifier).toBe("ERP-001");
   });
 
@@ -59,8 +61,8 @@ describe("mapApiToTask", () => {
 describe("mapApiToTasks", () => {
   it("maps array of items", () => {
     const items: ApiWorkItem[] = [
-      { source: "ERP", external_id: "1", user_id: "u1", payload: { title: "A" }, updated_at: "" },
-      { source: "CRM", external_id: "2", user_id: "u1", payload: { title: "B" }, updated_at: "" },
+      { source: "ERP", externalId: "1", updatedAt: "", title: "A" },
+      { source: "CRM", externalId: "2", updatedAt: "", title: "B" },
     ];
     const result = mapApiToTasks(items);
     expect(result).toHaveLength(2);
