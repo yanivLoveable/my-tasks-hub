@@ -1,29 +1,51 @@
-export interface ApiWorkItemPayload {
-  title?: string;
-  taskID?: string;
-  url?: string;
-  status?: string;
-  priority?: string;
-  assigmentDate?: string;
-  dueDate?: string;
-  categoryDesc?: string;
-  category?: string;
-  taskType?: string;
-  subCategoryDesc?: string;
-  subCategory?: string;
-  assignedToRole?: string;
-  [key: string]: unknown;
-}
+// --- Flat work-item returned by GET /user-tasks ---
 
 export interface ApiWorkItem {
   source: string;
-  external_id: string;
-  user_id: string;
-  user_email?: string;
-  user_name?: string;
-  payload: ApiWorkItemPayload;
-  updated_at: string;
+  externalId: string;
+  updatedAt: string;
+  url?: string;
+  title?: string;
+  status?: string;
+  taskId?: string;
+  dueDate?: string | null;
+  priority?: string | null;
+  assignmentDate?: string;
+  category?: string | null;
+  categoryDesc?: string | null;
+  subCategory?: string | null;
+  subCategoryDesc?: string | null;
+  taskType?: string | null;
+  assignedToRole?: string | null;
+  [key: string]: unknown;
 }
+
+// --- Response envelope from GET /user-tasks ---
+
+export interface ApiResponseMetadata {
+  userId: string;
+  userEmail?: string;
+  userName?: string;
+}
+
+export interface SourceRefreshInfo {
+  lastAttemptAt: string;
+  lastAttemptRunId: string;
+  lastSuccessAt: string;
+  lastSuccessRunId: string;
+}
+
+export interface ApiResponseSource {
+  refresh: SourceRefreshInfo;
+}
+
+export interface ApiResponse {
+  metadata: ApiResponseMetadata;
+  data: ApiWorkItem[];
+  sources: Record<string, ApiResponseSource>;
+}
+
+// --- Auth ---
 
 export interface AuthTokenResponse {
   access_token: string;
@@ -31,16 +53,36 @@ export interface AuthTokenResponse {
   token_type?: string;
 }
 
+// --- POST /refresh ---
+
 export interface RefreshResponse {
   ok: boolean;
+  userId: string;
   runId: string;
+  status: string;
   sources?: Record<string, { status: string }>;
 }
 
+// --- GET /jobs/runs/{runId} ---
+
 export interface JobRunResponse {
-  status: "pending" | "running" | "succeeded" | "failed";
+  ok: boolean;
+  runId: string;
+  jobName?: string;
+  status: "pending" | "queued" | "running" | "succeeded" | "failed";
+  createdAt?: string;
+  startedAt?: string;
+  finishedAt?: string;
+  updatedAt?: string;
   errorMessage?: string;
   result?: {
-    sources?: Record<string, { status: string; error?: string }>;
+    statuses?: Record<string, string>;
   };
+  sources?: Record<string, {
+    status: string;
+    startedAt?: string;
+    finshedAt?: string;
+    error?: { message: string };
+    refresh?: SourceRefreshInfo;
+  }>;
 }

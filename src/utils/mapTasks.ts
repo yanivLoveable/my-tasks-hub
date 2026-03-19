@@ -15,36 +15,35 @@ function deriveSystemLabel(source: string): string {
 }
 
 export function mapApiToTask(item: ApiWorkItem): Task {
-  const p = item.payload || {};
   const systemLabel = deriveSystemLabel(item.source);
-  const url = p.url
-    ? rewriteTaskUrl(p.url as string, systemLabel, APP_ENV)
+  const url = item.url
+    ? rewriteTaskUrl(item.url, systemLabel, APP_ENV)
     : "";
 
-  const startDate = parseDate(p.assigmentDate as string);
-  const dueDate = parseDateNullable(p.dueDate as string);
+  const startDate = parseDate(item.assignmentDate);
+  const dueDate = parseDateNullable(item.dueDate);
   const overdueDays = getOverdueDays(dueDate);
 
   return {
-    id: item.external_id,
+    id: item.externalId,
     source: item.source,
     systemLabel,
-    title: (p.title as string) || "",
-    identifier: (p.taskID as string) || item.external_id,
+    title: item.title || "",
+    identifier: item.taskId || item.externalId,
     url,
-    status: p.status as string | undefined,
-    priority: p.priority as string | undefined,
+    status: item.status ?? undefined,
+    priority: item.priority ?? undefined,
     startDate,
     dueDate,
     category:
-      (p.categoryDesc as string) ||
-      (p.category as string) ||
-      (p.taskType as string) ||
-      (p.subCategoryDesc as string) ||
-      (p.subCategory as string) ||
+      item.categoryDesc ||
+      item.category ||
+      item.taskType ||
+      item.subCategoryDesc ||
+      item.subCategory ||
       undefined,
-    assignedToRole: p.assignedToRole as string | undefined,
-    updatedAt: parseDate(item.updated_at),
+    assignedToRole: item.assignedToRole ?? undefined,
+    updatedAt: parseDate(item.updatedAt),
     overdueDays: overdueDays > 0 ? overdueDays : undefined,
   };
 }
