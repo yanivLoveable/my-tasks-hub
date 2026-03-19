@@ -58,9 +58,17 @@ export function useTasks() {
       }
 
       const token = await authenticate();
-      const apiItems = await fetchUserTasks(token, user.id, abortRef.current.signal);
+      const { items: apiItems, sources } = await fetchUserTasks(token, user.id, abortRef.current.signal);
       setTasks(mapApiToTasks(apiItems));
 
+      // Detect per-source failures from sources metadata
+      const failed: Record<string, Date> = {};
+      for (const [sys, info] of Object.entries(sources)) {
+        if (info.refresh.lastAttemptAt !== info.refresh.lastSuccessAt) {
+          failed[sys] = new Date(info.refresh.lastAttemptAt);
+        }
+      }
+      setFailedSystems(failed);
       setLastUpdated(new Date());
     } catch (err: unknown) {
       if (abortRef.current?.signal.aborted) return;
