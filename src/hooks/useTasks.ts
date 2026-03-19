@@ -145,9 +145,9 @@ export function useTasks() {
         const job = await waitForJob(token, res.runId, undefined, abortRef.current.signal);
 
         // Parse per-source results for partial failure detection
-        const sources = job.result?.sources ?? {};
-        const sourceEntries = Object.entries(sources);
-        const allFailed = sourceEntries.length > 0 && sourceEntries.every(([, info]) => info.status !== "succeeded");
+        const statuses = job.result?.statuses ?? {};
+        const statusEntries = Object.entries(statuses);
+        const allFailed = statusEntries.length > 0 && statusEntries.every(([, s]) => s !== "succeeded");
 
         if (job.status === "failed" || allFailed) {
           throw new Error(job.errorMessage || "רענון נכשל");
@@ -155,14 +155,14 @@ export function useTasks() {
 
         // Track partially failed systems
         const failed: Record<string, Date> = {};
-        for (const [sys, info] of sourceEntries) {
-          if (info.status !== "succeeded") {
+        for (const [sys, s] of statusEntries) {
+          if (s !== "succeeded") {
             failed[sys] = failedSystems[sys] ?? lastUpdated ?? new Date();
           }
         }
         setFailedSystems(failed);
 
-        const apiItems = await fetchUserTasks(token, user!.id, abortRef.current.signal);
+        const { items: apiItems } = await fetchUserTasks(token, user!.id, abortRef.current.signal);
         setTasks(mapApiToTasks(apiItems));
       }
 
