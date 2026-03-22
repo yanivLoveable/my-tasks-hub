@@ -8,6 +8,7 @@ import React, {
 } from "react";
 import Keycloak from "keycloak-js";
 import { getAccessToken as getApiAccessToken } from "@/services/authService";
+import { APP_ENV } from "@/config";
 
 export type AuthStatus = "loading" | "ready" | "error";
 
