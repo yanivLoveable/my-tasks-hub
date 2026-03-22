@@ -90,17 +90,45 @@ function getStoredTokenInfo() {
 
 /** ---------------- MOCK PROVIDER (no Keycloak) ---------------- */
 function MockAuthProvider({ children }: { children: React.ReactNode }) {
+  const [status, setStatus] = useState<AuthStatus>("loading");
+  const [user, setUser] = useState<User | null>(null);
+
+  const authenticate = useCallback(async () => {
+    if (APP_ENV === "dev") {
+      const { devAuthenticate } = await import("@/services/devAuth");
+      const token = await devAuthenticate();
+      const payload = decodeJwtPayload<JWTPayload>(token);
+      const u = userFromPayload(payload);
+      if (u) setUser(u);
+      setStatus("ready");
+      return token;
+    }
+    throw new Error("Auth disabled (missing Keycloak config).");
+  }, []);
+
+  const logout = useCallback(() => {
+    try {
+      localStorage.removeItem(ACCESS_TOKEN_KEY);
+      localStorage.removeItem(USER_KEY);
+    } catch {}
+    setUser(null);
+    setStatus("loading");
+  }, []);
+
+  useEffect(() => {
+    if (APP_ENV === "dev") {
+      authenticate().catch((e) => {
+        console.error("Dev auth failed:", e);
+        setStatus("error");
+      });
+    } else {
+      setStatus("ready");
+    }
+  }, [authenticate]);
+
   const value = useMemo<AuthContextValue>(
-    () => ({
-      user: null,
-      status: "ready",
-      authenticate: async () => {
-        // In mock mode we don't authenticate. If some code calls it, fail loudly:
-        throw new Error("Auth disabled (missing Keycloak config).");
-      },
-      logout: () => {},
-    }),
-    []
+    () => ({ user, status, authenticate, logout }),
+    [user, status, authenticate, logout]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
