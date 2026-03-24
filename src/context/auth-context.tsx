@@ -7,22 +7,18 @@ import React, {
   useState,
 } from "react";
 import Keycloak from "keycloak-js";
-import { APP_ENV } from "@/config";
+import { APP_ENV, KEYCLOAK_URL, KEYCLOAK_REALM, KEYCLOAK_CLIENT_ID } from "@/config";
 import { setAuthRetryFn } from "@/services/authRetry";
+import { decodeJwtPayload, userFromPayload, type User, type JWTPayload } from "@/utils/jwt";
 
 export type AuthStatus = "loading" | "ready" | "error";
 
-export type User = {
-  id: string;
-  username?: string;
-  name?: string;
-  email?: string;
-};
+export type { User } from "@/utils/jwt";
 
 export interface AuthContextValue {
   user: User | null;
   status: AuthStatus;
-  authenticate: () => Promise<string>; // returns API access token
+  authenticate: () => Promise<string>;
   logout: () => void;
 }
 
@@ -36,47 +32,6 @@ export const AuthContext = createContext<AuthContextValue>({
 });
 
 const USER_KEY = "notifCenter.user";
-
-type JWTPayload = Partial<User> & {
-  exp?: number;
-  sub?: string;
-  preferred_username?: string;
-  email?: string;
-  name?: string;
-  sAMAccountName?: string;
-};
-
-function decodeJwtPayload<T>(token: string): T | null {
-  const parts = token.split(".");
-  if (parts.length < 2) return null;
-  try {
-    const base64Url = parts[1];
-    const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
-    const padded = base64.padEnd(
-      base64.length + ((4 - (base64.length % 4)) % 4),
-      "="
-    );
-    const json = atob(padded);
-    return JSON.parse(json);
-  } catch {
-    return null;
-  }
-}
-
-function userFromPayload(p: JWTPayload | null): User | null {
-  if (!p) return null;
-  const id = p.sAMAccountName ?? "";
-  if (!id) return null;
-  return {
-    id,
-    username:
-      (typeof p.username === "string" && p.username) ||
-      (typeof p.preferred_username === "string" && p.preferred_username) ||
-      undefined,
-    name: typeof p.name === "string" ? p.name : undefined,
-    email: typeof p.email === "string" ? p.email : undefined,
-  };
-}
 
 /** ---------------- MOCK PROVIDER (no Keycloak) ---------------- */
 function MockAuthProvider({ children }: { children: React.ReactNode }) {
@@ -161,16 +116,13 @@ function RealAuthProvider({
     return keycloakInitPromiseRef.current;
   }, [keycloak]);
 
-  /** Returns a valid access token, refreshing via keycloak if needed */
   const authenticate = useCallback(async () => {
     const ok = await initKeycloakOnce();
     if (!ok) throw new Error("Keycloak init failed");
 
-    // Use keycloak's built-in refresh: refreshes if token expires within 30s
     try {
       await keycloak.updateToken(30);
     } catch {
-      // updateToken failed — force re-login
       keycloak.login();
       throw new Error("Session expired, redirecting to login");
     }
@@ -197,7 +149,6 @@ function RealAuthProvider({
     keycloak.logout();
   }, [keycloak]);
 
-  // Bootstrap: init keycloak and get first token
   useEffect(() => {
     setAuthRetryFn(authenticate);
 
@@ -210,14 +161,13 @@ function RealAuthProvider({
       });
   }, [authenticate]);
 
-  // Proactive refresh: schedule token refresh based on keycloak token exp
   useEffect(() => {
     if (status !== "ready") return;
 
     const exp = keycloak.tokenParsed?.exp;
     if (!exp) return;
 
-    const skew = 30_000; // refresh 30s before expiry
+    const skew = 30_000;
     const delay = Math.max(0, exp * 1000 - Date.now() - skew);
 
     const id = window.setTimeout(() => {
@@ -237,12 +187,6 @@ function RealAuthProvider({
 
 /** ---------------- EXPORT (chooses mock vs real) ---------------- */
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const keycloakUrl = import.meta.env.VITE_KEYCLOAK_URL as string | undefined;
-  const keycloakRealm = import.meta.env.VITE_KEYCLOAK_REALM as string | undefined;
-  const keycloakClientId = import.meta.env.VITE_KEYCLOAK_CLIENT_ID as
-    | string
-    | undefined;
-
   const isPlaceholder = (v: string | undefined) =>
     !v || v.trim() === "" || v.includes("<") || v.includes(">");
 
@@ -257,10 +201,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const isConfigured =
-    !isPlaceholder(keycloakUrl) &&
-    !isPlaceholder(keycloakRealm) &&
-    !isPlaceholder(keycloakClientId) &&
-    isValidUrl(keycloakUrl);
+    !isPlaceholder(KEYCLOAK_URL) &&
+    !isPlaceholder(KEYCLOAK_REALM) &&
+    !isPlaceholder(KEYCLOAK_CLIENT_ID) &&
+    isValidUrl(KEYCLOAK_URL);
 
   if (!isConfigured) {
     return <MockAuthProvider>{children}</MockAuthProvider>;
@@ -268,9 +212,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <RealAuthProvider
-      keycloakUrl={keycloakUrl!}
-      keycloakRealm={keycloakRealm!}
-      keycloakClientId={keycloakClientId!}
+      keycloakUrl={KEYCLOAK_URL}
+      keycloakRealm={KEYCLOAK_REALM}
+      keycloakClientId={KEYCLOAK_CLIENT_ID}
     >
       {children}
     </RealAuthProvider>

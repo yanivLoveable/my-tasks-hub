@@ -16,7 +16,6 @@ export async function devAuthenticate(): Promise<string> {
     );
   }
 
-  // Step 1: get Keycloak token via backend proxy
   const tokenRes = await fetch(`${API_BASE_URL}/api/auth/token`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -25,36 +24,16 @@ export async function devAuthenticate(): Promise<string> {
 
   if (!tokenRes.ok) {
     const txt = await tokenRes.text().catch(() => "");
-    throw new Error(`Dev auth step 1 failed (HTTP ${tokenRes.status}): ${txt}`);
+    throw new Error(`Dev auth failed (HTTP ${tokenRes.status}): ${txt}`);
   }
 
   const tokenData = (await tokenRes.json()) as { access_token?: string; token?: string };
   const keycloakToken = tokenData.access_token || tokenData.token;
 
   if (!keycloakToken) {
-    throw new Error(
-      "Dev auth step 1: response missing accessToken/token field"
-    );
+    throw new Error("Dev auth: response missing access_token/token field");
   }
 
-  // Step 2: exchange Keycloak token for API access token
-  // const authRes = await fetch(`${API_BASE_URL}/api/auth`, {
-  //   method: "POST",
-  //   headers: { "Content-Type": "application/json" },
-  //   body: JSON.stringify({ keycloakToken }),
-  // });
-
-  // if (!authRes.ok) {
-  //   const txt = await authRes.text().catch(() => "");
-  //   throw new Error(`Dev auth step 2 failed (HTTP ${authRes.status}): ${txt}`);
-  // }
-
-  // const authData = (await authRes.json()) as { accessToken?: string };
-
-  // if (!authData.accessToken) {
-  //   throw new Error("Dev auth step 2: response missing accessToken");
-  // }
-
-  storeAccessToken(tokenData.access_token);
-  return tokenData.access_token;
+  storeAccessToken(keycloakToken);
+  return keycloakToken;
 }

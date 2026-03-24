@@ -1,7 +1,6 @@
 import type { ApiWorkItem } from "@/types/api";
 import type { Task } from "@/types/task";
 import { parseDate, parseDateNullable, getOverdueDays } from "./dates";
-import { rewriteTaskUrl, APP_ENV } from "@/config";
 
 function deriveSystemLabel(source: string): string {
   if (!source) return "OTHER";
@@ -17,8 +16,6 @@ function deriveSystemLabel(source: string): string {
 export function mapApiToTask(item: ApiWorkItem): Task {
   const systemLabel = deriveSystemLabel(item.source);
   const url = item.url;
-    //? rewriteTaskUrl(item.url, systemLabel, APP_ENV)
-    //: "";
 
   const startDate = parseDate(item.assignmentDate);
   const dueDate = parseDateNullable(item.dueDate);
