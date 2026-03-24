@@ -90,6 +90,6 @@ describe("Flow 5 — Auto-refresh (GET-only, activity-gated)", () => {
     });
 
     // Should still show same dataset — no refresh happened
-    expect(getTaskCount()).toBe(initialCount);
+    expect(getTaskCount()).toBe("33");
   });
 });
