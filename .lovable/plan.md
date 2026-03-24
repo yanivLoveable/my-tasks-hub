@@ -1,35 +1,18 @@
 
+# Fix Auth Refresh, Auto-Refresh Logic, Remove userId from API Calls
 
-# Three Fixes: Token Refresh, Empty System Filters, Task Card Layout
+## Status: ✅ Implemented
 
-## 1. Token Refresh on 401
+### Changes Made
 
-**Problem:** When the API token expires mid-session, `http.ts` throws immediately with no retry. The `RealAuthProvider` already has a proactive timer but it can miss edge cases.
+1. **`src/context/auth-context.tsx`** — `authenticate()` now calls `keycloak.updateToken(30)` to refresh token via refresh_token. Proactive timer uses `keycloak.tokenParsed?.exp`. Removed localStorage token caching for real auth.
 
-**Solution:** Add a single-retry mechanism in `http.ts`. On a 401 response, call a registered re-auth callback to get a fresh token, then retry the request once.
+2. **`src/services/tasksService.ts`** — Removed `userId` param from `fetchUserTasks()`.
 
-### Files:
-- **`src/services/authRetry.ts` (new)** — Tiny registry: `setAuthRetryFn(fn)` and `getAuthRetryFn()`. Avoids circular imports between `http.ts` and `auth-context.tsx`.
-- **`src/services/http.ts`** — On 401, call `getAuthRetryFn()`, get a fresh token, retry the request once. If the retry also fails, throw as normal.
-- **`src/context/auth-context.tsx`** — In both `MockAuthProvider` and `RealAuthProvider`, register `authenticate` via `setAuthRetryFn()` on mount so `http.ts` can use it.
+3. **`src/services/refreshService.ts`** — Removed `userId` param from `triggerRefresh()`.
 
-## 2. Show All Primary Systems Even When Empty
+4. **`src/hooks/useTasks.ts`** — Removed `userId` from all API calls. Auto-refresh now triggers full sync (`refresh()`) instead of just `loadTasks()`. Added user activity tracking (mousemove, keydown, click, scroll, touchstart). 5-min interval only fires if user was active. Tab focus triggers full sync respecting cooldown.
 
-**Problem:** `FiltersBar` derives systems from `tasks.map(t => t.systemLabel)`, so if no tasks exist for SNOW or DOCS, those buttons disappear.
+5. **`src/types/api.ts`** — Removed `userId` from `RefreshResponse`.
 
-**Solution:** Always show `PRIMARY_SYSTEMS` (SNOW, ERP, DOCS) regardless of whether tasks exist for them. The count will display `(0)` for empty systems.
-
-### File: `src/components/FiltersBar.tsx`
-- Change `primarySystems` from filtering by `systems.includes(s)` to always using all `PRIMARY_SYSTEMS`.
-- When `systemCounts[sys]` is undefined, display `(0)`.
-
-## 3. Task Card: Smaller Title Font + Identifier Below Title
-
-**Problem:** Long mixed Hebrew/English titles are too large. The identifier sits inline with the title.
-
-**Solution:** Reduce title font from 16px to 14px and move the identifier to its own line below the title.
-
-### File: `src/components/TaskCard.tsx`
-- Change title `text-[16px]` → `text-[14px]`.
-- Move the identifier `<span>` out of the title's flex row into a separate line below.
-
+6. **`src/test/flows/flow5-refresh.test.tsx`** — Updated tests for new behavior: tab focus triggers full sync (dataset cycles), activity-gated interval, inactive user skips refresh, cooldown blocks tab-focus refresh.
