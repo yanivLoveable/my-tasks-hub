@@ -25,7 +25,7 @@ export function useTasks() {
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
   const [failedSystems, setFailedSystems] = useState<Record<string, Date>>({});
 
-  const mockIndexRef = useRef(0);
+  const mockIndexRef = useRef(-1);
   const abortRef = useRef<AbortController | null>(null);
   const lastActivityRef = useRef<number>(Date.now());
 
