@@ -79,10 +79,8 @@ describe("Flow 5 — Auto-refresh (GET-only, activity-gated)", () => {
     renderApp(<Index />);
 
     await waitFor(() => {
-      expect(screen.getByText(/ממתינות לך/)).toBeInTheDocument();
+      expect(getTaskCount()).toBe("33");
     });
-
-    const initialCount = getTaskCount();
 
     // Advance time past activity timeout WITHOUT any user events
     vi.setSystemTime(new Date("2026-03-05T10:10:00"));
