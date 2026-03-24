@@ -76,10 +76,7 @@ export default function FiltersBar({
     return Array.from(set).sort();
   }, [tasks]);
 
-  const primarySystems = useMemo(
-    () => PRIMARY_SYSTEMS.filter((s) => systems.includes(s)),
-    [systems]
-  );
+  const primarySystems = PRIMARY_SYSTEMS;
 
   const moreSystems = useMemo(
     () => systems.filter((s) => !PRIMARY_SYSTEMS.includes(s)),

@@ -1,44 +1,35 @@
 
 
-# Dev-Only Auth Helper File
+# Three Fixes: Token Refresh, Empty System Filters, Task Card Layout
 
-## What It Does
+## 1. Token Refresh on 401
 
-A single utility file used **only in dev** that automates what you did manually in Swagger:
+**Problem:** When the API token expires mid-session, `http.ts` throws immediately with no retry. The `RealAuthProvider` already has a proactive timer but it can miss edge cases.
 
-1. Call `POST ${API_BASE_URL}/api/auth/token` with `client_id` + `client_secret` → get a Keycloak token
-2. Call `POST ${API_BASE_URL}/api/auth` with that Keycloak token → get an API access token
-3. Store the API access token via `authService.storeAccessToken()`
+**Solution:** Add a single-retry mechanism in `http.ts`. On a 401 response, call a registered re-auth callback to get a fresh token, then retry the request once.
 
-This lets you bypass the browser-based Keycloak SSO login during development.
+### Files:
+- **`src/services/authRetry.ts` (new)** — Tiny registry: `setAuthRetryFn(fn)` and `getAuthRetryFn()`. Avoids circular imports between `http.ts` and `auth-context.tsx`.
+- **`src/services/http.ts`** — On 401, call `getAuthRetryFn()`, get a fresh token, retry the request once. If the retry also fails, throw as normal.
+- **`src/context/auth-context.tsx`** — In both `MockAuthProvider` and `RealAuthProvider`, register `authenticate` via `setAuthRetryFn()` on mount so `http.ts` can use it.
 
-## Security Note
+## 2. Show All Primary Systems Even When Empty
 
-`VITE_CLIENT_ID` and `VITE_CLIENT_SECRET` are already defined in `src/config/env.ts`. Since these are `VITE_`-prefixed, they'll be bundled into the frontend — this is acceptable **only for dev**. The file will guard against running in non-dev environments.
+**Problem:** `FiltersBar` derives systems from `tasks.map(t => t.systemLabel)`, so if no tasks exist for SNOW or DOCS, those buttons disappear.
 
-## Changes
+**Solution:** Always show `PRIMARY_SYSTEMS` (SNOW, ERP, DOCS) regardless of whether tasks exist for them. The count will display `(0)` for empty systems.
 
-### 1. Create `src/services/devAuth.ts`
+### File: `src/components/FiltersBar.tsx`
+- Change `primarySystems` from filtering by `systems.includes(s)` to always using all `PRIMARY_SYSTEMS`.
+- When `systemCounts[sys]` is undefined, display `(0)`.
 
-- Export `async function devAuthenticate(): Promise<string>`
-- Throws if `APP_ENV !== "dev"` (safety guard)
-- Step 1: `POST ${API_BASE_URL}/api/auth/token` with body `{ clientId: CLIENT_ID, clientSecret: CLIENT_SECRET }` → extracts the Keycloak token
-- Step 2: passes that token to `exchangeKeycloakToken()` from `authService.ts` (which calls `/api/auth`) → gets API access token
-- Stores via `storeAccessToken()` and returns it
-- Includes error handling with descriptive messages
+## 3. Task Card: Smaller Title Font + Identifier Below Title
 
-### 2. Update `src/context/auth-context.tsx` — MockAuthProvider
+**Problem:** Long mixed Hebrew/English titles are too large. The identifier sits inline with the title.
 
-- In `MockAuthProvider`, import `devAuthenticate` and wire it into the `authenticate` function so that when `APP_ENV === "dev"`, calling `authenticate()` uses this client-credentials flow instead of throwing
-- This way the existing `useTasks` hook works seamlessly in dev without Keycloak SSO
+**Solution:** Reduce title font from 16px to 14px and move the identifier to its own line below the title.
 
-### 3. Update `.env`
-
-- Add comments for `VITE_CLIENT_ID` and `VITE_CLIENT_SECRET` showing they're used for dev auth
-
-## Files
-
-1. `src/services/devAuth.ts` (new)
-2. `src/context/auth-context.tsx` (minor update to MockAuthProvider)
-3. `.env` (comment update)
+### File: `src/components/TaskCard.tsx`
+- Change title `text-[16px]` → `text-[14px]`.
+- Move the identifier `<span>` out of the title's flex row into a separate line below.
 
