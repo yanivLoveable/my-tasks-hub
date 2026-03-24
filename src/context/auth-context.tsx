@@ -118,6 +118,7 @@ function MockAuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   useEffect(() => {
+    setAuthRetryFn(authenticate);
     if (APP_ENV === "dev") {
       authenticate().catch((e) => {
         console.error("Dev auth failed:", e);
