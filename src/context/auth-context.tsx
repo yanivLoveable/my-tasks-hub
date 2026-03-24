@@ -9,6 +9,7 @@ import React, {
 import Keycloak from "keycloak-js";
 import { getAccessToken as getApiAccessToken } from "@/services/authService";
 import { APP_ENV } from "@/config";
+import { setAuthRetryFn } from "@/services/authRetry";
 
 export type AuthStatus = "loading" | "ready" | "error";
 
@@ -117,6 +118,7 @@ function MockAuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   useEffect(() => {
+    setAuthRetryFn(authenticate);
     if (APP_ENV === "dev") {
       authenticate().catch((e) => {
         console.error("Dev auth failed:", e);
@@ -238,8 +240,9 @@ function RealAuthProvider({
   }, [authenticate]);
 
   useEffect(() => {
+    setAuthRetryFn(authenticate);
     void ensureAuthenticated();
-  }, [ensureAuthenticated]);
+  }, [ensureAuthenticated, authenticate]);
 
   // Refresh near expiry (API token exp in JWT)
   useEffect(() => {
