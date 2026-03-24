@@ -6,7 +6,6 @@ import Index from "@/pages/Index";
 
 /** Helper: find the bold task count in "ממתינות לך X משימות" */
 function getTaskCount(): string {
-  // The count is rendered as a bold <span> inside the subtitle
   const el = screen.getByText(/ממתינות לך/);
   const bold = el.querySelector(".font-bold");
   return bold?.textContent?.trim() ?? "";
@@ -132,7 +131,7 @@ describe("Flow 5 — Refresh + cooldown + messaging", () => {
   });
 });
 
-describe("Flow 5b — Auto-refresh", () => {
+describe("Flow 5b — Auto-refresh (full sync, activity-gated)", () => {
   beforeEach(() => {
     clearAllStorage();
     vi.useFakeTimers({ shouldAdvanceTime: true });
@@ -142,7 +141,7 @@ describe("Flow 5b — Auto-refresh", () => {
     vi.useRealTimers();
   });
 
-  it("auto-refreshes via polling after 5 minutes", async () => {
+  it("auto-refreshes via full sync on tab focus (cycles mock dataset)", async () => {
     vi.setSystemTime(new Date("2026-03-05T10:00:00"));
     renderApp(<Index />);
 
@@ -150,27 +149,9 @@ describe("Flow 5b — Auto-refresh", () => {
       expect(getTaskCount()).toBe("33");
     });
 
-    // Advance 5 minutes — triggers auto-refresh interval (calls loadTasks, same mock index)
-    await act(async () => {
-      await vi.advanceTimersByTimeAsync(5 * 60 * 1000 + 500);
-    });
-
-    // Verifies the interval fires without crashing
-    await waitFor(() => {
-      expect(screen.getByText(/ממתינות לך/)).toBeInTheDocument();
-    });
-  });
-
-  it("auto-refreshes on tab focus when data is stale (>60s)", async () => {
-    vi.setSystemTime(new Date("2026-03-05T10:00:00"));
-    renderApp(<Index />);
-
-    await waitFor(() => {
-      expect(getTaskCount()).toBe("33");
-    });
-
-    // Advance time past the MIN_REFETCH_GAP (60s)
-    vi.setSystemTime(new Date("2026-03-05T10:02:00"));
+    // Jump past cooldown (tab focus triggers refresh which sets cooldown)
+    // Initial load doesn't set cooldown, so tab focus should work
+    vi.setSystemTime(new Date("2026-03-05T10:01:00"));
 
     // Simulate tab becoming visible
     await act(async () => {
@@ -180,16 +161,16 @@ describe("Flow 5b — Auto-refresh", () => {
         configurable: true,
       });
       document.dispatchEvent(new Event("visibilitychange"));
-      await vi.advanceTimersByTimeAsync(500);
+      await vi.advanceTimersByTimeAsync(1500);
     });
 
-    // Should still render (auto-refresh reloads same index)
+    // Tab focus triggers full refresh which cycles the mock dataset
     await waitFor(() => {
-      expect(screen.getByText(/ממתינות לך/)).toBeInTheDocument();
+      expect(getTaskCount()).toBe("24");
     });
   });
 
-  it("does NOT auto-refresh on tab focus when data is fresh (<60s)", async () => {
+  it("auto-refreshes every 5 minutes when user is active", async () => {
     vi.setSystemTime(new Date("2026-03-05T10:00:00"));
     renderApp(<Index />);
 
@@ -197,9 +178,68 @@ describe("Flow 5b — Auto-refresh", () => {
       expect(getTaskCount()).toBe("33");
     });
 
-    // Only 10 seconds later — within MIN_REFETCH_GAP
-    vi.setSystemTime(new Date("2026-03-05T10:00:10"));
+    // Simulate user activity (so the activity check passes)
+    await act(async () => {
+      document.dispatchEvent(new MouseEvent("mousemove"));
+    });
 
+    // Jump past cooldown from any previous refresh + advance 5 min interval
+    vi.setSystemTime(new Date("2026-03-05T10:06:00"));
+
+    await act(async () => {
+      // Simulate activity right before interval fires
+      document.dispatchEvent(new MouseEvent("mousemove"));
+      await vi.advanceTimersByTimeAsync(5 * 60 * 1000 + 500);
+    });
+
+    // Verifies the interval fires without crashing
+    await waitFor(() => {
+      expect(screen.getByText(/ממתינות לך/)).toBeInTheDocument();
+    });
+  });
+
+  it("does NOT auto-refresh when user is inactive for 5+ minutes", async () => {
+    vi.setSystemTime(new Date("2026-03-05T10:00:00"));
+    renderApp(<Index />);
+
+    await waitFor(() => {
+      expect(getTaskCount()).toBe("33");
+    });
+
+    // Advance time past activity timeout WITHOUT any user events
+    // Set time far enough that activity check fails
+    vi.setSystemTime(new Date("2026-03-05T10:10:00"));
+
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(5 * 60 * 1000 + 500);
+    });
+
+    // Should still show original 33 tasks — no refresh happened
+    expect(getTaskCount()).toBe("33");
+  });
+
+  it("does NOT auto-refresh on tab focus when on cooldown", async () => {
+    vi.setSystemTime(new Date("2026-03-05T10:00:00"));
+    renderApp(<Index />);
+
+    await waitFor(() => {
+      expect(getTaskCount()).toBe("33");
+    });
+
+    // Manually trigger refresh to start cooldown
+    const allButtons = screen.getAllByRole("button");
+    const refreshBtn = allButtons.find((btn) =>
+      btn.querySelector(".lucide-rotate-cw")
+    );
+    fireEvent.click(refreshBtn!);
+    await vi.advanceTimersByTimeAsync(1500);
+
+    // Now on cooldown — count changed to 24
+    await waitFor(() => {
+      expect(getTaskCount()).toBe("24");
+    });
+
+    // Tab focus during cooldown should NOT trigger another refresh
     await act(async () => {
       Object.defineProperty(document, "visibilityState", {
         value: "visible",
@@ -207,10 +247,10 @@ describe("Flow 5b — Auto-refresh", () => {
         configurable: true,
       });
       document.dispatchEvent(new Event("visibilitychange"));
-      await vi.advanceTimersByTimeAsync(100);
+      await vi.advanceTimersByTimeAsync(1500);
     });
 
-    // Should still show 33 tasks, no re-fetch triggered
-    expect(getTaskCount()).toBe("33");
+    // Should still be 24 (not cycled to next dataset)
+    expect(getTaskCount()).toBe("24");
   });
 });

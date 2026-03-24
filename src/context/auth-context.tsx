@@ -7,7 +7,6 @@ import React, {
   useState,
 } from "react";
 import Keycloak from "keycloak-js";
-//import { getAccessToken as getApiAccessToken } from "@/services/authService";
 import { APP_ENV } from "@/config";
 import { setAuthRetryFn } from "@/services/authRetry";
 
@@ -36,7 +35,6 @@ export const AuthContext = createContext<AuthContextValue>({
   logout: () => {},
 });
 
-const ACCESS_TOKEN_KEY = "notifCenter.apiAccessToken";
 const USER_KEY = "notifCenter.user";
 
 type JWTPayload = Partial<User> & {
@@ -68,9 +66,6 @@ function decodeJwtPayload<T>(token: string): T | null {
 function userFromPayload(p: JWTPayload | null): User | null {
   if (!p) return null;
   const id = p.sAMAccountName ?? "";
-    // (typeof p.id === "string" && p.id) ||
-    // (typeof p.sub === "string" && p.sub) ||
-    // "";
   if (!id) return null;
   return {
     id,
@@ -81,14 +76,6 @@ function userFromPayload(p: JWTPayload | null): User | null {
     name: typeof p.name === "string" ? p.name : undefined,
     email: typeof p.email === "string" ? p.email : undefined,
   };
-}
-
-function getStoredTokenInfo() {
-  const token = localStorage.getItem(ACCESS_TOKEN_KEY);
-  const payload = token ? decodeJwtPayload<JWTPayload>(token) : null;
-  const expMs = payload?.exp ? payload.exp * 1000 : null;
-  const isValid = Boolean(token && expMs && expMs > Date.now());
-  return { token, payload, expMs, isValid, user: userFromPayload(payload) };
 }
 
 /** ---------------- MOCK PROVIDER (no Keycloak) ---------------- */
@@ -111,7 +98,6 @@ function MockAuthProvider({ children }: { children: React.ReactNode }) {
 
   const logout = useCallback(() => {
     try {
-      localStorage.removeItem(ACCESS_TOKEN_KEY);
       localStorage.removeItem(USER_KEY);
     } catch {}
     setUser(null);
@@ -164,7 +150,6 @@ function RealAuthProvider({
   );
 
   const keycloakInitPromiseRef = useRef<Promise<boolean> | null>(null);
-  const ensureInFlightRef = useRef<Promise<void> | null>(null);
 
   const initKeycloakOnce = useCallback(() => {
     if (!keycloakInitPromiseRef.current) {
@@ -176,29 +161,35 @@ function RealAuthProvider({
     return keycloakInitPromiseRef.current;
   }, [keycloak]);
 
+  /** Returns a valid access token, refreshing via keycloak if needed */
   const authenticate = useCallback(async () => {
     const ok = await initKeycloakOnce();
     if (!ok) throw new Error("Keycloak init failed");
 
-    const apiAccessToken = keycloak.token;
-    if (!apiAccessToken) throw new Error("Missing Keycloak token");
+    // Use keycloak's built-in refresh: refreshes if token expires within 30s
+    try {
+      await keycloak.updateToken(30);
+    } catch {
+      // updateToken failed — force re-login
+      keycloak.login();
+      throw new Error("Session expired, redirecting to login");
+    }
 
-    // Exchange Keycloak token => API access token
-    //const apiAccessToken = await getApiAccessToken(keycloakToken);
+    const token = keycloak.token;
+    if (!token) throw new Error("Missing Keycloak token");
 
-    const payload = decodeJwtPayload<JWTPayload>(apiAccessToken);
+    const payload = decodeJwtPayload<JWTPayload>(token);
     const u = userFromPayload(payload);
     if (u) {
       localStorage.setItem(USER_KEY, JSON.stringify(u));
       setUser(u);
     }
 
-    return apiAccessToken;
+    return token;
   }, [initKeycloakOnce, keycloak]);
 
   const logout = useCallback(() => {
     try {
-      localStorage.removeItem(ACCESS_TOKEN_KEY);
       localStorage.removeItem(USER_KEY);
     } catch {}
     setUser(null);
@@ -206,60 +197,35 @@ function RealAuthProvider({
     keycloak.logout();
   }, [keycloak]);
 
-  const ensureAuthenticated = useCallback(async () => {
-    if (ensureInFlightRef.current) return ensureInFlightRef.current;
-
-    ensureInFlightRef.current = (async () => {
-      setStatus("loading");
-
-      const info = getStoredTokenInfo();
-      if (info.isValid) {
-        setUser(info.user);
-        setStatus("ready");
-        return;
-      }
-
-      await authenticate();
-      const info2 = getStoredTokenInfo();
-      setUser(info2.user);
-      setStatus("ready");
-    })()
-      .catch((e) => {
-        console.error(e);
-        try {
-          localStorage.removeItem(ACCESS_TOKEN_KEY);
-          localStorage.removeItem(USER_KEY);
-        } catch {}
-        setUser(null);
-        setStatus("error");
-      })
-      .finally(() => {
-        ensureInFlightRef.current = null;
-      });
-
-    return ensureInFlightRef.current;
-  }, [authenticate]);
-
+  // Bootstrap: init keycloak and get first token
   useEffect(() => {
     setAuthRetryFn(authenticate);
-    void ensureAuthenticated();
-  }, [ensureAuthenticated, authenticate]);
 
-  // Refresh near expiry (API token exp in JWT)
+    authenticate()
+      .then(() => setStatus("ready"))
+      .catch((e) => {
+        console.error("Keycloak auth failed:", e);
+        setUser(null);
+        setStatus("error");
+      });
+  }, [authenticate]);
+
+  // Proactive refresh: schedule token refresh based on keycloak token exp
   useEffect(() => {
     if (status !== "ready") return;
-    const { expMs, isValid } = getStoredTokenInfo();
-    if (!expMs || !isValid) return;
 
-    const skew = 30_000;
-    const delay = Math.max(0, expMs - Date.now() - skew);
+    const exp = keycloak.tokenParsed?.exp;
+    if (!exp) return;
+
+    const skew = 30_000; // refresh 30s before expiry
+    const delay = Math.max(0, exp * 1000 - Date.now() - skew);
 
     const id = window.setTimeout(() => {
-      void ensureAuthenticated();
+      authenticate().catch((e) => console.error("Proactive refresh failed:", e));
     }, delay);
 
     return () => window.clearTimeout(id);
-  }, [status, ensureAuthenticated]);
+  }, [status, authenticate, keycloak.tokenParsed?.exp]);
 
   const value = useMemo<AuthContextValue>(
     () => ({ user, status, authenticate, logout }),
@@ -283,7 +249,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const isValidUrl = (v: string | undefined) => {
     if (!v) return false;
     try {
-      // keycloak-js expects a real absolute URL
       const u = new URL(v);
       return u.protocol === "http:" || u.protocol === "https:";
     } catch {

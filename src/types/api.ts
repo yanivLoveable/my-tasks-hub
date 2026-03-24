@@ -57,7 +57,6 @@ export interface AuthTokenResponse {
 
 export interface RefreshResponse {
   ok: boolean;
-  userId: string;
   runId: string;
   status: string;
   sources?: Record<string, { status: string }>;
