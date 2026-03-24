@@ -8,16 +8,8 @@ const ACTIVITY_EVENTS: (keyof DocumentEventMap)[] = ["mousemove", "keydown", "cl
 
 import { useAuth } from "@/hooks/use-auth";
 import { fetchUserTasks } from "@/services/tasksService";
-import { triggerRefresh } from "@/services/refreshService";
-import { waitForJob } from "@/services/jobsService";
 import { mapApiToTasks } from "@/utils/mapTasks";
 import { APP_ENV } from "@/config";
-import {
-  isOnRefreshCooldown,
-  setRefreshCooldownUntilMs,
-  getRefreshCooldownUntilMs,
-  REFRESH_COOLDOWN_MS,
-} from "@/utils/refreshCooldown";
 
 export interface BannerMessage {
   type: "error" | "warning" | "success" | "info";
@@ -29,14 +21,11 @@ export function useTasks() {
 
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
-  const [refreshing, setRefreshing] = useState(false);
   const [banner, setBanner] = useState<BannerMessage | null>(null);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
-  const [cooldown, setCooldown] = useState(() => isOnRefreshCooldown());
   const [failedSystems, setFailedSystems] = useState<Record<string, Date>>({});
-  const cooldownTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const mockIndexRef = useRef(0);
+  const mockIndexRef = useRef(-1);
   const abortRef = useRef<AbortController | null>(null);
   const lastActivityRef = useRef<number>(Date.now());
 
@@ -65,6 +54,7 @@ export function useTasks() {
 
       if (shouldUseMock) {
         await new Promise((r) => setTimeout(r, 300));
+        mockIndexRef.current = (mockIndexRef.current + 1) % MOCK_SETS.length;
         setTasks(MOCK_SETS[mockIndexRef.current]);
         setLastUpdated(new Date());
         return;
@@ -97,118 +87,25 @@ export function useTasks() {
     void loadTasks();
   }, [isReady, shouldUseMock, loadTasks]);
 
-  // Start a timer to clear cooldown reactively
-  const startCooldownTimer = useCallback((durationMs: number) => {
-    if (cooldownTimerRef.current) clearTimeout(cooldownTimerRef.current);
-    setCooldown(true);
-    cooldownTimerRef.current = setTimeout(() => {
-      setCooldown(false);
-      cooldownTimerRef.current = null;
-    }, durationMs);
-  }, []);
-
-  // On mount, if there's an existing cooldown, schedule its expiry
-  useEffect(() => {
-    const remaining = getRefreshCooldownUntilMs() - Date.now();
-    if (remaining > 0) {
-      startCooldownTimer(remaining);
-    } else {
-      setCooldown(false);
-    }
-    return () => {
-      if (cooldownTimerRef.current) clearTimeout(cooldownTimerRef.current);
-    };
-  }, [startCooldownTimer]);
-
-  const getCooldownTime = (): string => {
-    const end = getRefreshCooldownUntilMs();
-    if (end <= Date.now()) return "";
-    const d = new Date(end);
-    return `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
-  };
-
-  const refresh = useCallback(async () => {
-    if (refreshing) return;
-    if (!shouldUseMock && !isReady) return;
-    if (isOnRefreshCooldown()) return;
-
-    abortRef.current?.abort();
-    abortRef.current = new AbortController();
-
-    try {
-      setRefreshing(true);
-
-      // cooldown starts immediately on click
-      setRefreshCooldownUntilMs(Date.now() + REFRESH_COOLDOWN_MS);
-      startCooldownTimer(REFRESH_COOLDOWN_MS);
-
-      if (shouldUseMock) {
-        await new Promise((r) => setTimeout(r, 1200));
-        mockIndexRef.current = (mockIndexRef.current + 1) % MOCK_SETS.length;
-        setTasks(MOCK_SETS[mockIndexRef.current]);
-        // Simulate partial failure every other refresh for visual testing
-        if (mockIndexRef.current % 2 === 1) {
-          setFailedSystems({ SNOW: new Date(Date.now() - 3 * 60 * 1000) });
-        } else {
-          setFailedSystems({});
-        }
-      } else {
-        const token = await authenticate();
-        const res = await triggerRefresh(token);
-        const job = await waitForJob(token, res.runId, undefined, abortRef.current.signal);
-
-        // Parse per-source results for partial failure detection
-        const statuses = job.result?.statuses ?? {};
-        const statusEntries = Object.entries(statuses);
-        const allFailed = statusEntries.length > 0 && statusEntries.every(([, s]) => s !== "succeeded");
-
-        if (job.status === "failed" || allFailed) {
-          throw new Error(job.errorMessage || "רענון נכשל");
-        }
-
-        // Track partially failed systems
-        const failed: Record<string, Date> = {};
-        for (const [sys, s] of statusEntries) {
-          if (s !== "succeeded") {
-            failed[sys] = failedSystems[sys] ?? lastUpdated ?? new Date();
-          }
-        }
-        setFailedSystems(failed);
-
-        const { items: apiItems } = await fetchUserTasks(token, abortRef.current.signal);
-        setTasks(mapApiToTasks(apiItems));
-      }
-
-      setLastUpdated(new Date());
-    } catch (err: unknown) {
-      if (abortRef.current?.signal.aborted) return;
-      const msg = err instanceof Error ? err.message : String(err);
-      setBanner({ type: "error", text: msg });
-    } finally {
-      setRefreshing(false);
-      abortRef.current = null;
-    }
-  }, [authenticate, isReady, startCooldownTimer, refreshing, shouldUseMock, failedSystems, lastUpdated]);
-
-  // --- Auto-refresh: full sync every 5 minutes, only if user is active ---
+  // --- Auto-refresh: GET every 5 minutes, only if user is active ---
   useEffect(() => {
     const id = setInterval(() => {
       if (document.visibilityState === "visible" && isUserActive()) {
-        void refresh();
+        void loadTasks();
       }
     }, AUTO_REFRESH_INTERVAL_MS);
     return () => clearInterval(id);
-  }, [refresh, isUserActive]);
+  }, [loadTasks, isUserActive]);
 
-  // --- Auto-refresh: full sync on tab focus (respects cooldown) ---
+  // --- Auto-refresh: GET on tab focus ---
   useEffect(() => {
     const handleVisibility = () => {
       if (document.visibilityState !== "visible") return;
-      void refresh();
+      void loadTasks();
     };
     document.addEventListener("visibilitychange", handleVisibility);
     return () => document.removeEventListener("visibilitychange", handleVisibility);
-  }, [refresh]);
+  }, [loadTasks]);
 
   useEffect(() => {
     return () => abortRef.current?.abort();
@@ -217,13 +114,9 @@ export function useTasks() {
   return {
     tasks,
     loading,
-    refreshing,
     banner,
     setBanner,
     lastUpdated,
-    refresh,
-    cooldown,
-    getCooldownTime,
     loadTasks,
     failedSystems,
   };

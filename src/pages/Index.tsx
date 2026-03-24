@@ -20,13 +20,9 @@ const Index = () => {
   const {
     tasks,
     loading,
-    refreshing,
     banner,
     setBanner,
     lastUpdated,
-    refresh,
-    cooldown,
-    getCooldownTime,
     loadTasks,
     failedSystems,
   } = useTasks();
@@ -52,7 +48,6 @@ const Index = () => {
     const categories = new Set(tasks.map((t) => t.category).filter(Boolean));
 
     const s = { ...uiState };
-    // Migrate old single-select format
     if (!Array.isArray(s.selectedSystems)) s.selectedSystems = [];
     if (!Array.isArray(s.selectedTopics)) s.selectedTopics = [];
     
@@ -106,21 +101,15 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background" dir="rtl">
-      {/* Banner */}
       <Banner
         message={banner}
         onDismiss={() => setBanner(null)}
         onRetry={banner?.type === "error" ? loadTasks : undefined}
       />
 
-      {/* Header area – white bg */}
       <div className="bg-background border-b border-header-border pb-1.5">
         <Header
           lastUpdated={lastUpdated}
-          onRefresh={refresh}
-          refreshing={refreshing}
-          cooldown={cooldown}
-          cooldownTime={getCooldownTime()}
           failedSystems={failedSystems}
         />
         <ControlsBar totalTasks={tasks.length} />
@@ -135,7 +124,6 @@ const Index = () => {
             setUiState((prev) => {
               const newVal = !prev.flags[flag];
               const newFlags = { ...prev.flags, [flag]: newVal };
-              // Mutual exclusion: group ↔ personal
               if (newVal && flag === "groupOnly") newFlags.personalOnly = false;
               if (newVal && flag === "personalOnly") newFlags.groupOnly = false;
               return { ...prev, flags: newFlags, currentPage: 1 };
@@ -156,7 +144,6 @@ const Index = () => {
         />
       </div>
 
-      {/* Main content – light gray bg */}
       <div className="bg-content-bg flex-1">
         <div className="mx-auto" style={{ maxWidth: 1104 }}>
           {!loading && (validatedState.selectedSystems.length > 0 || validatedState.selectedTopics.length > 0 || validatedState.flags.overdueOnly || validatedState.flags.groupOnly || validatedState.flags.delegationOnly || validatedState.flags.personalOnly || validatedState.searchQuery.trim()) && (
@@ -187,7 +174,6 @@ const Index = () => {
         </div>
       </div>
 
-      {/* Footer – full width like header */}
       <PaginationFooter
         currentPage={currentPage}
         totalItems={sorted.length}

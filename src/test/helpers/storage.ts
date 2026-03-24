@@ -5,10 +5,6 @@ export function preloadUIState(partial: Partial<UIState> = {}) {
   localStorage.setItem("notifCenter.uiState", JSON.stringify(state));
 }
 
-export function preloadCooldown(untilMs: number) {
-  localStorage.setItem("notifCenter.refreshCooldownUntil", String(untilMs));
-}
-
 export function clearAllStorage() {
   localStorage.clear();
 }
