@@ -1,18 +1,36 @@
 
-# Fix Auth Refresh, Auto-Refresh Logic, Remove userId from API Calls
 
-## Status: ✅ Implemented
+# Extended Code Cleanup: Remove Dead Link Rewriting, Consolidate Config, Clean Auth
 
-### Changes Made
+Building on the previous cleanup plan, adding these findings:
 
-1. **`src/context/auth-context.tsx`** — `authenticate()` now calls `keycloak.updateToken(30)` to refresh token via refresh_token. Proactive timer uses `keycloak.tokenParsed?.exp`. Removed localStorage token caching for real auth.
+## Additional Dead Code Found
 
-2. **`src/services/tasksService.ts`** — Removed `userId` param from `fetchUserTasks()`.
+### 6. Delete `src/config/links.ts` and its test
+- `LINK_HOSTS` and `rewriteTaskUrl` are **not used** — the call in `mapTasks.ts` is commented out (lines 19-21). Your backend already returns correct URLs per environment.
+- Delete `src/config/links.ts`
+- Delete `src/test/flows/flow7-links.test.tsx`
+- Remove the re-export from `src/config/index.ts`
+- Remove the dead import and commented-out code from `src/utils/mapTasks.ts`
 
-3. **`src/services/refreshService.ts`** — Removed `userId` param from `triggerRefresh()`.
+### 7. Use `.env` config vars consistently
+You asked "why not use the `.env`?" — good point. Currently `auth-context.tsx` reads `import.meta.env.VITE_KEYCLOAK_*` directly instead of using the centralized `KEYCLOAK_URL`, `KEYCLOAK_REALM`, `KEYCLOAK_CLIENT_ID` from `src/config/env.ts`. The fix (from step 4 of previous plan) is to import from `@/config` — single source of truth, cleaner code.
 
-4. **`src/hooks/useTasks.ts`** — Removed `userId` from all API calls. Auto-refresh now triggers full sync (`refresh()`) instead of just `loadTasks()`. Added user activity tracking (mousemove, keydown, click, scroll, touchstart). 5-min interval only fires if user was active. Tab focus triggers full sync respecting cooldown.
+### 8. Keep `devAuth.ts` but clean it
+You confirmed you use it here (Lovable preview) but not in your secured network. Keep the file, just remove the large commented-out "Step 2" block (lines 41-56).
 
-5. **`src/types/api.ts`** — Removed `userId` from `RefreshResponse`.
+---
 
-6. **`src/test/flows/flow5-refresh.test.tsx`** — Updated tests for new behavior: tab focus triggers full sync (dataset cycles), activity-gated interval, inactive user skips refresh, cooldown blocks tab-focus refresh.
+## Full Combined Plan (previous + new)
+
+| # | Action | File(s) |
+|---|--------|---------|
+| 1 | Delete `authClient.ts` (dead file) | `src/services/authClient.ts` |
+| 2 | Gut `authService.ts` — keep only `storeAccessToken` | `src/services/authService.ts` |
+| 3 | Extract `decodeJwtPayload` + `userFromPayload` into `src/utils/jwt.ts`, import in `auth-context.tsx` | New: `src/utils/jwt.ts`, edit: `src/context/auth-context.tsx` |
+| 4 | Use config exports (`KEYCLOAK_URL` etc.) in `AuthProvider` instead of `import.meta.env` | `src/context/auth-context.tsx` |
+| 5 | Delete `links.ts` + test, remove re-export and dead import | Delete: `src/config/links.ts`, `src/test/flows/flow7-links.test.tsx`. Edit: `src/config/index.ts`, `src/utils/mapTasks.ts` |
+| 6 | Clean commented-out code in `devAuth.ts` | `src/services/devAuth.ts` |
+
+No behavior changes. All remaining tests should pass.
+
