@@ -8,11 +8,9 @@ export interface FetchTasksResult {
 
 export async function fetchUserTasks(
   token: string,
-  userId: string,
   signal?: AbortSignal
 ): Promise<FetchTasksResult> {
   const params = new URLSearchParams({
-    userId,
     limit: "200",
     offset: "0",
   });

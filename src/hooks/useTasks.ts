@@ -3,7 +3,9 @@ import { MOCK_SETS } from "@/data/mockTaskSets";
 import type { Task } from "@/types/task";
 
 const AUTO_REFRESH_INTERVAL_MS = 5 * 60 * 1000;
-const MIN_REFETCH_GAP_MS = 60 * 1000;
+const USER_ACTIVITY_TIMEOUT_MS = 5 * 60 * 1000;
+const ACTIVITY_EVENTS: (keyof DocumentEventMap)[] = ["mousemove", "keydown", "click", "scroll", "touchstart"];
+
 import { useAuth } from "@/hooks/use-auth";
 import { fetchUserTasks } from "@/services/tasksService";
 import { triggerRefresh } from "@/services/refreshService";
@@ -35,12 +37,23 @@ export function useTasks() {
   const cooldownTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const mockIndexRef = useRef(0);
-
   const abortRef = useRef<AbortController | null>(null);
+  const lastActivityRef = useRef<number>(Date.now());
 
-  // Default developer workflow: show mock tasks in dev.
-  // Switch to real Keycloak+API mode by setting VITE_APP_ENV to "test" or "prod".
-  const shouldUseMock = APP_ENV === "dev" || !user?.id;
+  const shouldUseMock = APP_ENV === "dev";
+
+  // Track user activity
+  useEffect(() => {
+    const mark = () => { lastActivityRef.current = Date.now(); };
+    ACTIVITY_EVENTS.forEach((e) => document.addEventListener(e, mark, { passive: true }));
+    return () => {
+      ACTIVITY_EVENTS.forEach((e) => document.removeEventListener(e, mark));
+    };
+  }, []);
+
+  const isUserActive = useCallback(() => {
+    return Date.now() - lastActivityRef.current < USER_ACTIVITY_TIMEOUT_MS;
+  }, []);
 
   const loadTasks = useCallback(async () => {
     try {
@@ -58,7 +71,7 @@ export function useTasks() {
       }
 
       const token = await authenticate();
-      const { items: apiItems, sources } = await fetchUserTasks(token, user.id, abortRef.current.signal);
+      const { items: apiItems, sources } = await fetchUserTasks(token, abortRef.current.signal);
       setTasks(mapApiToTasks(apiItems));
 
       // Detect per-source failures from sources metadata
@@ -77,10 +90,9 @@ export function useTasks() {
     } finally {
       setLoading(false);
     }
-  }, [authenticate, shouldUseMock, user?.id]);
+  }, [authenticate, shouldUseMock]);
 
   useEffect(() => {
-    // In real API mode we need auth ready; in mock mode we should not block UI.
     if (!shouldUseMock && !isReady) return;
     void loadTasks();
   }, [isReady, shouldUseMock, loadTasks]);
@@ -116,7 +128,8 @@ export function useTasks() {
   };
 
   const refresh = useCallback(async () => {
-    if ((!shouldUseMock && !isReady) || refreshing) return;
+    if (refreshing) return;
+    if (!shouldUseMock && !isReady) return;
     if (isOnRefreshCooldown()) return;
 
     abortRef.current?.abort();
@@ -131,7 +144,7 @@ export function useTasks() {
 
       if (shouldUseMock) {
         await new Promise((r) => setTimeout(r, 1200));
-      mockIndexRef.current = (mockIndexRef.current + 1) % MOCK_SETS.length;
+        mockIndexRef.current = (mockIndexRef.current + 1) % MOCK_SETS.length;
         setTasks(MOCK_SETS[mockIndexRef.current]);
         // Simulate partial failure every other refresh for visual testing
         if (mockIndexRef.current % 2 === 1) {
@@ -141,7 +154,7 @@ export function useTasks() {
         }
       } else {
         const token = await authenticate();
-        const res = await triggerRefresh(token, user!.id);
+        const res = await triggerRefresh(token);
         const job = await waitForJob(token, res.runId, undefined, abortRef.current.signal);
 
         // Parse per-source results for partial failure detection
@@ -162,7 +175,7 @@ export function useTasks() {
         }
         setFailedSystems(failed);
 
-        const { items: apiItems } = await fetchUserTasks(token, user!.id, abortRef.current.signal);
+        const { items: apiItems } = await fetchUserTasks(token, abortRef.current.signal);
         setTasks(mapApiToTasks(apiItems));
       }
 
@@ -175,31 +188,27 @@ export function useTasks() {
       setRefreshing(false);
       abortRef.current = null;
     }
-  }, [authenticate, isReady, startCooldownTimer, refreshing, shouldUseMock, user?.id]);
+  }, [authenticate, isReady, startCooldownTimer, refreshing, shouldUseMock, failedSystems, lastUpdated]);
 
-  // --- Auto-refresh: polling every 5 minutes (only when tab is visible) ---
+  // --- Auto-refresh: full sync every 5 minutes, only if user is active ---
   useEffect(() => {
     const id = setInterval(() => {
-      if (document.visibilityState === "visible") {
-        void loadTasks();
+      if (document.visibilityState === "visible" && isUserActive()) {
+        void refresh();
       }
     }, AUTO_REFRESH_INTERVAL_MS);
     return () => clearInterval(id);
-  }, [loadTasks]);
+  }, [refresh, isUserActive]);
 
-  // --- Auto-refresh: on tab focus if data is stale (>60s old) ---
+  // --- Auto-refresh: full sync on tab focus (respects cooldown) ---
   useEffect(() => {
     const handleVisibility = () => {
       if (document.visibilityState !== "visible") return;
-      if (!lastUpdated) return;
-      const gap = Date.now() - lastUpdated.getTime();
-      if (gap >= MIN_REFETCH_GAP_MS) {
-        void loadTasks();
-      }
+      void refresh();
     };
     document.addEventListener("visibilitychange", handleVisibility);
     return () => document.removeEventListener("visibilitychange", handleVisibility);
-  }, [loadTasks, lastUpdated]);
+  }, [refresh]);
 
   useEffect(() => {
     return () => abortRef.current?.abort();
