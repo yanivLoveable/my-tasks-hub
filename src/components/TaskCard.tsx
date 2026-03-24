@@ -62,9 +62,9 @@ export default function TaskCard({ task }: TaskCardProps) {
             </span>
           </div>
 
-          {/* Row 1b: identifier */}
-          {task.identifier && (
-            <div className="mb-[5px]">
+          {/* Row 2: identifier + category + dates + overdue */}
+          <div className="flex items-center gap-[10px] flex-wrap text-[12px] text-muted-foreground">
+            {task.identifier && (
               <Tooltip open={copied ? true : undefined}>
                 <TooltipTrigger asChild>
                   <span
@@ -78,11 +78,7 @@ export default function TaskCard({ task }: TaskCardProps) {
                   {copied ? "הועתק!" : "לחץ להעתקה"}
                 </TooltipContent>
               </Tooltip>
-            </div>
-          )}
-
-          {/* Row 2: category + dates + overdue */}
-          <div className="flex items-center gap-[10px] flex-wrap text-[12px] text-muted-foreground">
+            )}
             {showCategory && (
               <span className="bg-secondary text-secondary-foreground font-bold rounded px-[7px] py-[1px] text-[11px]">
                 {task.category}

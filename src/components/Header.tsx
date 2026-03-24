@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { MessageSquare, Info, X, AlertTriangle } from "lucide-react";
-import RefreshPopover from "@/components/RefreshPopover";
 import FeedbackModal from "@/components/FeedbackModal";
 import { formatDateTimeHebrew } from "@/utils/format";
 import {
@@ -17,19 +16,11 @@ import {
 
 interface HeaderProps {
   lastUpdated: Date | null;
-  onRefresh: () => void;
-  refreshing: boolean;
-  cooldown: boolean;
-  cooldownTime: string;
   failedSystems?: Record<string, Date>;
 }
 
 export default function Header({
   lastUpdated,
-  onRefresh,
-  refreshing,
-  cooldown,
-  cooldownTime,
   failedSystems = {},
 }: HeaderProps) {
   const failedNames = Object.keys(failedSystems);
@@ -61,14 +52,6 @@ export default function Header({
               )}
             </span>
           )}
-          <RefreshPopover
-            lastUpdated={lastUpdated}
-            onRefresh={onRefresh}
-            refreshing={refreshing}
-            cooldown={cooldown}
-            cooldownTime={cooldownTime}
-          />
-          <div className="w-px h-4 bg-border" />
           <TooltipProvider delayDuration={300}>
             <Tooltip>
               <TooltipTrigger asChild>

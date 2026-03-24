@@ -52,36 +52,3 @@ export interface AuthTokenResponse {
   expires_in: number;
   token_type?: string;
 }
-
-// --- POST /refresh ---
-
-export interface RefreshResponse {
-  ok: boolean;
-  runId: string;
-  status: string;
-  sources?: Record<string, { status: string }>;
-}
-
-// --- GET /jobs/runs/{runId} ---
-
-export interface JobRunResponse {
-  ok: boolean;
-  runId: string;
-  jobName?: string;
-  status: "pending" | "queued" | "running" | "succeeded" | "failed";
-  createdAt?: string;
-  startedAt?: string;
-  finishedAt?: string;
-  updatedAt?: string;
-  errorMessage?: string;
-  result?: {
-    statuses?: Record<string, string>;
-  };
-  sources?: Record<string, {
-    status: string;
-    startedAt?: string;
-    finshedAt?: string;
-    error?: { message: string };
-    refresh?: SourceRefreshInfo;
-  }>;
-}
