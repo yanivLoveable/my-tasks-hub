@@ -55,16 +55,20 @@ export default function TaskCard({ task }: TaskCardProps) {
 
         {/* Content */}
         <div className="flex-1 min-w-0">
-          {/* Row 1: title + identifier */}
-          <div className="flex items-baseline gap-2 mb-[5px] flex-wrap">
-            <span className="text-[16px] font-bold text-foreground leading-[1.3] line-clamp-2 break-words">
+          {/* Row 1: title */}
+          <div className="mb-[3px]">
+            <span className="text-[14px] font-bold text-foreground leading-[1.3] line-clamp-2 break-words">
               {task.title}
             </span>
-            {task.identifier && (
+          </div>
+
+          {/* Row 1b: identifier */}
+          {task.identifier && (
+            <div className="mb-[5px]">
               <Tooltip open={copied ? true : undefined}>
                 <TooltipTrigger asChild>
                   <span
-                    className="text-[11px] font-mono text-muted-foreground flex-shrink-0 select-none cursor-pointer hover:text-primary transition-colors"
+                    className="text-[11px] font-mono text-muted-foreground select-none cursor-pointer hover:text-primary transition-colors"
                     onClick={handleCopyId}
                   >
                     {task.identifier}
@@ -74,8 +78,8 @@ export default function TaskCard({ task }: TaskCardProps) {
                   {copied ? "הועתק!" : "לחץ להעתקה"}
                 </TooltipContent>
               </Tooltip>
-            )}
-          </div>
+            </div>
+          )}
 
           {/* Row 2: category + dates + overdue */}
           <div className="flex items-center gap-[10px] flex-wrap text-[12px] text-muted-foreground">

@@ -9,6 +9,7 @@ import React, {
 import Keycloak from "keycloak-js";
 import { getAccessToken as getApiAccessToken } from "@/services/authService";
 import { APP_ENV } from "@/config";
+import { setAuthRetryFn } from "@/services/authRetry";
 
 export type AuthStatus = "loading" | "ready" | "error";
 
