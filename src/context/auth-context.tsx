@@ -240,8 +240,9 @@ function RealAuthProvider({
   }, [authenticate]);
 
   useEffect(() => {
+    setAuthRetryFn(authenticate);
     void ensureAuthenticated();
-  }, [ensureAuthenticated]);
+  }, [ensureAuthenticated, authenticate]);
 
   // Refresh near expiry (API token exp in JWT)
   useEffect(() => {
