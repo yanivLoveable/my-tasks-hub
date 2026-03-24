@@ -16,9 +16,9 @@ function deriveSystemLabel(source: string): string {
 
 export function mapApiToTask(item: ApiWorkItem): Task {
   const systemLabel = deriveSystemLabel(item.source);
-  const url = item.url
-    ? rewriteTaskUrl(item.url, systemLabel, APP_ENV)
-    : "";
+  const url = item.url;
+    //? rewriteTaskUrl(item.url, systemLabel, APP_ENV)
+    //: "";
 
   const startDate = parseDate(item.assignmentDate);
   const dueDate = parseDateNullable(item.dueDate);

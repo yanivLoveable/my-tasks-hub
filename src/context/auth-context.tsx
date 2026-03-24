@@ -7,7 +7,7 @@ import React, {
   useState,
 } from "react";
 import Keycloak from "keycloak-js";
-import { getAccessToken as getApiAccessToken } from "@/services/authService";
+//import { getAccessToken as getApiAccessToken } from "@/services/authService";
 import { APP_ENV } from "@/config";
 
 export type AuthStatus = "loading" | "ready" | "error";
@@ -44,6 +44,7 @@ type JWTPayload = Partial<User> & {
   preferred_username?: string;
   email?: string;
   name?: string;
+  sAMAccountName?: string;
 };
 
 function decodeJwtPayload<T>(token: string): T | null {
@@ -65,10 +66,10 @@ function decodeJwtPayload<T>(token: string): T | null {
 
 function userFromPayload(p: JWTPayload | null): User | null {
   if (!p) return null;
-  const id =
-    (typeof p.id === "string" && p.id) ||
-    (typeof p.sub === "string" && p.sub) ||
-    "";
+  const id = p.sAMAccountName ?? "";
+    // (typeof p.id === "string" && p.id) ||
+    // (typeof p.sub === "string" && p.sub) ||
+    // "";
   if (!id) return null;
   return {
     id,
@@ -177,11 +178,11 @@ function RealAuthProvider({
     const ok = await initKeycloakOnce();
     if (!ok) throw new Error("Keycloak init failed");
 
-    const keycloakToken = keycloak.token;
-    if (!keycloakToken) throw new Error("Missing Keycloak token");
+    const apiAccessToken = keycloak.token;
+    if (!apiAccessToken) throw new Error("Missing Keycloak token");
 
     // Exchange Keycloak token => API access token
-    const apiAccessToken = await getApiAccessToken(keycloakToken);
+    //const apiAccessToken = await getApiAccessToken(keycloakToken);
 
     const payload = decodeJwtPayload<JWTPayload>(apiAccessToken);
     const u = userFromPayload(payload);
