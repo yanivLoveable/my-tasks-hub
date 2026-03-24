@@ -12,42 +12,31 @@ describe("Flow 1 — Initial load + baseline UI", () => {
 
   it("renders RTL layout with header elements", async () => {
     renderApp(<Index />);
-    await waitFor(() => {
-      expect(screen.getByText("YANIV")).toBeInTheDocument();
-    });
+    expect(await screen.findByText("YANIV")).toBeInTheDocument();
     expect(screen.getByText("מרכז המשימות וההתראות")).toBeInTheDocument();
   });
 
   it("loads and displays tasks after loading state", async () => {
     renderApp(<Index />);
-    await waitFor(() => {
-      // First task in default sort order
-      const sorted = sortTasks([...MOCK_TASKS], "default", "asc");
-      expect(screen.getByText(sorted[0].title)).toBeInTheDocument();
-    });
+    const sorted = sortTasks([...MOCK_TASKS], "default", "asc");
+    expect(await screen.findByText(sorted[0].title)).toBeInTheDocument();
   });
 
   it("shows pagination with total items count", async () => {
     renderApp(<Index />);
-    await waitFor(() => {
-      expect(screen.getByText(/מציג 1-20 מתוך/)).toBeInTheDocument();
-    });
+    expect(await screen.findByText(/מציג 1-20 מתוך/)).toBeInTheDocument();
   });
 
   it("shows total tasks count in controls bar", async () => {
     renderApp(<Index />);
-    await waitFor(() => {
-      expect(screen.getByText(String(MOCK_TASKS.length))).toBeInTheDocument();
-    });
+    expect(await screen.findByText(String(MOCK_TASKS.length))).toBeInTheDocument();
   });
 
   it("task card contains required fields (title, identifier, system label)", async () => {
     renderApp(<Index />);
     const sorted = sortTasks([...MOCK_TASKS], "default", "asc");
     const firstTask = sorted[0];
-    await waitFor(() => {
-      expect(screen.getByText(firstTask.title)).toBeInTheDocument();
-    });
+    expect(await screen.findByText(firstTask.title)).toBeInTheDocument();
     expect(screen.getByText(firstTask.identifier)).toBeInTheDocument();
     expect(screen.getAllByText(firstTask.systemLabel).length).toBeGreaterThan(0);
   });
