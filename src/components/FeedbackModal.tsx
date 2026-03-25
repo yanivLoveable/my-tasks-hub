@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { MessageSquare, X } from "lucide-react";
+import emailjs from "@emailjs/browser";
+import { toast } from "@/hooks/use-toast";
 import {
   Dialog,
   DialogContent,
@@ -14,17 +16,43 @@ interface FeedbackModalProps {
 
 const MAX_CHARS = 500;
 
+// EmailJS public keys (safe to store client-side)
+const EMAILJS_SERVICE_ID = "YOUR_SERVICE_ID";
+const EMAILJS_TEMPLATE_ID = "YOUR_TEMPLATE_ID";
+const EMAILJS_PUBLIC_KEY = "YOUR_PUBLIC_KEY";
+
 export default function FeedbackModal({ open, onOpenChange }: FeedbackModalProps) {
   const [text, setText] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const [sending, setSending] = useState(false);
 
-  const handleSubmit = () => {
-    setSubmitted(true);
-    setTimeout(() => {
-      onOpenChange(false);
-      setSubmitted(false);
-      setText("");
-    }, 1800);
+  const handleSubmit = async () => {
+    setSending(true);
+    try {
+      await emailjs.send(
+        EMAILJS_SERVICE_ID,
+        EMAILJS_TEMPLATE_ID,
+        {
+          message: text,
+          to_email: "yaniv.loveable@gmail.com",
+        },
+        EMAILJS_PUBLIC_KEY
+      );
+      setSubmitted(true);
+      setTimeout(() => {
+        onOpenChange(false);
+        setSubmitted(false);
+        setText("");
+      }, 1800);
+    } catch (error) {
+      toast({
+        title: "שגיאה בשליחת המשוב",
+        description: "אנא נסה שוב מאוחר יותר",
+        variant: "destructive",
+      });
+    } finally {
+      setSending(false);
+    }
   };
 
   const handleClose = () => {
@@ -96,14 +124,15 @@ export default function FeedbackModal({ open, onOpenChange }: FeedbackModalProps
             <div className="flex items-center justify-center gap-3 w-full">
               <button
                 onClick={handleSubmit}
-                disabled={!text.trim()}
+                disabled={!text.trim() || sending}
                 className="h-10 px-8 rounded-xl bg-action text-white text-[13px] font-semibold hover:bg-actionHover transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
               >
-                שלח משוב
+                {sending ? "שולח..." : "שלח משוב"}
               </button>
               <button
                 onClick={handleClose}
-                className="h-10 px-5 rounded-xl border border-border text-[13px] font-semibold text-primary hover:bg-secondary transition-colors"
+                disabled={sending}
+                className="h-10 px-5 rounded-xl border border-border text-[13px] font-semibold text-primary hover:bg-secondary transition-colors disabled:opacity-40"
               >
                 ביטול
               </button>
