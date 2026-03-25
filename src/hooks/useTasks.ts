@@ -2,8 +2,8 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { MOCK_SETS } from "@/data/mockTaskSets";
 import type { Task } from "@/types/task";
 
-const AUTO_REFRESH_INTERVAL_MS = 5 * 60 * 1000;
-const USER_ACTIVITY_TIMEOUT_MS = 5 * 60 * 1000;
+const AUTO_REFRESH_INTERVAL_MS = 2 * 60 * 1000;
+const USER_ACTIVITY_TIMEOUT_MS = 2 * 60 * 1000;
 const ACTIVITY_EVENTS: (keyof DocumentEventMap)[] = ["mousemove", "keydown", "click", "scroll", "touchstart"];
 
 import { useAuth } from "@/hooks/use-auth";
@@ -33,7 +33,9 @@ export function useTasks() {
 
   // Track user activity
   useEffect(() => {
-    const mark = () => { lastActivityRef.current = Date.now(); };
+    const mark = () => {
+      lastActivityRef.current = Date.now();
+    };
     ACTIVITY_EVENTS.forEach((e) => document.addEventListener(e, mark, { passive: true }));
     return () => {
       ACTIVITY_EVENTS.forEach((e) => document.removeEventListener(e, mark));
