@@ -114,6 +114,8 @@ const Index = () => {
       <div className="bg-background border-b border-header-border pb-1.5">
         <Header
           lastUpdated={lastUpdated}
+          nextRefreshTime={nextRefreshTime}
+          refreshing={refreshing}
           failedSystems={failedSystems}
         />
         <ControlsBar totalTasks={tasks.length} />
