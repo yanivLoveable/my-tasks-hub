@@ -148,13 +148,11 @@ const Index = () => {
 
       <div className="bg-content-bg flex-1">
         <div className="mx-auto" style={{ maxWidth: 1104 }}>
-          {!loading && (validatedState.selectedSystems.length > 0 || validatedState.selectedTopics.length > 0 || validatedState.flags.overdueOnly || validatedState.flags.groupOnly || validatedState.flags.delegationOnly || validatedState.flags.personalOnly || validatedState.searchQuery.trim()) && (
-            <div className="flex items-center justify-start py-1.5 px-2" dir="rtl">
-              <p className="text-[11px] text-muted-foreground/60">
-                בהתאם לסינון, מוצגות {sorted.length} משימות
-              </p>
-            </div>
-          )}
+          <div className="flex items-center justify-start py-1.5 px-2" dir="rtl">
+            <p className={`text-[11px] text-muted-foreground/60 transition-opacity ${!loading && hasActiveFilters ? "opacity-100" : "opacity-0"}`}>
+              בהתאם לסינון, מוצגות {sorted.length} משימות
+            </p>
+          </div>
           <div className="pt-2">
             <TaskList
               tasks={paginatedTasks}
