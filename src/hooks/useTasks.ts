@@ -124,9 +124,11 @@ export function useTasks() {
   return {
     tasks,
     loading,
+    refreshing,
     banner,
     setBanner,
     lastUpdated,
+    nextRefreshTime,
     loadTasks,
     failedSystems,
   };
