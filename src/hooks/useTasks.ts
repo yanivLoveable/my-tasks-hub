@@ -23,7 +23,9 @@ export function useTasks() {
   const [loading, setLoading] = useState(true);
   const [banner, setBanner] = useState<BannerMessage | null>(null);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
+  const [nextRefreshTime, setNextRefreshTime] = useState<Date | null>(null);
   const [failedSystems, setFailedSystems] = useState<Record<string, Date>>({});
+  const [refreshing, setRefreshing] = useState(false);
 
   const mockIndexRef = useRef(-1);
   const abortRef = useRef<AbortController | null>(null);
