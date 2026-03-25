@@ -1,4 +1,3 @@
-import { useState, useEffect, useRef } from "react";
 import type { Task } from "@/types/task";
 import TaskCard from "./TaskCard";
 import { SearchX } from "lucide-react";
@@ -28,75 +27,6 @@ function SkeletonCard() {
 }
 
 export default function TaskList({ tasks, loading, hasActiveFilters, onClearFilters }: TaskListProps) {
-  const prevIdsRef = useRef<Set<string>>(new Set());
-  const [newTaskIds, setNewTaskIds] = useState<Set<string>>(new Set());
-  const [exitingTasks, setExitingTasks] = useState<Task[]>([]);
-  const isFirstRender = useRef(true);
-
-  useEffect(() => {
-    if (loading) return;
-
-    const currentIds = new Set(tasks.map((t) => t.id));
-    const prevIds = prevIdsRef.current;
-
-    // On first render with data, don't animate anything
-    if (isFirstRender.current) {
-      isFirstRender.current = false;
-      prevIdsRef.current = currentIds;
-      return;
-    }
-
-    // Find new tasks (in current but not in previous)
-    const added = new Set<string>();
-    currentIds.forEach((id) => {
-      if (!prevIds.has(id)) added.add(id);
-    });
-
-    // Find removed tasks (in previous but not in current)
-    const removedIds = new Set<string>();
-    prevIds.forEach((id) => {
-      if (!currentIds.has(id)) removedIds.add(id);
-    });
-
-    if (added.size > 0) {
-      setNewTaskIds(added);
-    }
-
-    // For removed tasks, we need their Task objects from the previous render
-    // We store them temporarily for the exit animation
-    if (removedIds.size > 0) {
-      // We can't access old task objects here, so we store removedIds
-      // and reconstruct minimal exit placeholders
-      setExitingTasks((prev) => prev); // trigger handled below
-    }
-
-    prevIdsRef.current = currentIds;
-
-    // Clear "new" status after animation completes
-    if (added.size > 0) {
-      const timer = setTimeout(() => setNewTaskIds(new Set()), 300);
-      return () => clearTimeout(timer);
-    }
-  }, [tasks, loading]);
-
-  // Track previous tasks for exit animation
-  const prevTasksRef = useRef<Task[]>([]);
-
-  useEffect(() => {
-    if (loading) return;
-
-    const currentIds = new Set(tasks.map((t) => t.id));
-    const removed = prevTasksRef.current.filter((t) => !currentIds.has(t.id));
-
-    if (removed.length > 0) {
-      setExitingTasks(removed);
-      const timer = setTimeout(() => setExitingTasks([]), 300);
-      return () => clearTimeout(timer);
-    }
-
-    prevTasksRef.current = tasks;
-  }, [tasks, loading]);
-
   if (loading) {
     return (
       <div className="space-y-2">
@@ -107,7 +37,7 @@ export default function TaskList({ tasks, loading, hasActiveFilters, onClearFilt
     );
   }
 
-  if (tasks.length === 0 && exitingTasks.length === 0) {
+  if (tasks.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-24 text-muted-foreground" dir="rtl">
         <div className="w-14 h-14 rounded-full bg-secondary flex items-center justify-center mb-5">
@@ -130,18 +60,8 @@ export default function TaskList({ tasks, loading, hasActiveFilters, onClearFilt
 
   return (
     <div className="space-y-2">
-      {/* Exiting tasks (animating out) */}
-      {exitingTasks.map((task) => (
-        <div key={`exit-${task.id}`} className="animate-task-exit">
-          <TaskCard task={task} />
-        </div>
-      ))}
-      {/* Current tasks */}
       {tasks.map((task) => (
-        <div
-          key={task.id}
-          className={newTaskIds.has(task.id) ? "animate-task-enter opacity-0" : ""}
-        >
+        <div key={task.id}>
           <TaskCard task={task} />
         </div>
       ))}
