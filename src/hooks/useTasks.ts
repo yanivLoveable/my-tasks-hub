@@ -77,7 +77,9 @@ export function useTasks() {
         }
       }
       setFailedSystems(failed);
-      setLastUpdated(new Date());
+      const now = new Date();
+      setLastUpdated(now);
+      setNextRefreshTime(new Date(now.getTime() + AUTO_REFRESH_INTERVAL_MS));
     } catch (err: unknown) {
       if (abortRef.current?.signal.aborted) return;
       const msg = err instanceof Error ? err.message : String(err);
