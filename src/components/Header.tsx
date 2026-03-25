@@ -48,7 +48,7 @@ export default function Header({
               {nextRefreshTime && (
                 <>
                   <span className="mx-0.5">|</span>
-                  <span className="opacity-70">רענון הבא: {formatTime(nextRefreshTime)}</span>
+                  <span>רענון הבא: {formatTime(nextRefreshTime)}</span>
                 </>
               )}
               {hasPartialFailure && (
