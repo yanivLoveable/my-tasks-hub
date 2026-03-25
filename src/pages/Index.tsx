@@ -73,6 +73,8 @@ const Index = () => {
     currentPage * PAGE_SIZE
   );
 
+  const hasActiveFilters = validatedState.selectedSystems.length > 0 || validatedState.selectedTopics.length > 0 || validatedState.flags.overdueOnly || validatedState.flags.groupOnly || validatedState.flags.delegationOnly || validatedState.flags.personalOnly || !!validatedState.searchQuery.trim();
+
   const handleSystemToggle = useCallback((sys: string) => {
     setUiState((prev) => {
       const systems = Array.isArray(prev.selectedSystems) ? prev.selectedSystems : [];
