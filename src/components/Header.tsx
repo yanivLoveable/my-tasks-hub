@@ -31,9 +31,13 @@ export default function Header({
   return (
     <>
       <div className="flex items-center justify-between px-8 py-1.5" dir="rtl">
-        <span className="text-base font-extrabold text-primary tracking-wide">
-          YANIV
-        </span>
+        <svg width="90" height="24" viewBox="0 0 90 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="flex-shrink-0">
+          {/* Rounded square icon with Y monogram */}
+          <rect x="0" y="2" width="20" height="20" rx="5" className="fill-primary" />
+          <text x="10" y="17" textAnchor="middle" className="fill-primary-foreground" fontSize="13" fontWeight="800" fontFamily="Assistant, sans-serif">Y</text>
+          {/* Logotype */}
+          <text x="26" y="17.5" className="fill-primary" fontSize="15" fontWeight="800" fontFamily="Assistant, sans-serif" letterSpacing="1.5">ANIV</text>
+        </svg>
         <div className="flex items-center gap-3">
           {lastUpdated && (
             <span className="inline-flex items-center gap-1.5 text-xs text-muted-foreground/60 select-none">

@@ -60,8 +60,14 @@ export default function TaskList({ tasks, loading, hasActiveFilters, onClearFilt
 
   return (
     <div className="space-y-2">
-      {tasks.map((task) => (
-        <TaskCard key={task.id} task={task} />
+      {tasks.map((task, index) => (
+        <div
+          key={task.id}
+          className="opacity-0 animate-task-enter"
+          style={{ animationDelay: `${index * 50}ms` }}
+        >
+          <TaskCard task={task} />
+        </div>
       ))}
     </div>
   );
