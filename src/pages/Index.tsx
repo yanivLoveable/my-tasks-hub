@@ -20,9 +20,11 @@ const Index = () => {
   const {
     tasks,
     loading,
+    refreshing,
     banner,
     setBanner,
     lastUpdated,
+    nextRefreshTime,
     loadTasks,
     failedSystems,
   } = useTasks();
