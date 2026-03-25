@@ -1,36 +1,46 @@
 
 
-# Replace Logo + Add Task Card Animations
+# Per-Task Enter/Exit Animations (Only New & Removed Tasks Animate)
 
-## 1. Replace "YANIV" text with an SVG logo
+## Problem
 
-Since image upload is failing, I'll create an inline SVG logo directly in the Header component. It will be a clean, modern logotype spelling "YANIV" with a small icon element — similar dimensions to the current text (~80px wide, ~20px tall).
+Currently every task card re-runs the entrance animation on every render — when filters change, when refreshing, etc. The entire list "flashes." You want only **newly added** tasks to animate in and **removed** tasks to animate out, while existing tasks stay put.
 
-**File: `src/components/Header.tsx`**
-- Replace the `<span>YANIV</span>` with an inline SVG logo mark — a small geometric icon (a stylized "Y" monogram inside a rounded square) followed by the text "YANIV" rendered as SVG text with the primary color
-- Size: ~90px wide × 24px tall to match current footprint
+## Root Cause
 
-## 2. Add enter/exit animations to task cards
+The animation class `animate-task-enter` is applied unconditionally to every card. React re-renders all cards and each one replays the animation.
 
-Use CSS `@keyframes` with staggered delays for smooth fade+slide-in when tasks appear, and leverage `layout` transitions.
+## Approach
 
-**File: `tailwind.config.ts`**
-- Add `task-enter` keyframe: fade-in + slide from right (RTL-friendly) over 250ms
-- Add corresponding animation class
+Track which task IDs are **new** vs **existing** vs **removed** using a `useRef` that stores the previous task ID set. On each render, diff the current IDs against the previous ones. Only new tasks get the entrance animation; removed tasks get a brief exit animation before being removed from the DOM.
 
-**File: `src/components/TaskCard.tsx`**
-- Add `animate-task-enter` class to the card wrapper
+## Changes
 
-**File: `src/components/TaskList.tsx`**
-- Add staggered animation delay via inline style `animationDelay: ${index * 50}ms` on each TaskCard wrapper
-- Add `animate-task-enter` with `opacity-0` initial state and `animation-fill-mode: forwards`
+### 1. `src/components/TaskList.tsx` — Diff-based animation logic
 
-This gives a subtle cascading entrance effect when the list loads or filters change, without needing a heavy animation library.
+- Add a `useRef<Set<string>>` to store the previous set of task IDs
+- Add a `useState<Task[]>` for "exiting tasks" (tasks being animated out)
+- On each render (via `useEffect`), compare new task IDs vs previous:
+  - **New IDs** → mark them in a `newTaskIds` set → apply `animate-task-enter` only to those
+  - **Removed IDs** → add them to an "exiting" list with `animate-task-exit` → remove from DOM after animation ends (~300ms timeout)
+  - **Existing IDs** → render normally, no animation class
+- Update the ref after diffing
+- Remove the staggered `animationDelay` (no longer relevant since only individual cards animate)
+
+### 2. `tailwind.config.ts` — Add exit animation
+
+- Add `task-exit` keyframe: fade-out + slide-left over 250ms
+- Add `animate-task-exit` animation class with `forwards` fill mode
+
+### 3. `src/hooks/useTasks.ts` — Skip loading skeleton on refresh
+
+- Currently `loadTasks` sets `loading = true` which shows skeletons, wiping out the list. This defeats per-task animations.
+- Add a flag: only set `loading = true` on the **first** load. Subsequent refreshes keep the old list visible while fetching, then swap in the new data (triggering the diff logic).
+- Add `isInitialLoad` ref, set `loading = true` only when `tasks` is empty.
 
 | File | Change |
 |------|--------|
-| `src/components/Header.tsx` | Replace text logo with inline SVG logo |
-| `tailwind.config.ts` | Add `task-enter` keyframe + animation |
-| `src/components/TaskList.tsx` | Add staggered animation delays to cards |
-| `src/components/TaskCard.tsx` | Add enter animation class |
+| `src/components/TaskList.tsx` | Track previous task IDs via ref, diff to determine new/removed/existing, apply animations only to new/removed cards |
+| `tailwind.config.ts` | Add `task-exit` keyframe and animation |
+| `src/hooks/useTasks.ts` | Only show loading skeleton on first load, not on refresh |
 
