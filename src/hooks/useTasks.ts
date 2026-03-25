@@ -84,6 +84,7 @@ export function useTasks() {
       const msg = err instanceof Error ? err.message : String(err);
       setBanner({ type: "error", text: msg });
     } finally {
+      hasLoadedOnce.current = true;
       setLoading(false);
     }
   }, [authenticate, shouldUseMock]);
