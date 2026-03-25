@@ -64,7 +64,7 @@ export default function FeedbackModal({ open, onOpenChange }: FeedbackModalProps
           </div>
 
           {submitted ? (
-            <div className="text-center py-4">
+            <div className="flex items-center justify-center" style={{ minHeight: '176px' }}>
               <p className="text-[20px] font-extrabold text-primary leading-snug tracking-wide">
                 המשוב נשלח בהצלחה
               </p>
