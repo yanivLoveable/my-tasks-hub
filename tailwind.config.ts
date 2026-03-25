@@ -110,6 +110,16 @@ export default {
             transform: "translateX(0)",
           },
         },
+        "task-exit": {
+          "0%": {
+            opacity: "1",
+            transform: "translateX(0)",
+          },
+          "100%": {
+            opacity: "0",
+            transform: "translateX(-12px)",
+          },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
