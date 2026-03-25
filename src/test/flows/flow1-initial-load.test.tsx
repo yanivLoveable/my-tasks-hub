@@ -12,7 +12,8 @@ describe("Flow 1 — Initial load + baseline UI", () => {
 
   it("renders RTL layout with header elements", async () => {
     renderApp(<Index />);
-    expect(await screen.findByText("YANIV")).toBeInTheDocument();
+    // Logo is now an SVG with split text "Y" + "ANIV"
+    expect(await screen.findByText("ANIV")).toBeInTheDocument();
     expect(screen.getByText("מרכז המשימות וההתראות")).toBeInTheDocument();
   });
 
