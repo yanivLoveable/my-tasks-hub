@@ -61,7 +61,9 @@ export function useTasks() {
         await new Promise((r) => setTimeout(r, 300));
         mockIndexRef.current = (mockIndexRef.current + 1) % MOCK_SETS.length;
         setTasks(MOCK_SETS[mockIndexRef.current]);
-        setLastUpdated(new Date());
+        const now = new Date();
+        setLastUpdated(now);
+        setNextRefreshTime(new Date(now.getTime() + AUTO_REFRESH_INTERVAL_MS));
         return;
       }
 
