@@ -5,6 +5,22 @@ import { clearAllStorage, preloadUIState } from "@/test/helpers/storage";
 import Index from "@/pages/Index";
 import { MOCK_TASKS } from "@/data/mockTasks";
 
+function getFilterCount(): number {
+  const el = screen.getByText(/בהתאם לסינון, מוצגות/);
+  const text = el.textContent || "";
+  return parseInt(text.match(/\d+/)?.[0] || "0");
+}
+
+function expectFilterVisible() {
+  const el = screen.getByText(/בהתאם לסינון, מוצגות/);
+  expect(el).toHaveClass("opacity-100");
+}
+
+function expectFilterHidden() {
+  const el = screen.getByText(/בהתאם לסינון, מוצגות/);
+  expect(el).toHaveClass("opacity-0");
+}
+
 describe("Flow 3 — Filters flow", () => {
   beforeEach(() => clearAllStorage());
   afterEach(() => clearAllStorage());
@@ -17,28 +33,22 @@ describe("Flow 3 — Filters flow", () => {
 
     fireEvent.click(screen.getByText("חורגות"));
 
-    await waitFor(() => {
-      expect(screen.getByText(/בהתאם לסינון, מוצגות/)).toBeInTheDocument();
-    });
-
     const overdueTasks = MOCK_TASKS.filter((t) => t.overdueDays && t.overdueDays > 0);
-    const text = screen.getByText(/בהתאם לסינון, מוצגות/).textContent || "";
-    const count = parseInt(text.match(/\d+/)?.[0] || "0");
-    expect(count).toBe(overdueTasks.length);
+    await waitFor(() => {
+      expectFilterVisible();
+      expect(getFilterCount()).toBe(overdueTasks.length);
+    });
   });
 
   it("filters by system via preloaded state", async () => {
     preloadUIState({ selectedSystems: ["ERP"] });
     renderApp(<Index />);
 
-    await waitFor(() => {
-      expect(screen.getByText(/בהתאם לסינון, מוצגות/)).toBeInTheDocument();
-    });
-
     const erpTasks = MOCK_TASKS.filter((t) => t.systemLabel === "ERP");
-    const text = screen.getByText(/בהתאם לסינון, מוצגות/).textContent || "";
-    const count = parseInt(text.match(/\d+/)?.[0] || "0");
-    expect(count).toBe(erpTasks.length);
+    await waitFor(() => {
+      expectFilterVisible();
+      expect(getFilterCount()).toBe(erpTasks.length);
+    });
   });
 
   it("filters by group flag", async () => {
@@ -51,9 +61,8 @@ describe("Flow 3 — Filters flow", () => {
 
     await waitFor(() => {
       const groupTasks = MOCK_TASKS.filter((t) => !!t.groupName);
-      const text = screen.getByText(/בהתאם לסינון, מוצגות/).textContent || "";
-      const count = parseInt(text.match(/\d+/)?.[0] || "0");
-      expect(count).toBe(groupTasks.length);
+      expectFilterVisible();
+      expect(getFilterCount()).toBe(groupTasks.length);
     });
   });
 
@@ -65,12 +74,12 @@ describe("Flow 3 — Filters flow", () => {
 
     fireEvent.click(screen.getByText("חורגות"));
     await waitFor(() => {
-      expect(screen.getByText(/בהתאם לסינון, מוצגות/)).toBeInTheDocument();
+      expectFilterVisible();
     });
 
     fireEvent.click(screen.getByText("נקה הכל"));
     await waitFor(() => {
-      expect(screen.queryByText(/בהתאם לסינון, מוצגות/)).not.toBeInTheDocument();
+      expectFilterHidden();
     });
   });
 
@@ -87,9 +96,8 @@ describe("Flow 3 — Filters flow", () => {
       const combined = MOCK_TASKS.filter(
         (t) => (t.overdueDays && t.overdueDays > 0) && !t.groupName && !t.delegatedFrom
       );
-      const text = screen.getByText(/בהתאם לסינון, מוצגות/).textContent || "";
-      const count = parseInt(text.match(/\d+/)?.[0] || "0");
-      expect(count).toBe(combined.length);
+      expectFilterVisible();
+      expect(getFilterCount()).toBe(combined.length);
     });
   });
 
@@ -97,13 +105,10 @@ describe("Flow 3 — Filters flow", () => {
     preloadUIState({ selectedSystems: ["ERP", "JIRA"] });
     renderApp(<Index />);
 
-    await waitFor(() => {
-      expect(screen.getByText(/בהתאם לסינון, מוצגות/)).toBeInTheDocument();
-    });
-
     const expected = MOCK_TASKS.filter((t) => t.systemLabel === "ERP" || t.systemLabel === "JIRA");
-    const text = screen.getByText(/בהתאם לסינון, מוצגות/).textContent || "";
-    const count = parseInt(text.match(/\d+/)?.[0] || "0");
-    expect(count).toBe(expected.length);
+    await waitFor(() => {
+      expectFilterVisible();
+      expect(getFilterCount()).toBe(expected.length);
+    });
   });
 });
