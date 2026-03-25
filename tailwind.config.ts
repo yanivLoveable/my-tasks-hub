@@ -100,6 +100,16 @@ export default {
             height: "0",
           },
         },
+        "task-enter": {
+          "0%": {
+            opacity: "0",
+            transform: "translateX(12px)",
+          },
+          "100%": {
+            opacity: "1",
+            transform: "translateX(0)",
+          },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
