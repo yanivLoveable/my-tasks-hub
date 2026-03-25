@@ -1,31 +1,30 @@
 
 
-# Remove Animations & Replace SVG Logo with PNG
+# Send Feedback via EmailJS
 
-## 1. Remove task enter/exit animations
+## What this does
+When a user submits feedback in the modal, it will be emailed to **yaniv.loveable@gmail.com** using EmailJS (a free client-side email service).
 
-**`src/components/TaskList.tsx`**
-- Remove all diff-based animation logic (useRef for prevIds, newTaskIds state, exitingTasks state, related useEffects)
-- Render tasks simply without animation classes
+## Setup required (one-time, ~3 minutes)
+You'll need a free EmailJS account:
+1. Go to [emailjs.com](https://www.emailjs.com) and sign up
+2. **Add an email service** (e.g. Gmail) — this connects EmailJS to your inbox
+3. **Create an email template** with these variable placeholders:
+   - `{{message}}` — the feedback text
+   - `{{to_email}}` — recipient (we'll send `yaniv.loveable@gmail.com`)
+4. Note down your **Service ID**, **Template ID**, and **Public Key** (found in Account → API Keys)
 
-**`tailwind.config.ts`**
-- Remove `task-enter` and `task-exit` keyframes and animation entries
-
-**`src/hooks/useTasks.ts`**
-- Remove the `hasLoadedOnce` ref and restore normal loading behavior (show skeletons on every load)
-
-## 2. Replace SVG logo with PNG
-
-**`src/components/Header.tsx`**
-- Replace the inline SVG with an `<img>` tag pointing to a PNG file
-- Size it to match current dimensions (~90px wide)
-
-You'll need to upload your PNG logo file — just attach it in the chat after this plan is applied and I'll wire it up.
+## Code changes
 
 | File | Change |
 |------|--------|
-| `src/components/TaskList.tsx` | Remove all animation diffing logic, render cards plainly |
-| `tailwind.config.ts` | Remove task-enter/task-exit keyframes and animations |
-| `src/hooks/useTasks.ts` | Restore simple loading state |
-| `src/components/Header.tsx` | Replace SVG with PNG `<img>` tag |
+| `package.json` | Add `@emailjs/browser` dependency |
+| `src/components/FeedbackModal.tsx` | Import EmailJS, call `emailjs.send()` on submit with the feedback text, show loading state on the button, handle errors with a toast |
+
+### FeedbackModal changes
+- Store EmailJS public key, service ID, and template ID as constants (these are public/safe to store in code)
+- On submit: call `emailjs.send(serviceId, templateId, { message: text, to_email: "yaniv.loveable@gmail.com" }, publicKey)`
+- Add a loading state to disable the button and show "שולח..." while sending
+- On success: show the existing ✓ confirmation
+- On error: show a toast error message
 
