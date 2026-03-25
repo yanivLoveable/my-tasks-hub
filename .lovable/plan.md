@@ -1,34 +1,36 @@
 
 
-# Fix: Filter activation causes task list to shift down
+# Replace Logo + Add Task Card Animations
 
-## Problem
+## 1. Replace "YANIV" text with an SVG logo
 
-When you click a filter, the message "בהתאם לסינון, מוצגות X משימות" (line 149-155 in `Index.tsx`) conditionally renders. It goes from **not existing** to **existing in the DOM**, which pushes the entire task list down — a visible layout jump.
+Since image upload is failing, I'll create an inline SVG logo directly in the Header component. It will be a clean, modern logotype spelling "YANIV" with a small icon element — similar dimensions to the current text (~80px wide, ~20px tall).
 
-## Fix
+**File: `src/components/Header.tsx`**
+- Replace the `<span>YANIV</span>` with an inline SVG logo mark — a small geometric icon (a stylized "Y" monogram inside a rounded square) followed by the text "YANIV" rendered as SVG text with the primary color
+- Size: ~90px wide × 24px tall to match current footprint
 
-**File: `src/pages/Index.tsx`**
+## 2. Add enter/exit animations to task cards
 
-Always render the filter-count container but use `invisible` (or `opacity-0`) when no filters are active. This reserves the vertical space permanently, preventing the layout shift.
+Use CSS `@keyframes` with staggered delays for smooth fade+slide-in when tasks appear, and leverage `layout` transitions.
 
-Replace the conditional render `{!loading && (conditions) && (<div>...)}` with:
+**File: `tailwind.config.ts`**
+- Add `task-enter` keyframe: fade-in + slide from right (RTL-friendly) over 250ms
+- Add corresponding animation class
 
-```tsx
-<div className="flex items-center justify-start py-1.5 px-2" dir="rtl">
-  <p className={`text-[11px] text-muted-foreground/60 transition-opacity ${
-    !loading && hasActiveFilters ? "opacity-100" : "opacity-0"
-  }`}>
-    בהתאם לסינון, מוצגות {sorted.length} משימות
-  </p>
-</div>
-```
+**File: `src/components/TaskCard.tsx`**
+- Add `animate-task-enter` class to the card wrapper
 
-This keeps the ~24px row always present so the list never jumps. The text just fades in/out.
+**File: `src/components/TaskList.tsx`**
+- Add staggered animation delay via inline style `animationDelay: ${index * 50}ms` on each TaskCard wrapper
+- Add `animate-task-enter` with `opacity-0` initial state and `animation-fill-mode: forwards`
 
-Extract the `hasActiveFilters` boolean (already computed for `TaskList`) into a shared variable above both usages to keep it DRY.
+This gives a subtle cascading entrance effect when the list loads or filters change, without needing a heavy animation library.
 
 | File | Change |
 |------|--------|
-| `src/pages/Index.tsx` | Always render filter-count row; toggle opacity instead of mount/unmount |
+| `src/components/Header.tsx` | Replace text logo with inline SVG logo |
+| `tailwind.config.ts` | Add `task-enter` keyframe + animation |
+| `src/components/TaskList.tsx` | Add staggered animation delays to cards |
+| `src/components/TaskCard.tsx` | Add enter animation class |
 
