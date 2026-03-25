@@ -86,6 +86,7 @@ export function useTasks() {
       setBanner({ type: "error", text: msg });
     } finally {
       setLoading(false);
+      setRefreshing(false);
     }
   }, [authenticate, shouldUseMock]);
 
