@@ -46,9 +46,13 @@ export function useTasks() {
     return Date.now() - lastActivityRef.current < USER_ACTIVITY_TIMEOUT_MS;
   }, []);
 
+  const hasLoadedOnce = useRef(false);
+
   const loadTasks = useCallback(async () => {
     try {
-      setLoading(true);
+      if (!hasLoadedOnce.current) {
+        setLoading(true);
+      }
       setBanner(null);
 
       abortRef.current?.abort();
@@ -80,6 +84,7 @@ export function useTasks() {
       const msg = err instanceof Error ? err.message : String(err);
       setBanner({ type: "error", text: msg });
     } finally {
+      hasLoadedOnce.current = true;
       setLoading(false);
     }
   }, [authenticate, shouldUseMock]);
