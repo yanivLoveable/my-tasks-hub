@@ -46,13 +46,9 @@ export function useTasks() {
     return Date.now() - lastActivityRef.current < USER_ACTIVITY_TIMEOUT_MS;
   }, []);
 
-  const hasLoadedOnce = useRef(false);
-
   const loadTasks = useCallback(async () => {
     try {
-      if (!hasLoadedOnce.current) {
-        setLoading(true);
-      }
+      setLoading(true);
       setBanner(null);
 
       abortRef.current?.abort();
