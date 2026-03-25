@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { MessageSquare, Info, X, AlertTriangle } from "lucide-react";
+import { MessageSquare, Info, X, AlertTriangle, RefreshCw } from "lucide-react";
 import FeedbackModal from "@/components/FeedbackModal";
-import { formatDateTimeHebrew } from "@/utils/format";
+import { formatTime } from "@/utils/dates";
 import {
   Tooltip,
   TooltipContent,
@@ -16,11 +16,15 @@ import {
 
 interface HeaderProps {
   lastUpdated: Date | null;
+  nextRefreshTime: Date | null;
+  refreshing?: boolean;
   failedSystems?: Record<string, Date>;
 }
 
 export default function Header({
   lastUpdated,
+  nextRefreshTime,
+  refreshing = false,
   failedSystems = {},
 }: HeaderProps) {
   const failedNames = Object.keys(failedSystems);
@@ -34,16 +38,27 @@ export default function Header({
         <img src="/logo.png" alt="Logo" className="h-6 flex-shrink-0" />
         <div className="flex items-center gap-3">
           {lastUpdated && (
-            <span className="inline-flex items-center gap-1.5 text-xs text-muted-foreground/60 select-none">
-              עדכון אחרון: {formatDateTimeHebrew(lastUpdated)}
+            <span className="inline-flex items-center gap-1.5 text-xs text-muted-foreground/60 select-none whitespace-nowrap">
+              <RefreshCw
+                size={12}
+                className={`flex-shrink-0 ${refreshing ? "animate-spin" : ""}`}
+                style={{ cursor: "default" }}
+              />
+              עדכון אחרון: {formatTime(lastUpdated)}
+              {nextRefreshTime && (
+                <>
+                  <span className="mx-0.5">|</span>
+                  <span className="opacity-70">רענון הבא: {formatTime(nextRefreshTime)}</span>
+                </>
+              )}
               {hasPartialFailure && (
                 <TooltipProvider delayDuration={200}>
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <AlertTriangle size={14} className="text-amber-500 cursor-help" />
+                      <AlertTriangle size={14} className="text-amber-500 cursor-help flex-shrink-0" />
                     </TooltipTrigger>
                     <TooltipContent side="bottom" dir="rtl" className="text-[11px] max-w-[260px]">
-                      רענון חלק מהמערכות נכשל ({failedNames.join(", ")}). המידע המוצג עשוי להיות חלקי.
+                      רענון חלק מהמערכות נכשל ({failedNames.join(", ")}). המידע עשוי להיות חלקי.
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>

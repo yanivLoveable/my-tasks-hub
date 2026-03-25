@@ -23,7 +23,9 @@ export function useTasks() {
   const [loading, setLoading] = useState(true);
   const [banner, setBanner] = useState<BannerMessage | null>(null);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
+  const [nextRefreshTime, setNextRefreshTime] = useState<Date | null>(null);
   const [failedSystems, setFailedSystems] = useState<Record<string, Date>>({});
+  const [refreshing, setRefreshing] = useState(false);
 
   const mockIndexRef = useRef(-1);
   const abortRef = useRef<AbortController | null>(null);
@@ -48,6 +50,7 @@ export function useTasks() {
 
   const loadTasks = useCallback(async () => {
     try {
+      setRefreshing(true);
       setLoading(true);
       setBanner(null);
 
@@ -58,7 +61,9 @@ export function useTasks() {
         await new Promise((r) => setTimeout(r, 300));
         mockIndexRef.current = (mockIndexRef.current + 1) % MOCK_SETS.length;
         setTasks(MOCK_SETS[mockIndexRef.current]);
-        setLastUpdated(new Date());
+        const now = new Date();
+        setLastUpdated(now);
+        setNextRefreshTime(new Date(now.getTime() + AUTO_REFRESH_INTERVAL_MS));
         return;
       }
 
@@ -74,13 +79,16 @@ export function useTasks() {
         }
       }
       setFailedSystems(failed);
-      setLastUpdated(new Date());
+      const now = new Date();
+      setLastUpdated(now);
+      setNextRefreshTime(new Date(now.getTime() + AUTO_REFRESH_INTERVAL_MS));
     } catch (err: unknown) {
       if (abortRef.current?.signal.aborted) return;
       const msg = err instanceof Error ? err.message : String(err);
       setBanner({ type: "error", text: msg });
     } finally {
       setLoading(false);
+      setRefreshing(false);
     }
   }, [authenticate, shouldUseMock]);
 
@@ -116,9 +124,11 @@ export function useTasks() {
   return {
     tasks,
     loading,
+    refreshing,
     banner,
     setBanner,
     lastUpdated,
+    nextRefreshTime,
     loadTasks,
     failedSystems,
   };
