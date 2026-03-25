@@ -50,6 +50,7 @@ export function useTasks() {
 
   const loadTasks = useCallback(async () => {
     try {
+      setRefreshing(true);
       setLoading(true);
       setBanner(null);
 
