@@ -1,30 +1,16 @@
 
 
-# Send Feedback via EmailJS
+## Fix: Failed source tooltip should show `lastSuccessAt`
 
-## What this does
-When a user submits feedback in the modal, it will be emailed to **yaniv.loveable@gmail.com** using EmailJS (a free client-side email service).
+### Problem
+When a source fails to refresh, the `failedSystems` record stores `lastAttemptAt` (line 78 in `useTasks.ts`). The tooltip on the filter chip says "סונכרן לאחרונה ב-..." but shows the failed attempt time instead of the last **successful** sync time.
 
-## Setup required (one-time, ~3 minutes)
-You'll need a free EmailJS account:
-1. Go to [emailjs.com](https://www.emailjs.com) and sign up
-2. **Add an email service** (e.g. Gmail) — this connects EmailJS to your inbox
-3. **Create an email template** with these variable placeholders:
-   - `{{message}}` — the feedback text
-   - `{{to_email}}` — recipient (we'll send `yaniv.loveable@gmail.com`)
-4. Note down your **Service ID**, **Template ID**, and **Public Key** (found in Account → API Keys)
+### Change
 
-## Code changes
+**File: `src/hooks/useTasks.ts`** (line 78)
+- Change `failed[sys] = new Date(info.refresh.lastAttemptAt)` → `failed[sys] = new Date(info.refresh.lastSuccessAt)`
 
-| File | Change |
-|------|--------|
-| `package.json` | Add `@emailjs/browser` dependency |
-| `src/components/FeedbackModal.tsx` | Import EmailJS, call `emailjs.send()` on submit with the feedback text, show loading state on the button, handle errors with a toast |
+This single-line fix ensures the tooltip displays when the source **last successfully synced**, which is the meaningful information for the user.
 
-### FeedbackModal changes
-- Store EmailJS public key, service ID, and template ID as constants (these are public/safe to store in code)
-- On submit: call `emailjs.send(serviceId, templateId, { message: text, to_email: "yaniv.loveable@gmail.com" }, publicKey)`
-- Add a loading state to disable the button and show "שולח..." while sending
-- On success: show the existing ✓ confirmation
-- On error: show a toast error message
+Everything else (the warning icon on the filter chip, the tooltip text in `FiltersBar.tsx`) is already correctly wired — only the stored date value is wrong.
 
