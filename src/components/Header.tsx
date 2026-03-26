@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { MessageSquare, Info, X, AlertTriangle, RefreshCw } from "lucide-react";
+import { MessageSquare, Info, X, AlertTriangle } from "lucide-react";
 import FeedbackModal from "@/components/FeedbackModal";
 import { formatTime } from "@/utils/dates";
 import {
@@ -39,11 +39,6 @@ export default function Header({
         <div className="flex items-center gap-3">
           {lastUpdated && (
             <span className="inline-flex items-center gap-1.5 text-xs text-muted-foreground/60 select-none whitespace-nowrap">
-              <RefreshCw
-                size={12}
-                className={`flex-shrink-0 ${refreshing ? "animate-spin" : ""}`}
-                style={{ cursor: "default" }}
-              />
               עדכון אחרון: {formatTime(lastUpdated)}
               {nextRefreshTime && (
                 <>

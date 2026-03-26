@@ -75,13 +75,20 @@ export function useTasks() {
       const failed: Record<string, Date> = {};
       for (const [sys, info] of Object.entries(sources)) {
         if (info.refresh.lastAttemptAt !== info.refresh.lastSuccessAt) {
-          failed[sys] = new Date(info.refresh.lastAttemptAt);
+          failed[sys] = new Date(info.refresh.lastSuccessAt);
         }
       }
       setFailedSystems(failed);
-      const now = new Date();
-      setLastUpdated(now);
-      setNextRefreshTime(new Date(now.getTime() + AUTO_REFRESH_INTERVAL_MS));
+
+      // Derive lastUpdated from max lastSuccessAt across all sources
+      const successTimestamps = Object.values(sources).map(
+        (s) => new Date(s.refresh.lastSuccessAt).getTime()
+      );
+      const maxSuccess = successTimestamps.length > 0
+        ? new Date(Math.max(...successTimestamps))
+        : new Date();
+      setLastUpdated(maxSuccess);
+      setNextRefreshTime(new Date(maxSuccess.getTime() + AUTO_REFRESH_INTERVAL_MS));
     } catch (err: unknown) {
       if (abortRef.current?.signal.aborted) return;
       const msg = err instanceof Error ? err.message : String(err);
