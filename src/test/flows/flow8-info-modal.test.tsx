@@ -12,7 +12,7 @@ describe("Flow 8 — Info modal", () => {
   async function openInfoModal() {
     renderApp(<Index />);
     await waitFor(() => {
-      expect(screen.getByText("ANIV")).toBeInTheDocument();
+      expect(screen.getByAltText("Logo")).toBeInTheDocument();
     });
     const infoButton = screen.getByRole("button", { name: "הסבר על המערכת" });
     await userEvent.click(infoButton);
