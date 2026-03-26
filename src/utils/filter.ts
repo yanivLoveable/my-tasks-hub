@@ -1,6 +1,18 @@
 import type { Task, UIState } from "@/types/task";
 import { formatDateHebrew } from "./dates";
 
+/* QWERTY → Hebrew keyboard mapping (standard Israeli layout) */
+const EN_TO_HE: Record<string, string> = {
+  q: "/", w: "'", e: "ק", r: "ר", t: "א", y: "ט", u: "ו", i: "ן", o: "ם", p: "פ",
+  a: "ש", s: "ד", d: "ג", f: "כ", g: "ע", h: "י", j: "ח", k: "ל", l: "ך",
+  z: "ז", x: "ס", c: "ב", v: "ה", b: "נ", n: "מ", m: "צ",
+  ",": "ת", ".": "ץ", ";": "ף",
+};
+
+function toHebrew(str: string): string {
+  return [...str].map((c) => EN_TO_HE[c.toLowerCase()] ?? c).join("");
+}
+
 export function filterTasks(tasks: Task[], state: UIState): Task[] {
   let result = tasks;
 
@@ -33,9 +45,10 @@ export function filterTasks(tasks: Task[], state: UIState): Task[] {
     result = result.filter((t) => !t.groupName && !t.delegatedFrom);
   }
 
-  // Search
+  // Search – match both original query and Hebrew-mapped fallback
   if (state.searchQuery.trim()) {
     const q = state.searchQuery.trim().toLowerCase();
+    const hebrewQ = toHebrew(q);
     result = result.filter((t) => {
       const fields = [
         t.title,
@@ -43,7 +56,7 @@ export function filterTasks(tasks: Task[], state: UIState): Task[] {
         t.startDate ? formatDateHebrew(t.startDate) : "",
         t.dueDate ? formatDateHebrew(t.dueDate) : "",
       ];
-      return fields.some((f) => f.toLowerCase().includes(q));
+      return fields.some((f) => f.toLowerCase().includes(q) || f.includes(hebrewQ));
     });
   }
 

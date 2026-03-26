@@ -39,11 +39,6 @@ export default function Header({
         <div className="flex items-center gap-3">
           {lastUpdated && (
             <span className="inline-flex items-center gap-1.5 text-xs text-muted-foreground/60 select-none whitespace-nowrap">
-              <RefreshCw
-                size={12}
-                className={`flex-shrink-0 ${refreshing ? "animate-spin" : ""}`}
-                style={{ cursor: "default" }}
-              />
               עדכון אחרון: {formatTime(lastUpdated)}
               {nextRefreshTime && (
                 <>
