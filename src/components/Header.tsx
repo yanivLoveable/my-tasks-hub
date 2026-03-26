@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { MessageSquare, Info, X, AlertTriangle, RefreshCw } from "lucide-react";
+import { MessageSquare, Info, X, AlertTriangle } from "lucide-react";
 import FeedbackModal from "@/components/FeedbackModal";
 import { formatTime } from "@/utils/dates";
 import {
