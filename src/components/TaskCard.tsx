@@ -46,7 +46,7 @@ export default function TaskCard({ task }: TaskCardProps) {
         tabIndex={0}
         onKeyDown={(e) => e.key === "Enter" && handleClick()}
         dir="rtl"
-        style={{ fontFamily: "Assistant, sans-serif" }}
+        style={{ fontFamily: "'Segoe UI', Tahoma, Arial, sans-serif" }}
       >
         {/* System badge - square box */}
         <div className="w-[44px] h-[44px] flex-shrink-0 bg-secondary border border-border rounded-md flex items-center justify-center font-bold text-[10px] text-primary tracking-[0.04em] text-center leading-tight break-all">
