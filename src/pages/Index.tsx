@@ -150,8 +150,8 @@ const Index = () => {
         />
       </div>
 
-      <div className="bg-content-bg flex-1">
-        <div className="mx-auto" style={{ maxWidth: 1104 }}>
+      <div className="bg-content-bg flex-1 flex flex-col">
+        <div className="mx-auto flex-1" style={{ maxWidth: 1104 }}>
           <div className="flex items-center justify-start py-1.5 px-2" dir="rtl">
             <p className={`text-[11px] text-muted-foreground/60 transition-opacity ${!loading && hasActiveFilters ? "opacity-100" : "opacity-0"}`}>
               בהתאם לסינון, מוצגות {sorted.length} משימות
