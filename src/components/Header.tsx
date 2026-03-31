@@ -87,7 +87,7 @@ export default function Header({
             <Tooltip>
               <TooltipTrigger asChild>
                 <button
-                  className="flex items-center justify-center w-8 h-8 rounded-full border border-primary text-primary hover:bg-primary/5 transition-colors"
+                  className="flex items-center justify-center w-9 h-9 rounded-full border border-primary text-primary hover:bg-primary/5 transition-colors"
                   onClick={() => setInfoOpen(true)}
                   aria-label="הסבר על המערכת"
                 >
