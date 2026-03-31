@@ -6,7 +6,7 @@ interface ControlsBarProps {
 
 export default function ControlsBar({ totalTasks }: ControlsBarProps) {
   return (
-    <div className="flex flex-col items-center pt-1 pb-1 px-8">
+    <div className="flex flex-col items-center pt-4 pb-1 px-8">
       <div className="flex items-center gap-2">
         <h1 className="text-[28px] font-extrabold text-primary leading-tight">
           מרכז המשימות וההתראות
