@@ -13,7 +13,7 @@ export default function ControlsBar({ totalTasks }: ControlsBarProps) {
         </h1>
         <Bell size={18} strokeWidth={2.5} className="text-alert-red" />
       </div>
-      <div className="text-[13px] text-muted-foreground flex items-center gap-1.5">
+      <div className="text-[13px] text-muted-foreground flex items-center gap-1.5 mt-1">
         <span>
           ממתינות לך{" "}
           <span className="font-bold text-primary">{totalTasks}</span> משימות
