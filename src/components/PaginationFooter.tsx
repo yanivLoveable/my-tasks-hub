@@ -93,12 +93,12 @@ export default function PaginationFooter({
         </div>
       </div>
 
-      {/* Footer links – sticky dark blue background */}
-      <div className="bg-primary sticky bottom-0 z-30">
+      {/* Footer links – normal flow, NOT sticky */}
+      <div className="bg-primary">
         <div className="flex items-center justify-center gap-3 text-[12px] text-primary-foreground/70 py-2.5">
-          <button onClick={onFeedbackClick} className="hover:text-primary-foreground transition-colors">שלח משוב</button>
+          <button onClick={onFeedbackClick} className="hover:text-primary-foreground transition-colors duration-200">שלח משוב</button>
           <span>|</span>
-          <button onClick={onSupportClick} className="hover:text-primary-foreground transition-colors">לתמיכה</button>
+          <button onClick={onSupportClick} className="hover:text-primary-foreground transition-colors duration-200">לתמיכה</button>
         </div>
       </div>
     </>
