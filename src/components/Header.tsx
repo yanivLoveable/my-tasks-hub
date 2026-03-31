@@ -28,10 +28,12 @@ export default function Header({
   refreshing = false,
   failedSystems = {},
 }: HeaderProps) {
+  const { user } = useAuth();
   const failedNames = Object.keys(failedSystems);
   const hasPartialFailure = failedNames.length > 0;
   const [feedbackOpen, setFeedbackOpen] = useState(false);
   const [infoOpen, setInfoOpen] = useState(false);
+  const displayName = user?.name || user?.username || "משתמש";
 
   return (
     <>
