@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { MessageSquare, Info, X, AlertTriangle } from "lucide-react";
+import { MessageSquare, Info, X, AlertTriangle, User } from "lucide-react";
+import { useAuth } from "@/hooks/use-auth";
 import FeedbackModal from "@/components/FeedbackModal";
 import { formatTime } from "@/utils/dates";
 import {
