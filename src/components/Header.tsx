@@ -108,7 +108,7 @@ export default function Header({
             <Tooltip>
               <TooltipTrigger asChild>
                 <div
-                  className="flex items-center justify-center w-9 h-9 rounded-full border border-primary text-primary"
+                  className="flex items-center justify-center w-9 h-9 rounded-full border border-primary text-primary cursor-pointer"
                 >
                   <User size={16} />
                 </div>
