@@ -40,7 +40,7 @@ export default function TaskCard({ task }: TaskCardProps) {
   return (
     <TooltipProvider delayDuration={300}>
       <div
-        className="flex items-center gap-[15px] bg-background border border-border rounded-lg px-[18px] py-[10px] cursor-pointer hover:border-primary/30 transition-[border-color] duration-150"
+        className="flex items-center gap-[15px] bg-background border border-border rounded-lg px-[18px] py-[10px] cursor-pointer hover:border-primary/30 hover:shadow-md hover:-translate-y-[2px] transition-all duration-150"
         onClick={handleClick}
         role="button"
         tabIndex={0}
