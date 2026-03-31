@@ -40,13 +40,13 @@ export default function TaskCard({ task }: TaskCardProps) {
   return (
     <TooltipProvider delayDuration={300}>
       <div
-        className="flex items-center gap-[15px] bg-background border border-border rounded-lg px-[18px] py-[10px] cursor-pointer hover:border-primary/30 transition-[border-color] duration-150"
+        className="flex items-center gap-[15px] bg-background border border-border rounded-lg px-[18px] py-[10px] cursor-pointer hover:border-primary/30 hover:shadow-md hover:-translate-y-[2px] transition-all duration-150"
         onClick={handleClick}
         role="button"
         tabIndex={0}
         onKeyDown={(e) => e.key === "Enter" && handleClick()}
         dir="rtl"
-        style={{ fontFamily: "Assistant, sans-serif" }}
+        style={{ fontFamily: "'Segoe UI', Tahoma, Arial, sans-serif" }}
       >
         {/* System badge - square box */}
         <div className="w-[44px] h-[44px] flex-shrink-0 bg-secondary border border-border rounded-md flex items-center justify-center font-bold text-[10px] text-primary tracking-[0.04em] text-center leading-tight break-all">
