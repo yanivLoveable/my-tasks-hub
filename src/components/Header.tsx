@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { MessageSquare, Info, X, AlertTriangle } from "lucide-react";
+import { MessageSquare, Info, X, AlertTriangle, User } from "lucide-react";
+import { useAuth } from "@/hooks/use-auth";
 import FeedbackModal from "@/components/FeedbackModal";
 import { formatTime } from "@/utils/dates";
 import {
@@ -27,10 +28,12 @@ export default function Header({
   refreshing = false,
   failedSystems = {},
 }: HeaderProps) {
+  const { user } = useAuth();
   const failedNames = Object.keys(failedSystems);
   const hasPartialFailure = failedNames.length > 0;
   const [feedbackOpen, setFeedbackOpen] = useState(false);
   const [infoOpen, setInfoOpen] = useState(false);
+  const displayName = user?.name || user?.username || "משתמש";
 
   return (
     <>
@@ -96,6 +99,22 @@ export default function Header({
               </TooltipTrigger>
               <TooltipContent side="bottom" dir="rtl" className="text-[11px]">
                 הסבר על המערכת
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+
+          {/* User icon */}
+          <TooltipProvider delayDuration={300}>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div
+                  className="flex items-center justify-center w-9 h-9 rounded-full border border-primary text-primary"
+                >
+                  <User size={16} />
+                </div>
+              </TooltipTrigger>
+              <TooltipContent side="bottom" dir="rtl" className="text-[11px]">
+                שלום, {displayName}
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
