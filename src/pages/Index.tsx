@@ -104,7 +104,7 @@ const Index = () => {
   }, [setUiState]);
 
   return (
-    <div className="min-h-screen bg-background" dir="rtl">
+    <div className="min-h-screen bg-background flex flex-col" dir="rtl">
       <Banner
         message={banner}
         onDismiss={() => setBanner(null)}

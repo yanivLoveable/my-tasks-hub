@@ -205,9 +205,7 @@ export default function FiltersBar({
                 onClick={() => onSystemToggle(sys)}
               >
                 {getSystemLabel(sys)}
-                {systemCounts[sys] != null && (
-                  <span className="text-[10px] opacity-60">({systemCounts[sys]})</span>
-                )}
+                <span className="text-[10px] opacity-60">({systemCounts[sys] ?? 0})</span>
                 {sysFailed && (
                   <AlertTriangle size={12} className="text-amber-500 flex-shrink-0" />
                 )}

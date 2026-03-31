@@ -13,7 +13,7 @@ export default {
       },
     },
     fontFamily: {
-      sans: ['Assistant', 'sans-serif'],
+      sans: ['Segoe UI', 'Tahoma', 'Arial', 'sans-serif'],
     },
     extend: {
       colors: {

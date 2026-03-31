@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { MessageSquare, X } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
+import { httpPost } from "@/services/http";
+import { useToast } from "@/hooks/use-toast";
 import {
   Dialog,
   DialogContent,
@@ -14,22 +16,32 @@ interface FeedbackModalProps {
 }
 
 const MAX_CHARS = 500;
-const FEEDBACK_EMAIL = "feedback-taskcenter@example.com";
 
 export default function FeedbackModal({ open, onOpenChange }: FeedbackModalProps) {
   const [text, setText] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const [sending, setSending] = useState(false);
   const { user } = useAuth();
+  const { toast } = useToast();
 
-  const handleSubmit = () => {
-    const userName = user?.name || user?.username || "Unknown";
-    const subject = encodeURIComponent(`משוב TASK CENTER - ${userName}`);
-    const body = encodeURIComponent(text);
-
-    window.location.href = `mailto:${FEEDBACK_EMAIL}?subject=${subject}&body=${body}`;
-
-    setText("");
-    setSubmitted(true);
+  const handleSubmit = async () => {
+    if (!text.trim() || sending) return;
+    setSending(true);
+    try {
+      const token = (user as any)?.token || "";
+      await httpPost("/api/work-items/feedback", token, { message: text });
+      setText("");
+      setSubmitted(true);
+      setTimeout(() => onOpenChange(false), 2000);
+    } catch (err) {
+      toast({
+        title: "שגיאה",
+        description: "שליחת המשוב נכשלה, נסה שנית.",
+        variant: "destructive",
+      });
+    } finally {
+      setSending(false);
+    }
   };
 
   const handleClose = () => {
@@ -97,10 +109,10 @@ export default function FeedbackModal({ open, onOpenChange }: FeedbackModalProps
               <div className="flex items-center justify-center gap-3 w-full">
                 <button
                   onClick={handleSubmit}
-                  disabled={!text.trim()}
+                  disabled={!text.trim() || sending}
                   className="h-10 px-8 rounded-xl bg-action text-white text-[13px] font-semibold hover:bg-actionHover transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                 >
-                  שלח משוב
+                  {sending ? "שולח..." : "שלח משוב"}
                 </button>
                 <button
                   onClick={handleClose}

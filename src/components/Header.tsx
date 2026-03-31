@@ -34,8 +34,8 @@ export default function Header({
 
   return (
     <>
-      <div className="flex items-center justify-between px-8 py-1.5" dir="rtl">
-        <img src="/logo.png" alt="Logo" className="h-6 flex-shrink-0" />
+      <div className="flex items-center justify-between px-8 py-1" dir="rtl">
+        <img src="/logo.png" alt="Logo" width={195} height={40} className="flex-shrink-0" style={{ width: 195, height: 40 }} />
         <div className="flex items-center gap-3">
           {lastUpdated && (
             <span className="inline-flex items-center gap-1.5 text-xs text-muted-foreground/60 select-none whitespace-nowrap">
@@ -64,7 +64,7 @@ export default function Header({
             <Tooltip>
               <TooltipTrigger asChild>
                 <button
-                  className="flex items-center justify-center w-8 h-8 rounded-full border border-primary text-primary hover:bg-primary/5 transition-colors"
+                  className="flex items-center justify-center w-9 h-9 rounded-full border border-primary text-primary hover:bg-primary/5 transition-colors"
                   onClick={() => setFeedbackOpen(true)}
                   aria-label="שלח משוב"
                 >
@@ -87,7 +87,7 @@ export default function Header({
             <Tooltip>
               <TooltipTrigger asChild>
                 <button
-                  className="flex items-center justify-center w-8 h-8 rounded-full border border-primary text-primary hover:bg-primary/5 transition-colors"
+                  className="flex items-center justify-center w-9 h-9 rounded-full border border-primary text-primary hover:bg-primary/5 transition-colors"
                   onClick={() => setInfoOpen(true)}
                   aria-label="הסבר על המערכת"
                 >
