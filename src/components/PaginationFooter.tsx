@@ -46,7 +46,7 @@ export default function PaginationFooter({
     <>
       {/* Pagination – white background */}
       <div className="bg-background border-t border-header-border">
-        <div className="flex flex-col items-center gap-2 pt-3 pb-[45px]">
+        <div className="flex flex-col items-center gap-2 pt-3 pb-4">
           <div className="flex items-center gap-1">
             <button
               className="p-1.5 rounded-md text-muted-foreground hover:text-primary disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
@@ -93,8 +93,8 @@ export default function PaginationFooter({
         </div>
       </div>
 
-      {/* Footer links – dark blue background */}
-      <div className="bg-primary">
+      {/* Footer links – sticky dark blue background */}
+      <div className="bg-primary sticky bottom-0 z-30">
         <div className="flex items-center justify-center gap-3 text-[12px] text-primary-foreground/70 py-2.5">
           <button onClick={onFeedbackClick} className="hover:text-primary-foreground transition-colors">שלח משוב</button>
           <span>|</span>
