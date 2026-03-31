@@ -102,6 +102,22 @@ export default function Header({
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
+
+          {/* User icon */}
+          <TooltipProvider delayDuration={300}>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div
+                  className="flex items-center justify-center w-9 h-9 rounded-full border border-primary text-primary"
+                >
+                  <User size={16} />
+                </div>
+              </TooltipTrigger>
+              <TooltipContent side="bottom" dir="rtl" className="text-[11px]">
+                שלום, {displayName}
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </div>
       </div>
 
