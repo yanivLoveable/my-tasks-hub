@@ -67,7 +67,7 @@ export default function Header({
             <Tooltip>
               <TooltipTrigger asChild>
                 <button
-                  className="flex items-center justify-center w-9 h-9 rounded-full border border-primary text-primary hover:bg-primary/5 transition-colors"
+                  className="flex items-center justify-center w-9 h-9 rounded-full border-2 border-primary text-primary hover:bg-primary/5 transition-colors"
                   onClick={() => setFeedbackOpen(true)}
                   aria-label="שלח משוב"
                 >
@@ -90,7 +90,7 @@ export default function Header({
             <Tooltip>
               <TooltipTrigger asChild>
                 <button
-                  className="flex items-center justify-center w-9 h-9 rounded-full border border-primary text-primary hover:bg-primary/5 transition-colors"
+                  className="flex items-center justify-center w-9 h-9 rounded-full border-2 border-primary text-primary hover:bg-primary/5 transition-colors"
                   onClick={() => setInfoOpen(true)}
                   aria-label="הסבר על המערכת"
                 >
@@ -108,7 +108,7 @@ export default function Header({
             <Tooltip>
               <TooltipTrigger asChild>
                 <div
-                  className="flex items-center justify-center w-9 h-9 rounded-full border border-primary text-primary cursor-pointer"
+                  className="flex items-center justify-center w-9 h-9 rounded-full border-2 border-primary text-primary cursor-pointer hover:bg-primary/5 transition-colors"
                 >
                   <User size={16} />
                 </div>
