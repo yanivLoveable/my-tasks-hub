@@ -84,7 +84,7 @@ export default function FeedbackModal({ open, onOpenChange }: FeedbackModalProps
           ) : (
             <>
               <div className="text-center space-y-1">
-                <DialogTitle className="text-[20px] font-extrabold text-primary leading-snug tracking-wide">
+                <DialogTitle className="text-[20px] font-bold text-primary leading-snug tracking-wide">
                   נשמח לשמוע ממך
                 </DialogTitle>
                 <DialogDescription className="text-[13px] text-muted-foreground">
