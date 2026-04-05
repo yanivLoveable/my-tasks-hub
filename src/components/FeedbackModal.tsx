@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { MessageSquare, X } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { httpPost } from "@/services/http";
@@ -24,6 +24,13 @@ export default function FeedbackModal({ open, onOpenChange }: FeedbackModalProps
   const { user } = useAuth();
   const { toast } = useToast();
 
+  useEffect(() => {
+    if (open) {
+      setSubmitted(false);
+      setText("");
+    }
+  }, [open]);
+
   const handleSubmit = async () => {
     if (!text.trim() || sending) return;
     setSending(true);
@@ -46,10 +53,6 @@ export default function FeedbackModal({ open, onOpenChange }: FeedbackModalProps
 
   const handleClose = () => {
     onOpenChange(false);
-    setTimeout(() => {
-      setText("");
-      setSubmitted(false);
-    }, 200);
   };
 
   return (
@@ -75,6 +78,13 @@ export default function FeedbackModal({ open, onOpenChange }: FeedbackModalProps
             </span>
           </div>
 
+          <DialogTitle className={submitted ? "sr-only" : "text-[20px] font-bold text-primary leading-snug tracking-wide text-center"}>
+            נשמח לשמוע ממך
+          </DialogTitle>
+          <DialogDescription className={submitted ? "sr-only" : "text-[13px] text-muted-foreground text-center -mt-3"}>
+            המשוב שלך עוזר לנו להשתפר
+          </DialogDescription>
+
           {submitted ? (
             <div className="flex items-center justify-center" style={{ minHeight: '176px' }}>
               <p className="text-[20px] font-extrabold text-primary leading-snug tracking-wide">
@@ -83,15 +93,6 @@ export default function FeedbackModal({ open, onOpenChange }: FeedbackModalProps
             </div>
           ) : (
             <>
-              <div className="text-center space-y-1">
-                <DialogTitle className="text-[20px] font-bold text-primary leading-snug tracking-wide">
-                  נשמח לשמוע ממך
-                </DialogTitle>
-                <DialogDescription className="text-[13px] text-muted-foreground">
-                  המשוב שלך עוזר לנו להשתפר
-                </DialogDescription>
-              </div>
-
               <div className="w-full relative">
                 <textarea
                   className="w-full h-28 rounded-xl border border-input bg-background px-4 py-3 text-[13px] text-foreground placeholder:text-muted-foreground/50 resize-none focus:outline-none focus:ring-2 focus:ring-ring transition-shadow leading-relaxed"
