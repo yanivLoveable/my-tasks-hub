@@ -295,18 +295,14 @@ export default function FiltersBar({
                   </button>
                 ))}
                 {moreSelectedTopics.map((topic) => (
-                  <span
+                  <button
                     key={`tag-${topic}`}
-                    className="inline-flex items-center gap-1 px-2.5 py-0.5 bg-primary/10 text-primary text-xs font-medium rounded-full"
+                    className={chipStyle(true, isDocsOnly)}
+                    onClick={() => !isDocsOnly && onTopicToggle(topic)}
                   >
                     {topic}
-                    <button
-                      onClick={() => onTopicToggle(topic)}
-                      className="hover:text-primary/70 transition-colors cursor-pointer"
-                    >
-                      <X className="w-3 h-3" />
-                    </button>
-                  </span>
+                    <X className="w-3.5 h-3.5" />
+                  </button>
                 ))}
                 {moreTopics.length > 0 && (
                   <DropdownMenu modal={false}>
