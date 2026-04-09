@@ -72,7 +72,15 @@ export const MOCK_TASKS: Task[] = [
     title: "אישור תקנון עובדים מעודכן", identifier: "DOCS-200011", url: "#",
     status: "open", priority: "high",
     startDate: new Date("2025-12-20"), dueDate: new Date("2026-01-20"),
-    category: "משאבי אנוש", assignedToRole: "משאבי אנוש",
+    category: "Approval", assignedToRole: "Approval",
+    updatedAt: new Date("2025-12-20"), overdueDays: 42,
+  },
+  {
+    id: "DOCS-210021", source: "DOCS_APPROVAL", systemLabel: "DOCS",
+    title: "אישור תקנון קבלנים מעודכן", identifier: "DOCS-210021", url: "#",
+    status: "open", priority: "high",
+    startDate: new Date("2025-12-20"), dueDate: new Date("2026-01-20"),
+    category: "Approval", assignedToRole: "Approval",
     updatedAt: new Date("2025-12-20"), overdueDays: 42,
   },
   {
