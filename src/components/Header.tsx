@@ -12,6 +12,7 @@ import {
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogTitle,
 } from "@/components/ui/dialog";
 
@@ -148,6 +149,9 @@ export default function Header({
             <DialogTitle className="text-[18px] font-extrabold text-primary leading-snug tracking-wide text-center">
               הסבר על המערכת
             </DialogTitle>
+            <DialogDescription className="text-[13px] text-muted-foreground text-center -mt-1">
+              כל מה שצריך לדעת על מרכז המשימות וההתראות
+            </DialogDescription>
 
             {/* Body text */}
             <div className="text-[13px] text-foreground leading-[1.7] w-full space-y-1.5">
