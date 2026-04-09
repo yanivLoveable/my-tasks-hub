@@ -1,16 +1,21 @@
 
 
-## Fix: Feedback modal state reset and accessibility warnings
+## Plan: Add "עוד" dropdown for topic filters when more than 5
 
-### Problems
-1. After successful submission, the auto-close (`setTimeout(() => onOpenChange(false), 2000)` on line 35) calls `onOpenChange` directly instead of `handleClose`, so `submitted` and `text` are never reset. Reopening shows the success message.
-2. When `submitted` is true, `DialogTitle` and `DialogDescription` are conditionally hidden, causing accessibility warnings.
+### What changes
+In `src/components/FiltersBar.tsx`, the topics row (line 274-294) currently renders all topic buttons inline. When there are more than 5 categories, this can overflow to a second line.
 
-### Changes — `src/components/FeedbackModal.tsx`
+### How
+1. **Split topics into visible and overflow**: Show the first 5 topics as inline buttons. If `topics.length > 5`, collect the rest into an "עוד" dropdown — same pattern already used for system filters (lines 243-267).
 
-1. **Reset state when modal opens**: Add a `useEffect` that resets `text` and `submitted` whenever `open` becomes `true`. This guarantees a clean form every time the modal opens, regardless of how it was closed.
+2. **Add "עוד" dropdown for overflow topics**: Render a `DropdownMenu` with `DropdownMenuItem` for each overflow topic, showing active state with `bg-primary/10 font-semibold` (matching the system "עוד" pattern).
 
-2. **Always render DialogTitle and DialogDescription**: Move them outside the conditional block so they're always present for accessibility. Use `className="sr-only"` on both when in the `submitted` state so they're invisible but still in the DOM for screen readers.
+3. **Show selected overflow topics as tags**: Any selected topic from the overflow list appears as a removable tag (pill with X button) next to the visible topics — same pattern as `moreSelectedSystems` tags (lines 229-242).
 
-   Specifically: always render `<DialogTitle>` and `<DialogDescription>` with `aria-describedby` handled automatically. When `submitted` is true, visually hide them with `sr-only`.
+### Single file change: `src/components/FiltersBar.tsx`
+- Lines 274-294: Replace the topics rendering block with:
+  - `const visibleTopics = topics.slice(0, 5)`
+  - `const moreTopics = topics.slice(5)`
+  - `const moreSelectedTopics = selectedTopics.filter(t => moreTopics.includes(t))`
+  - Render `visibleTopics` as buttons, then selected overflow tags, then "עוד" dropdown if `moreTopics.length > 0`
 
