@@ -283,8 +283,8 @@ export default function FiltersBar({
             כל הנושאים
           </button>
           {(() => {
-            const visibleTopics = topics.slice(0, 5);
-            const moreTopics = topics.slice(5);
+            const visibleTopics = topics.slice(0, 4);
+            const moreTopics = topics.slice(4);
             const moreSelectedTopics = selectedTopics.filter((t) => moreTopics.includes(t));
             return (
               <>
