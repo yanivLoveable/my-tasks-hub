@@ -1,21 +1,15 @@
 
 
-## Plan: Add "עוד" dropdown for topic filters when more than 5
+## Fix: Selected overflow items should render as chip buttons, not small tags
 
-### What changes
-In `src/components/FiltersBar.tsx`, the topics row (line 274-294) currently renders all topic buttons inline. When there are more than 5 categories, this can overflow to a second line.
+### Problem
+When selecting a system from "עוד" (moreSystems) or a topic from "עוד" (moreTopics), they render as small pill tags with an X. They should instead render as regular active chip buttons (using `chipStyle(true)`) — matching the look of the primary system/topic buttons. Systems should also include the task count.
 
-### How
-1. **Split topics into visible and overflow**: Show the first 5 topics as inline buttons. If `topics.length > 5`, collect the rest into an "עוד" dropdown — same pattern already used for system filters (lines 243-267).
+### Changes — `src/components/FiltersBar.tsx`
 
-2. **Add "עוד" dropdown for overflow topics**: Render a `DropdownMenu` with `DropdownMenuItem` for each overflow topic, showing active state with `bg-primary/10 font-semibold` (matching the system "עוד" pattern).
+**1. Replace moreSelectedSystems tags (lines 229-242):**
+Change from `<span>` pill tags to `<button>` elements using `chipStyle(true)`, showing the system label + count + X icon — matching primary system buttons.
 
-3. **Show selected overflow topics as tags**: Any selected topic from the overflow list appears as a removable tag (pill with X button) next to the visible topics — same pattern as `moreSelectedSystems` tags (lines 229-242).
-
-### Single file change: `src/components/FiltersBar.tsx`
-- Lines 274-294: Replace the topics rendering block with:
-  - `const visibleTopics = topics.slice(0, 5)`
-  - `const moreTopics = topics.slice(5)`
-  - `const moreSelectedTopics = selectedTopics.filter(t => moreTopics.includes(t))`
-  - Render `visibleTopics` as buttons, then selected overflow tags, then "עוד" dropdown if `moreTopics.length > 0`
+**2. Replace moreSelectedTopics tags (lines 300-313):**
+Same change — use `chipStyle(true)` buttons with topic name + X icon instead of small pill tags.
 
