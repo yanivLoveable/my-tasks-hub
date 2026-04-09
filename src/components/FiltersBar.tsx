@@ -234,7 +234,6 @@ export default function FiltersBar({
             >
               {getSystemLabel(sys)}
               <span className="text-[10px] opacity-60">({systemCounts[sys] ?? 0})</span>
-              <X className="w-3.5 h-3.5" />
             </button>
           ))}
           {moreSystems.length > 0 && (
@@ -301,7 +300,6 @@ export default function FiltersBar({
                     onClick={() => !isDocsOnly && onTopicToggle(topic)}
                   >
                     {topic}
-                    <X className="w-3.5 h-3.5" />
                   </button>
                 ))}
                 {moreTopics.length > 0 && (
