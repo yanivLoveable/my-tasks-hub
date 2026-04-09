@@ -282,15 +282,60 @@ export default function FiltersBar({
           >
             כל הנושאים
           </button>
-          {topics.map((topic) => (
-            <button
-              key={topic}
-              className={chipStyle(isTopicActive(topic), isDocsOnly)}
-              onClick={() => !isDocsOnly && onTopicToggle(topic)}
-            >
-              {topic}
-            </button>
-          ))}
+          {(() => {
+            const visibleTopics = topics.slice(0, 5);
+            const moreTopics = topics.slice(5);
+            const moreSelectedTopics = selectedTopics.filter((t) => moreTopics.includes(t));
+            return (
+              <>
+                {visibleTopics.map((topic) => (
+                  <button
+                    key={topic}
+                    className={chipStyle(isTopicActive(topic), isDocsOnly)}
+                    onClick={() => !isDocsOnly && onTopicToggle(topic)}
+                  >
+                    {topic}
+                  </button>
+                ))}
+                {moreSelectedTopics.map((topic) => (
+                  <span
+                    key={`tag-${topic}`}
+                    className="inline-flex items-center gap-1 px-2.5 py-0.5 bg-primary/10 text-primary text-xs font-medium rounded-full"
+                  >
+                    {topic}
+                    <button
+                      onClick={() => onTopicToggle(topic)}
+                      className="hover:text-primary/70 transition-colors cursor-pointer"
+                    >
+                      <X className="w-3 h-3" />
+                    </button>
+                  </span>
+                ))}
+                {moreTopics.length > 0 && (
+                  <DropdownMenu modal={false}>
+                    <DropdownMenuTrigger asChild>
+                      <button className={`${chipStyle(moreSelectedTopics.length > 0, isDocsOnly)} gap-1`}>
+                        עוד
+                        <ChevronDown className="w-3 h-3" />
+                      </button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="min-w-[140px]" style={{ direction: "rtl" }}>
+                      {moreTopics.map((topic) => (
+                        <DropdownMenuItem
+                          key={topic}
+                          onClick={() => !isDocsOnly && onTopicToggle(topic)}
+                          className={isTopicActive(topic) ? "bg-primary/10 font-semibold" : ""}
+                          style={{ justifyContent: "flex-start", fontSize: 13, paddingInline: 14, paddingBlock: 6 }}
+                        >
+                          {topic}
+                        </DropdownMenuItem>
+                      ))}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                )}
+              </>
+            );
+          })()}
         </div>
 
         {/* Row 2: Special filters + clear */}
