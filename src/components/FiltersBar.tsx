@@ -249,7 +249,7 @@ export default function FiltersBar({
                   <DropdownMenuItem
                     key={sys}
                     onClick={() => onSystemToggle(sys)}
-                    className={`cursor-pointer ${isSystemActive(sys) ? "bg-primary/10 font-semibold" : ""}`}
+                    className={isSystemActive(sys) ? "bg-primary/10 font-semibold" : ""}
                     style={{ justifyContent: "flex-start", fontSize: 13, paddingInline: 14, paddingBlock: 6 }}
                   >
                     {getSystemLabel(sys)}
