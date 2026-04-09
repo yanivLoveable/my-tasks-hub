@@ -227,18 +227,15 @@ export default function FiltersBar({
           })}
           {/* Tags for systems selected from "More" */}
           {moreSelectedSystems.map((sys) => (
-            <span
+            <button
               key={`tag-${sys}`}
-              className="inline-flex items-center gap-1 px-2.5 py-0.5 bg-primary/10 text-primary text-xs font-medium rounded-full"
+              className={chipStyle(true)}
+              onClick={() => onSystemToggle(sys)}
             >
               {getSystemLabel(sys)}
-              <button
-                onClick={() => onSystemToggle(sys)}
-                className="hover:text-primary/70 transition-colors cursor-pointer"
-              >
-                <X className="w-3 h-3" />
-              </button>
-            </span>
+              <span className="text-[10px] opacity-60">({systemCounts[sys] ?? 0})</span>
+              <X className="w-3.5 h-3.5" />
+            </button>
           ))}
           {moreSystems.length > 0 && (
             <DropdownMenu modal={false}>
