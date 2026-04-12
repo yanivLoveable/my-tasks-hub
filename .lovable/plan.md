@@ -1,25 +1,36 @@
 
 
-## Fix: Feedback sent twice (empty token causes 401 + retry)
+## Plan: Replace system label text with PNG icons
 
-### Root cause
-`handleSubmit` reads `(user as any)?.token` but the `User` type (`{ id, username, name, email }`) has no `token` field. It's always `""`. The request goes out with an empty Bearer token, gets a 401, then `fetchWithRetry` in `http.ts` calls `authenticate()` to get a real token and retries — resulting in two network requests.
+### What changes
+Replace the text-based system badge in `TaskCard.tsx` with PNG images (`docs.png`, `snow.png`, `erp.png`).
 
-### Fix — `src/components/FeedbackModal.tsx`
+### Steps
 
-Change `handleSubmit` to call `authenticate()` for a fresh token instead of reading a non-existent property:
+1. **User places PNG files** in `public/icons/` directory: `docs.png`, `snow.png`, `erp.png`
 
+2. **Add icon mapping** in `TaskCard.tsx`:
 ```tsx
-// Before
-const { user } = useAuth();
-// ...
-const token = (user as any)?.token || "";
-
-// After
-const { authenticate } = useAuth();
-// ...
-const token = await authenticate();
+const SYSTEM_ICONS: Record<string, string> = {
+  DOCS: "/icons/docs.png",
+  DOCS_APPROVAL: "/icons/docs.png",
+  SNOW: "/icons/snow.png",
+  ERP: "/icons/erp.png",
+};
 ```
 
-Single line change in the destructuring (line 24) and one line in `handleSubmit` (line 38).
+3. **Replace the badge div** (lines 55-57) — if a matching icon exists, render an `<img>`, otherwise fall back to the text label:
+```tsx
+<div className="w-[44px] h-[44px] flex-shrink-0 bg-secondary border border-border rounded-md flex items-center justify-center overflow-hidden">
+  {SYSTEM_ICONS[task.source] ? (
+    <img src={SYSTEM_ICONS[task.source]} alt={task.systemLabel} className="w-8 h-8 object-contain" />
+  ) : (
+    <span className="font-bold text-[10px] text-primary">{task.systemLabel}</span>
+  )}
+</div>
+```
+
+### Files changed
+- `src/components/TaskCard.tsx` — add icon map + conditional image rendering
+- `public/icons/` — new directory with 3 PNG files (user provides)
 
