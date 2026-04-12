@@ -1,15 +1,25 @@
 
 
-## Fix: Selected overflow items should render as chip buttons, not small tags
+## Fix: Feedback sent twice (empty token causes 401 + retry)
 
-### Problem
-When selecting a system from "עוד" (moreSystems) or a topic from "עוד" (moreTopics), they render as small pill tags with an X. They should instead render as regular active chip buttons (using `chipStyle(true)`) — matching the look of the primary system/topic buttons. Systems should also include the task count.
+### Root cause
+`handleSubmit` reads `(user as any)?.token` but the `User` type (`{ id, username, name, email }`) has no `token` field. It's always `""`. The request goes out with an empty Bearer token, gets a 401, then `fetchWithRetry` in `http.ts` calls `authenticate()` to get a real token and retries — resulting in two network requests.
 
-### Changes — `src/components/FiltersBar.tsx`
+### Fix — `src/components/FeedbackModal.tsx`
 
-**1. Replace moreSelectedSystems tags (lines 229-242):**
-Change from `<span>` pill tags to `<button>` elements using `chipStyle(true)`, showing the system label + count + X icon — matching primary system buttons.
+Change `handleSubmit` to call `authenticate()` for a fresh token instead of reading a non-existent property:
 
-**2. Replace moreSelectedTopics tags (lines 300-313):**
-Same change — use `chipStyle(true)` buttons with topic name + X icon instead of small pill tags.
+```tsx
+// Before
+const { user } = useAuth();
+// ...
+const token = (user as any)?.token || "";
+
+// After
+const { authenticate } = useAuth();
+// ...
+const token = await authenticate();
+```
+
+Single line change in the destructuring (line 24) and one line in `handleSubmit` (line 38).
 
