@@ -21,7 +21,7 @@ export default function FeedbackModal({ open, onOpenChange }: FeedbackModalProps
   const [text, setText] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const [sending, setSending] = useState(false);
-  const { user } = useAuth();
+  const { authenticate } = useAuth();
   const { toast } = useToast();
 
   useEffect(() => {
@@ -35,7 +35,7 @@ export default function FeedbackModal({ open, onOpenChange }: FeedbackModalProps
     if (!text.trim() || sending) return;
     setSending(true);
     try {
-      const token = (user as any)?.token || "";
+      const token = await authenticate();
       await httpPost("/api/work-items/feedback", token, { message: text });
       setText("");
       setSubmitted(true);
