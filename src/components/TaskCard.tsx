@@ -16,6 +16,13 @@ interface TaskCardProps {
 const isDocs = (source: string) =>
   source === "DOCS_APPROVAL" || source === "DOCS";
 
+const SYSTEM_ICONS: Record<string, string> = {
+  DOCS: "/icons/docs.png",
+  DOCS_APPROVAL: "/icons/docs.png",
+  SNOW: "/icons/snow.png",
+  ERP: "/icons/erp.png",
+};
+
 export default function TaskCard({ task }: TaskCardProps) {
   const [copied, setCopied] = useState(false);
 
