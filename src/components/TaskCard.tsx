@@ -16,6 +16,13 @@ interface TaskCardProps {
 const isDocs = (source: string) =>
   source === "DOCS_APPROVAL" || source === "DOCS";
 
+const SYSTEM_ICONS: Record<string, string> = {
+  DOCS: "/icons/docs.png",
+  DOCS_APPROVAL: "/icons/docs.png",
+  SNOW: "/icons/snow.png",
+  ERP: "/icons/erp.png",
+};
+
 export default function TaskCard({ task }: TaskCardProps) {
   const [copied, setCopied] = useState(false);
 
@@ -49,8 +56,12 @@ export default function TaskCard({ task }: TaskCardProps) {
         style={{ fontFamily: "'Segoe UI', Tahoma, Arial, sans-serif" }}
       >
         {/* System badge - square box */}
-        <div className="w-[44px] h-[44px] flex-shrink-0 bg-secondary border border-border rounded-md flex items-center justify-center font-bold text-[10px] text-primary tracking-[0.04em] text-center leading-tight break-all">
-          {task.systemLabel}
+        <div className="w-[44px] h-[44px] flex-shrink-0 bg-secondary border border-border rounded-md flex items-center justify-center overflow-hidden">
+          {SYSTEM_ICONS[task.source] ? (
+            <img src={SYSTEM_ICONS[task.source]} alt={task.systemLabel} className="w-8 h-8 object-contain" />
+          ) : (
+            <span className="font-bold text-[10px] text-primary tracking-[0.04em] text-center leading-tight break-all">{task.systemLabel}</span>
+          )}
         </div>
 
         {/* Content */}
