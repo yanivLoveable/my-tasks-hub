@@ -35,7 +35,7 @@ export function mapApiToTask(item: ApiWorkItem): Task {
     category:
       item.categoryDesc ||
       item.category ||
-      item.taskType ||
+      //item.taskType ||
       item.subCategoryDesc ||
       item.subCategory ||
       undefined,
