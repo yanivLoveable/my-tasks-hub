@@ -399,7 +399,7 @@ export default function FiltersBar({
             className={`text-[12px] whitespace-nowrap bg-transparent border-none p-0 transition-colors ${
               hasActiveFilters
                 ? "text-primary hover:text-primary/80 underline underline-offset-2 cursor-pointer"
-                : "text-muted-foreground/40 cursor-default no-underline"
+                : "text-muted-foreground/70 cursor-default no-underline"
             }`}
             onClick={hasActiveFilters ? onClearAll : undefined}
           >

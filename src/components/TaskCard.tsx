@@ -110,7 +110,7 @@ export default function TaskCard({ task }: TaskCardProps) {
 
           {/* Row 3: metadata - delegation & group */}
           {hasMetaLine && (
-            <div className="flex items-center gap-[10px] flex-wrap text-[11px] text-muted-foreground/60 mt-[4px]">
+            <div className="flex items-center gap-[10px] flex-wrap text-[11px] text-muted-foreground mt-[4px]">
               {task.delegatedFrom && (
                 <span className="flex items-center gap-1">
                   <ArrowLeftRight size={12} className="flex-shrink-0" />
@@ -118,7 +118,7 @@ export default function TaskCard({ task }: TaskCardProps) {
                 </span>
               )}
               {task.delegatedFrom && task.groupName && (
-                <span className="text-muted-foreground/30">|</span>
+                <span className="text-muted-foreground/60">|</span>
               )}
               {task.groupName && (
                 <span className="flex items-center gap-1">

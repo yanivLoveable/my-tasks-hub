@@ -20,7 +20,7 @@ export default function ControlsBar({ totalTasks }: ControlsBarProps) {
           לביצוע
         </span>
         <span className="text-border">|</span>
-        <span className="text-[11px] text-muted-foreground/70">
+        <span className="text-[11px] text-muted-foreground">
           מוצגות משימות שנפתחו בחצי השנה האחרונה בלבד
         </span>
       </div>
