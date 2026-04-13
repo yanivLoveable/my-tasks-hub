@@ -79,7 +79,7 @@ describe("Flow 5 — Auto-refresh (GET-only, activity-gated)", () => {
     renderApp(<Index />);
 
     await waitFor(() => {
-      expect(getTaskCount()).toBe("33");
+      expect(getTaskCount()).toBe("34");
     });
 
     // Advance time past activity timeout WITHOUT any user events
@@ -90,6 +90,6 @@ describe("Flow 5 — Auto-refresh (GET-only, activity-gated)", () => {
     });
 
     // Should still show same dataset — no refresh happened
-    expect(getTaskCount()).toBe("33");
+    expect(getTaskCount()).toBe("34");
   });
 });
