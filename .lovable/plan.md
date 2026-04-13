@@ -1,36 +1,29 @@
 
 
-## Plan: Replace system label text with PNG icons
+## Plan: Improve text contrast for color-blind accessibility
 
-### What changes
-Replace the text-based system badge in `TaskCard.tsx` with PNG images (`docs.png`, `snow.png`, `erp.png`).
+### Problem
+Light gray text (`text-muted-foreground` = `hsl(220, 9%, 46%)` and its `/60`, `/70` opacity variants) is hard to read for color-blind users. The affected elements:
+- **Header**: "עדכון אחרון | רענון הבא" — uses `text-muted-foreground/60`
+- **ControlsBar**: "ממתינות לך... משימות לביצוע" — uses `text-muted-foreground`, and the sub-line uses `text-muted-foreground/70`
+- **FiltersBar**: "נקה הכל" (inactive state) — uses `text-muted-foreground/40`
 
-### Steps
+### Solution
+Increase contrast by darkening `--muted-foreground` globally and removing low-opacity variants.
 
-1. **User places PNG files** in `public/icons/` directory: `docs.png`, `snow.png`, `erp.png`
+### Changes
 
-2. **Add icon mapping** in `TaskCard.tsx`:
-```tsx
-const SYSTEM_ICONS: Record<string, string> = {
-  DOCS: "/icons/docs.png",
-  DOCS_APPROVAL: "/icons/docs.png",
-  SNOW: "/icons/snow.png",
-  ERP: "/icons/erp.png",
-};
-```
+**1. `src/index.css`** — Darken `--muted-foreground` from `220 9% 46%` to `220 9% 36%` (was already a medium gray, making it noticeably darker).
 
-3. **Replace the badge div** (lines 55-57) — if a matching icon exists, render an `<img>`, otherwise fall back to the text label:
-```tsx
-<div className="w-[44px] h-[44px] flex-shrink-0 bg-secondary border border-border rounded-md flex items-center justify-center overflow-hidden">
-  {SYSTEM_ICONS[task.source] ? (
-    <img src={SYSTEM_ICONS[task.source]} alt={task.systemLabel} className="w-8 h-8 object-contain" />
-  ) : (
-    <span className="font-bold text-[10px] text-primary">{task.systemLabel}</span>
-  )}
-</div>
-```
+**2. `src/components/Header.tsx` (line 45)** — Change `text-muted-foreground/60` to `text-muted-foreground` (full opacity with the new darker color).
 
-### Files changed
-- `src/components/TaskCard.tsx` — add icon map + conditional image rendering
-- `public/icons/` — new directory with 3 PNG files (user provides)
+**3. `src/components/ControlsBar.tsx` (line 23)** — Change `text-muted-foreground/70` to `text-muted-foreground`.
+
+**4. `src/components/FiltersBar.tsx` (line 402)** — Change `text-muted-foreground/40` to `text-muted-foreground/70` for the inactive "נקה הכל" button.
+
+**5. `src/components/TaskCard.tsx`** — Change any `text-muted-foreground/60` and `text-muted-foreground/30` to `text-muted-foreground` and `text-muted-foreground/60` respectively.
+
+**6. `src/pages/Index.tsx` (line 156)** — Change `text-muted-foreground/60` to `text-muted-foreground`.
+
+This ensures all secondary text meets WCAG AA contrast ratio (4.5:1) while preserving visual hierarchy.
 
