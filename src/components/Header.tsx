@@ -42,7 +42,7 @@ export default function Header({
         <img src="/logo.png" alt="Logo" width={195} height={40} className="flex-shrink-0" style={{ width: 195, height: 40 }} />
         <div className="flex items-center gap-3">
           {lastUpdated && (
-            <span className="inline-flex items-center gap-1.5 text-xs text-muted-foreground/60 select-none whitespace-nowrap">
+            <span className="inline-flex items-center gap-1.5 text-xs <span className="inline-flex items-center gap-1.5 text-xs text-muted-foreground select-none whitespace-nowrap"> whitespace-nowrap">
               עדכון אחרון: {formatTime(lastUpdated)}
               {nextRefreshTime && (
                 <>
