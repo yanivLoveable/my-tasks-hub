@@ -335,9 +335,9 @@ export default function FiltersBar({
             <TooltipProvider delayDuration={200}>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <button
-                    className={chipStyle(uiState.flags.overdueOnly)}
-                    onClick={() => onFlagToggle("overdueOnly")}
+                   <button
+                    className={chipStyle(uiState.flags.overdueOnly, isDocsOnly)}
+                    onClick={() => !isDocsOnly && onFlagToggle("overdueOnly")}
                   >
                     <TriangleAlert className="w-3.5 h-3.5" />
                     חורגות
