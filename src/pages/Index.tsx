@@ -53,7 +53,7 @@ const Index = () => {
     if (!Array.isArray(s.selectedSystems)) s.selectedSystems = [];
     if (!Array.isArray(s.selectedTopics)) s.selectedTopics = [];
     
-    s.selectedSystems = s.selectedSystems.filter((sys) => systemLabels.has(sys));
+    // Don't filter selectedSystems against current tasks — allow selecting systems with 0 tasks
     s.selectedTopics = s.selectedTopics.filter((t) => categories.has(t));
     return s;
   }, [tasks, uiState]);
