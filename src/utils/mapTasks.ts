@@ -42,6 +42,8 @@ export function mapApiToTask(item: ApiWorkItem): Task {
     assignedToRole: item.assignedToRole ?? undefined,
     updatedAt: parseDate(item.updatedAt),
     overdueDays: overdueDays > 0 ? overdueDays : undefined,
+    userIsDelegated: item.userIsDelegated ?? undefined,
+    userDelegatedFrom: item.userDelegatedFrom ?? undefined,
   };
 }
 

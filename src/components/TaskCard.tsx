@@ -128,18 +128,25 @@ export default function TaskCard({ task }: TaskCardProps) {
               )}
             </div>
           )}
+
+          {/* Row 4: impersonation notice */}
+          {task.userIsDelegated === "Y" && task.userDelegatedFrom && (
+            <div className="text-[11px] text-alert-red font-medium mt-[4px]">
+              ניתן לפתוח את המשימה רק לאחר ההתחזות למשתמש {task.userDelegatedFrom} ב-ERP
+            </div>
+          )}
         </div>
 
-        {/* External link button - solid circle */}
+        {/* External link button - circle with header-info hover style */}
         <button
           title="פתח משימה"
-          className="w-[34px] h-[34px] aspect-square flex-shrink-0 bg-task-action border-none rounded-full flex items-center justify-center cursor-pointer hover:bg-task-action-hover transition-colors"
+          className="w-[34px] h-[34px] aspect-square flex-shrink-0 bg-task-action border-2 border-transparent rounded-full flex items-center justify-center cursor-pointer hover:bg-primary/5 hover:border-primary transition-colors group"
           onClick={(e) => {
             e.stopPropagation();
             handleClick();
           }}
         >
-          <ExternalLink size={14} strokeWidth={2.5} className="text-white" />
+          <ExternalLink size={14} strokeWidth={2.5} className="text-white group-hover:text-primary transition-colors" />
         </button>
       </div>
     </TooltipProvider>

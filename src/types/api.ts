@@ -17,6 +17,8 @@ export interface ApiWorkItem {
   subCategoryDesc?: string | null;
   taskType?: string | null;
   assignedToRole?: string | null;
+  userIsDelegated?: "Y" | "N" | "B" | null;
+  userDelegatedFrom?: string | null;
   [key: string]: unknown;
 }
 
