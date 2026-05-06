@@ -137,17 +137,24 @@ export default function TaskCard({ task }: TaskCardProps) {
           )}
         </div>
 
-        {/* External link button - circle with header-info hover style */}
-        <button
-          title="פתח משימה"
-          className="w-[34px] h-[34px] aspect-square flex-shrink-0 bg-task-action border-2 border-transparent rounded-full flex items-center justify-center cursor-pointer hover:bg-primary/5 hover:border-primary transition-colors group"
-          onClick={(e) => {
-            e.stopPropagation();
-            handleClick();
-          }}
-        >
-          <ExternalLink size={14} strokeWidth={2.5} className="text-white group-hover:text-primary transition-colors" />
-        </button>
+        {/* External link button - solid circle */}
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <button
+              aria-label="פתח משימה"
+              className="w-[34px] h-[34px] aspect-square flex-shrink-0 bg-task-action border-none rounded-full flex items-center justify-center cursor-pointer hover:bg-task-action-hover transition-colors"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleClick();
+              }}
+            >
+              <ExternalLink size={14} strokeWidth={2.5} className="text-white" />
+            </button>
+          </TooltipTrigger>
+          <TooltipContent side="bottom" dir="rtl" className="text-[11px]">
+            פתח משימה
+          </TooltipContent>
+        </Tooltip>
       </div>
     </TooltipProvider>
   );
