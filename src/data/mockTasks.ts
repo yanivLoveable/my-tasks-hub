@@ -47,7 +47,7 @@ export const MOCK_TASKS: Task[] = [
     title: "אישור תשלום ספק דחוף", identifier: "ERP-300050", url: "#",
     status: "open", priority: "high",
     startDate: new Date("2026-02-15"), dueDate: new Date("2026-03-10"),
-    category: "רכש וכספים", assignedToRole: "רכש וכספים",
+    category: "רכש וכספים", assignedToRole: "רכש וכספים", delegatedFrom: "מיכל ברק",
     updatedAt: new Date("2026-02-15"),
     userIsDelegated: "Y", userDelegatedFrom: "מיכל ברק",
   },
