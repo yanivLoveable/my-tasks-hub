@@ -106,15 +106,10 @@ export default function TaskCard({ task }: TaskCardProps) {
                 | חריגה: {task.overdueDays} ימים
               </span>
             )}
-            {task.userIsDelegated === "Y" && task.userDelegatedFrom && (
-              <span className="text-task-action font-bold">
-                | ניתן לפתוח את המשימה רק לאחר ההתחזות למשתמש {task.userDelegatedFrom} ב-ERP
-              </span>
-            )}
           </div>
 
           {/* Row 3: metadata - delegation & group */}
-          {hasMetaLine && (
+          {(hasMetaLine || (task.userIsDelegated === "Y" && task.userDelegatedFrom)) && (
             <div className="flex items-center gap-[10px] flex-wrap text-[11px] text-muted-foreground mt-[4px]">
               {task.delegatedFrom && (
                 <span className="flex items-center gap-1">
@@ -129,6 +124,11 @@ export default function TaskCard({ task }: TaskCardProps) {
                 <span className="flex items-center gap-1">
                   <Users size={12} className="flex-shrink-0" />
                   קבוצת {task.groupName}
+                </span>
+              )}
+              {task.userIsDelegated === "Y" && task.userDelegatedFrom && (
+                <span className="text-task-action font-bold">
+                  | ניתן לפתוח את המשימה רק לאחר ההתחזות למשתמש {task.userDelegatedFrom} ב-ERP
                 </span>
               )}
             </div>
