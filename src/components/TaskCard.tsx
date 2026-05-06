@@ -106,6 +106,11 @@ export default function TaskCard({ task }: TaskCardProps) {
                 | חריגה: {task.overdueDays} ימים
               </span>
             )}
+            {task.userIsDelegated === "Y" && task.userDelegatedFrom && (
+              <span className="text-task-action font-bold">
+                | ניתן לפתוח את המשימה רק לאחר ההתחזות למשתמש {task.userDelegatedFrom} ב-ERP
+              </span>
+            )}
           </div>
 
           {/* Row 3: metadata - delegation & group */}
@@ -129,12 +134,6 @@ export default function TaskCard({ task }: TaskCardProps) {
             </div>
           )}
 
-          {/* Row 4: impersonation notice */}
-          {task.userIsDelegated === "Y" && task.userDelegatedFrom && (
-            <div className="text-[11px] text-alert-red font-medium mt-[4px]">
-              ניתן לפתוח את המשימה רק לאחר ההתחזות למשתמש {task.userDelegatedFrom} ב-ERP
-            </div>
-          )}
         </div>
 
         {/* External link button - solid circle */}
