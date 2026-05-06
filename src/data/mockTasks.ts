@@ -51,9 +51,6 @@ export const MOCK_TASKS: Task[] = [
     updatedAt: new Date("2026-02-15"),
     userIsDelegated: "Y", userDelegatedFrom: "מיכל ברק",
   },
-    category: "רכש וכספים", assignedToRole: "רכש וכספים",
-    updatedAt: new Date("2026-02-27"),
-  },
   // === DOCS ===
   {
     id: "DOCS-991234", source: "DOCS_APPROVAL", systemLabel: "DOCS",
