@@ -42,6 +42,15 @@ export const MOCK_TASKS: Task[] = [
     category: "רכש וכספים", assignedToRole: "רכש וכספים",
     updatedAt: new Date("2026-02-27"),
   },
+  {
+    id: "ERP-300050", source: "ERP", systemLabel: "ERP",
+    title: "אישור תשלום ספק דחוף", identifier: "ERP-300050", url: "#",
+    status: "open", priority: "high",
+    startDate: new Date("2026-02-15"), dueDate: new Date("2026-03-10"),
+    category: "רכש וכספים", assignedToRole: "רכש וכספים",
+    updatedAt: new Date("2026-02-15"),
+    userIsDelegated: "Y", userDelegatedFrom: "מיכל ברק",
+  },
   // === DOCS ===
   {
     id: "DOCS-991234", source: "DOCS_APPROVAL", systemLabel: "DOCS",
