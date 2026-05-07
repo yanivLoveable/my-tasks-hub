@@ -15,6 +15,8 @@ export interface Task {
   overdueDays?: number;
   delegatedFrom?: string;
   groupName?: string;
+  userIsDelegated?: "Y" | "N" | "B";
+  userDelegatedFrom?: string;
 }
 
 export type SortMode = "default" | "startDate" | "dueDate";

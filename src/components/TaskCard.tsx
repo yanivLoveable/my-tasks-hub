@@ -109,7 +109,7 @@ export default function TaskCard({ task }: TaskCardProps) {
           </div>
 
           {/* Row 3: metadata - delegation & group */}
-          {hasMetaLine && (
+          {(hasMetaLine || (task.userIsDelegated === "Y" && task.userDelegatedFrom)) && (
             <div className="flex items-center gap-[10px] flex-wrap text-[11px] text-muted-foreground mt-[4px]">
               {task.delegatedFrom && (
                 <span className="flex items-center gap-1">
@@ -126,21 +126,34 @@ export default function TaskCard({ task }: TaskCardProps) {
                   קבוצת {task.groupName}
                 </span>
               )}
+              {task.userIsDelegated === "Y" && task.userDelegatedFrom && (
+                <span className="text-task-action font-bold">
+                  | ניתן לפתוח את המשימה רק לאחר ההתחזות למשתמש {task.userDelegatedFrom} ב-ERP
+                </span>
+              )}
             </div>
           )}
+
         </div>
 
         {/* External link button - solid circle */}
-        <button
-          title="פתח משימה"
-          className="w-[34px] h-[34px] aspect-square flex-shrink-0 bg-task-action border-none rounded-full flex items-center justify-center cursor-pointer hover:bg-task-action-hover transition-colors"
-          onClick={(e) => {
-            e.stopPropagation();
-            handleClick();
-          }}
-        >
-          <ExternalLink size={14} strokeWidth={2.5} className="text-white" />
-        </button>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <button
+              aria-label="פתח משימה"
+              className="w-[34px] h-[34px] aspect-square flex-shrink-0 bg-task-action border-none rounded-full flex items-center justify-center cursor-pointer hover:bg-task-action-hover transition-colors"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleClick();
+              }}
+            >
+              <ExternalLink size={14} strokeWidth={2.5} className="text-white" />
+            </button>
+          </TooltipTrigger>
+          <TooltipContent side="bottom" dir="rtl" className="text-[11px]">
+            פתח משימה
+          </TooltipContent>
+        </Tooltip>
       </div>
     </TooltipProvider>
   );
