@@ -30,7 +30,18 @@ export default function Header({
   failedSystems = {},
 }: HeaderProps) {
   const { user } = useAuth();
-  const failedNames = Object.keys(failedSystems);
+  const SYSTEM_DISPLAY_NAMES: Record<string, string> = {
+    DOCS_APPROVAL: "אישור מסמכים",
+    DOCS: "אישור מסמכים",
+    SNOW_TICKET: "SNOW",
+    SNOW: "SNOW",
+    ERP: "ERP",
+    CRM: "CRM",
+    JIRA: "JIRA",
+  };
+  const failedNames = Object.keys(failedSystems).map(
+    (s) => SYSTEM_DISPLAY_NAMES[s] || SYSTEM_DISPLAY_NAMES[s.toUpperCase()] || s
+  );
   const hasPartialFailure = failedNames.length > 0;
   const [feedbackOpen, setFeedbackOpen] = useState(false);
   const [infoOpen, setInfoOpen] = useState(false);
@@ -56,7 +67,7 @@ export default function Header({
                     <TooltipTrigger asChild>
                       <AlertTriangle size={14} className="text-amber-500 cursor-help flex-shrink-0" />
                     </TooltipTrigger>
-                    <TooltipContent side="bottom" dir="rtl" className="text-[11px] max-w-[260px]">
+                    <TooltipContent side="bottom" dir="rtl" className="text-[11px] max-w-[420px] whitespace-normal break-words leading-relaxed">
                       רענון חלק מהמערכות נכשל ({failedNames.join(", ")}). המידע עשוי להיות חלקי.
                     </TooltipContent>
                   </Tooltip>
